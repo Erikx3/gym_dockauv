@@ -28,6 +28,7 @@ class StateSpace:
     @cached_property
     def Ig(self) -> np.ndarray:
         """
+        LOL
 
         :return: moment of inertia array 3x3
         """
@@ -41,15 +42,17 @@ class StateSpace:
     @cached_property
     def M_RB(self) -> np.ndarray:
         r"""
+        This function builds the rigid body mass matrix
+
         .. math::
 
-        M = \begin{bmatrix}
-                1 & 4 & 7 \\
-                2 & 5 & 8 \\
-                3 & 6 & 9
-            \end{bmatrix}
+            M = \begin{bmatrix}
+                    1 & 4 & 7 \\
+                    2 & 5 & 8 \\
+                    3 & 6 & 9
+                \end{bmatrix}
 
-        :return: rigid body mass matrix array 6x6
+        :return: array 6x6
         """
         M_RB_CG = np.vstack([
             np.hstack([self.m * np.identity(3), np.zeros(3)]),
