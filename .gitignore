@@ -154,4 +154,4 @@ crashlytics-build.properties
 fabric.properties
 
 # Own ignore files
-notes.py
+gym_dockauv/notes.py
