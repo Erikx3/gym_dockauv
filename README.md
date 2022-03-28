@@ -2,7 +2,10 @@
 
 Master Thesis Project Code, Cooperation of TU Berlin and NTNU
 
-TBD - Whole README.md + link to doc
+View the doc at: https://erikx3.github.io/gym_dockauv/
+
+> :warning: **TBD - Work in Progress**: Documentation via Sphinx hosted on Github Pages aswell as README.md
+
 
 
 

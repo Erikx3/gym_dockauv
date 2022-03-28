@@ -1,5 +1,4 @@
 import numpy as np
-from abc import ABC, abstractmethod
 from functools import cached_property
 from numpy.linalg import inv
 
@@ -26,6 +25,10 @@ class StateSpace:
 
     Where the relative velocity results from the absolute velocity and current velocity :math:`\boldsymbol{\nu}_r
     = \boldsymbol{\nu} - \boldsymbol{\nu}_c`
+
+    .. note:: Lift forces are neglected here for speeds up to 2m/s, however they can be easily added to the damping
+        term by creating matrix :math:`\boldsymbol{L}` and multiplying with speed component :math:`u`. An example for
+        another AUV dynamics implementation, where we also need more variables, is shown under ....
     """
 
     # TODO: Think about doing this with xml file and setattr function later (add B matrix by hand for now and read in
@@ -46,6 +49,13 @@ class StateSpace:
 
         # Added Mass variables
         self.X_udot = self.Y_vdot = self.Z_wdot = self.K_pdot = self.M_qdot = self.N_rdot = 0
+
+        # Linear Damping parameters
+        self.X_u = self.Y_v = self.Z_w = self.K_p = self.M_q = self.N_r = 0
+
+        # Quadratic Damping parameters
+        self.X_uu = self.Y_vv = self.Z_ww = self.K_pp = self.M_qq = self.N_rr = 0
+
 
     @cached_property
     def I_g(self) -> np.ndarray:
@@ -134,10 +144,11 @@ class StateSpace:
 
     def C_RB(self, nu_r: np.ndarray) -> np.ndarray:
         r"""
-        The skew-symmetric cross-product operation on :math:`M_{RB}` yields the rigid-body centripetal Coriolis
-        matrix :math:`\boldsymbol{C}_{RB}`. We use the velocity-independent parametrization as in `Fossen2011
-        <https://onlinelibrary.wiley.com/doi/book/10.1002/9781119994138>`_, page 55, where :math:`\boldsymbol{\nu}_2`
-        represents the angular velocity vector and :math:`S` the cross product operator
+        The skew-symmetric cross-product operation on :math:`\boldsymbol{M}_{RB}` yields the rigid-body centripetal
+        Coriolis matrix :math:`\boldsymbol{C}_{RB}`. We use the velocity-independent parametrization as in
+        `Fossen2011 <https://onlinelibrary.wiley.com/doi/book/10.1002/9781119994138>`_, page 55,
+        where :math:`\boldsymbol{\nu}_2` represents the angular velocity vector, :math:`S` the cross product operator
+        and :math:`\boldsymbol{I}_b` is the inertia matrix about an arbitrary origin (p.51)
 
         .. math::
 
@@ -162,7 +173,122 @@ class StateSpace:
         return C_RB_CO
 
     def C_A(self, nu_r: np.ndarray) -> np.ndarray:
-        pass
+        r"""
+        The skew-symmetric cross-product operation on :math:`\boldsymbol{M}_{A}` yields the added mass centripetal
+        Coriolis matrix :math:`\boldsymbol{C}_{A}`. Below we used the most generic form, so we are able to adapt to
+        changes someone made to :math:`\boldsymbol{M}_{A}`
+
+
+        .. math::
+
+            \boldsymbol{C}_{A} = \begin{bmatrix}
+            \boldsymbol{0}_{3x3} &
+            -\boldsymbol{S}(\boldsymbol{M}_{A,11} \boldsymbol{\nu}_1 + \boldsymbol{M}_{A,12} \boldsymbol{\nu}_2) \\
+            -\boldsymbol{S}(\boldsymbol{M}_{A,11} \boldsymbol{\nu}_1 + \boldsymbol{M}_{A,12} \boldsymbol{\nu}_2) &
+            -\boldsymbol{S}(\boldsymbol{M}_{A,21} \boldsymbol{\nu}_1 + \boldsymbol{M}_{A,22} \boldsymbol{\nu}_2)
+            \end{bmatrix}
+
+        In the case of a diagonal added mass matrix :math:`\boldsymbol{M}_{A}`, this leads to the following result
+
+        .. math::
+
+            \boldsymbol{C}_{A} = \begin{bmatrix}
+            0 & 0 & 0 & 0 & -Z_{\dot{w}} w & Y_{\dot{v}} v \\
+            0 & 0 & 0 & Z_{\dot{w}} w & 0 & -X_{\dot{u}} u \\
+            0 & 0 & 0 & -Y_{\dot{v}} v & X_{\dot{u}} u & 0 \\
+            0 & -Z_{\dot{w}} w & Y_{\dot{v}} v & 0 & -N_{\dot{r}} r & M_{\dot{q}} q \\
+            Z_{\dot{w}} w & 0 & -X_{\dot{u}} u & N_{\dot{r}} r & 0 & -K_{\dot{p}} p \\
+            -Y_{\dot{v}} v & X_{\dot{u}} u & 0 & -M_{\dot{q}} q & K_{\dot{p}} p & 0 \\
+            \end{bmatrix}
+
+        :param nu_r: relative velocity vector :math:`\boldsymbol{\nu}_r = [u \: v \: w \: p \: q \: r]^T`
+        :return: array 6x6
+        """
+
+        nu_1 = nu_r[0:3]
+        nu_2 = nu_r[3:6]
+        M_A11 = self.M_A[0:3, 0:3]
+        M_A12 = self.M_A[0:3, 3:6]
+        M_A21 = M_A12.T
+        M_A22 = self.M_a[3:6, 3:6]
+
+        C_A_CO = np.vstack([
+            np.hstack([np.zeros((3, 3)), -geom.S_skew(M_A11 @ nu_1 + M_A12 @ nu_2)]),
+            np.hstack([-geom.S_skew(M_A11 @ nu_1 + M_A12 @ nu_2), -geom.S_skew(M_A21 @ nu_1 + M_A22 @ nu_2)])
+        ])
+
+        # TODO: Make unit test for this with result from Simen!
+
+        return C_A_CO
+
+    def C(self, nu_r: np.ndarray) -> np.ndarray:
+        r"""
+        Returns the total of the coriolis matrices
+
+        :param nu_r: relative velocity vector :math:`\boldsymbol{\nu}_r = [u \: v \: w \: p \: q \: r]^T`
+        :return: array 6x6
+        """
+        C = self.C_RB(nu_r) + self.C_A(nu_r)
+        return C
+
+    def D(self, nu_r: np.ndarray) -> np.ndarray:
+        r"""
+        hydrodynamic damping modelled in linear viscous damping and quadratic damping.
+
+        .. note:: Here we assume again decoupling such that the linear and nonlinear damping matrices are given as below
+
+        .. math::
+
+            \boldsymbol{D}(\boldsymbol{\nu}_r) = \boldsymbol{D}_L + \boldsymbol{D}_{NL}(\boldsymbol{\nu}_r)
+
+        Linear Damping Matrix
+
+        .. math::
+
+            \boldsymbol{M}_A = \begin{bmatrix}
+                X_u & 0 & 0 & 0 & 0 & 0 \\
+                0 & Y_v & 0 & 0 & 0 & 0 \\
+                0 & 0 & Z_w & 0 & 0 & 0 \\
+                0 & 0 & 0 & K_p & 0 & 0 \\
+                0 & 0 & 0 & 0 & M_q & 0 \\
+                0 & 0 & 0 & 0 & 0 & N_r
+            \end{bmatrix}
+
+        Nonlinear (quadratic) damping matrix
+
+        .. math::
+
+            \boldsymbol{M}_A = \begin{bmatrix}
+                X_{u|u|} |u| & 0 & 0 & 0 & 0 & 0 \\
+                0 & Y_{v|v|} |v| & 0 & 0 & 0 & 0 \\
+                0 & 0 & Z_{w|w|} |w| & 0 & 0 & 0 \\
+                0 & 0 & 0 & K_{p|p|} |p| & 0 & 0 \\
+                0 & 0 & 0 & 0 & M_{q|q|} |q| & 0 \\
+                0 & 0 & 0 & 0 & 0 & N_{r|r|} |r|
+            \end{bmatrix}
+
+        :param nu_r: relative velocity vector :math:`\boldsymbol{\nu}_r = [u \: v \: w \: p \: q \: r]^T`
+        :return: array 6x6
+        """
+        u = abs(nu_r[0])
+        v = abs(nu_r[1])
+        w = abs(nu_r[2])
+        p = abs(nu_r[3])
+        q = abs(nu_r[4])
+        r = abs(nu_r[5])
+
+        D = -np.array([[self.X_u, 0, 0, 0, 0, 0],
+                       [0, self.Y_v, 0, 0, 0, 0],
+                       [0, 0, self.Z_w, 0, 0, 0],
+                       [0, 0, 0, self.K_p, 0, 0],
+                       [0, 0, 0, 0, self.M_q, 0],
+                       [0, 0, 0, 0, 0, self.N_r]])
+        D_n = -np.array([[self.X_uu * u, 0, 0, 0, 0, 0],
+                         [0, self.Y_vv * v, 0, 0, 0, 0],
+                         [0, 0, self.Z_ww * w, 0, 0, 0],
+                         [0, 0, 0, self.K_pp * p, 0, 0],
+                         [0, 0, 0, 0, self.M_qq * q, 0],
+                         [0, 0, 0, 0, 0, self.N_rr * r]])
 
 # TODO Add the reduced matrices in the Bluerov subclass description as xml? Plus B matrix
 
