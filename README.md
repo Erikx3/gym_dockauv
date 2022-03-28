@@ -1,8 +1,12 @@
-#gym_dockauv
+# gym_dockauv
 
 Master Thesis Project Code, Cooperation of TU Berlin and NTNU
 
-TBD
+TBD - Whole README.md + link to doc
+
+
+
+
 
 Notes:
 1. Installation of Sphinx 4.4.0 over https://www.sphinx-doc.org/en/master/usage/installation.html
