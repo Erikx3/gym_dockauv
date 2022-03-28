@@ -18,17 +18,19 @@ class StateSpace:
     Equations of Relative Motion with the assumption of irrotational current:
 
     .. math ::
-        \underbrace{M_{RB} \dot{\nu} + C_{RB}(\nu)\nu}_{\text{rigid-body terms}}
-        + \underbrace{M_A \dot{\nu}_r + C_A(\nu_r) \nu_r + D(\nu_r) \nu_r}_{\text{hydrodynamic terms}}
-        + \underbrace{g(\eta)}_{\text{hydrostatic terms}} = \tau
+        \underbrace{\boldsymbol{M}_{RB} \boldsymbol{\dot{\nu}}
+        + \boldsymbol{C}_{RB}(\boldsymbol{\nu})\boldsymbol{\nu}}_{\text{rigid-body terms}}
+        + \underbrace{\boldsymbol{M}_A \boldsymbol{\dot{\nu}}_r + C_A(\boldsymbol{\nu}_r) \boldsymbol{\nu}_r
+        + D(\boldsymbol{\nu}_r) \boldsymbol{\nu}_r}_{\text{hydrodynamic terms}}
+        + \underbrace{g(\eta)}_{\text{hydrostatic terms}} = \boldsymbol{\tau}
 
-    Where the relative velocity results from the absolute velocity and current velocity :math:`\nu_r = \nu - \nu_c`
+    Where the relative velocity results from the absolute velocity and current velocity :math:`\boldsymbol{\nu}_r
+    = \boldsymbol{\nu} - \boldsymbol{\nu}_c`
     """
 
-    # TODO: Think about doing this with xml file and setattr function later, solution for B matrix interesting
-    @abstractmethod
+    # TODO: Think about doing this with xml file and setattr function later (add B matrix by hand for now and read in
+    #  ... Bluerov data by xml file
 
-    # TODO: !!! First choose solution for boldmath, either include package bm or add boldsymbol to all vectors nd matrices!!!
     def __init__(self):
         # General AUV parameters
         self.m = 0
@@ -62,7 +64,7 @@ class StateSpace:
     @cached_property
     def r_G(self) -> np.ndarray:
         r"""
-        :math:`r_G = [x_G \: y_G \: z_G]^T` distance CG from CO (typically at CB)
+        :math:`\boldsymbol{r}_G = [x_G \: y_G \: z_G]^T` distance CG from CO (typically at CB)
 
         :return: array 3x1
         """
@@ -75,7 +77,7 @@ class StateSpace:
 
         .. math::
 
-            M_{RB} = \begin{bmatrix}
+            \boldsymbol{M}_{RB} = \begin{bmatrix}
                     m & 0 & 0 & 0 & m z_G & -m y_G \\
                     0 & m & 0 & -m z_G & 0 & m x_G \\
                     0 & 0 & m & m y_G & -m x_G & 0 \\
@@ -106,7 +108,7 @@ class StateSpace:
 
         .. math::
 
-            M_A = \begin{bmatrix}
+            \boldsymbol{M}_A = \begin{bmatrix}
                     X_{\dot{u}} & 0 & 0 & 0 & 0 & 0 \\
                     0 & Y_{\dot{v}} & 0 & 0 & 0 & 0 \\
                     0 & 0 & Z_{\dot{w}} & 0 & 0 & 0 \\
@@ -123,7 +125,7 @@ class StateSpace:
     @cached_property
     def M_inv(self) -> np.ndarray:
         """
-        Retrieves the total inverse of the mass matrices (which will end up on the RHS)
+        Retrieves the total inverse of the mass matrices (which will end up on the RHS of the EOM)
 
         :return: array 6x6
         """
@@ -133,18 +135,20 @@ class StateSpace:
     def C_RB(self, nu_r: np.ndarray) -> np.ndarray:
         r"""
         The skew-symmetric cross-product operation on :math:`M_{RB}` yields the rigid-body centripetal Coriolis
-        matrix :math:`C_{RB}`. We use the velocity-independent parametrization as in
-        `Fossen2011 <https://onlinelibrary.wiley.com/doi/book/10.1002/9781119994138>`_, page 55, where :math:`\nu_2`
+        matrix :math:`\boldsymbol{C}_{RB}`. We use the velocity-independent parametrization as in `Fossen2011
+        <https://onlinelibrary.wiley.com/doi/book/10.1002/9781119994138>`_, page 55, where :math:`\boldsymbol{\nu}_2`
         represents the angular velocity vector and :math:`S` the cross product operator
 
         .. math::
 
             \boldsymbol{C}_{RB} = \begin{bmatrix}
-                    m S(\nu2) & -m S(\nu_2) S(r_G) \\
-                    m S(r_G) S(\nu_2) & -S(I_b \nu_2)
-                \end{bmatrix}
+            m \boldsymbol{S}(\boldsymbol{\nu}_2) &
+            -m \boldsymbol{S}(\boldsymbol{\nu}_2) \boldsymbol{S}(\boldsymbol{r}_G) \\
+            m \boldsymbol{S}(\boldsymbol{r}_G) \boldsymbol{S}(\boldsymbol{\nu}_2) &
+            -\boldsymbol{S}(\boldsymbol{I}_b \boldsymbol{\nu}_2)
+            \end{bmatrix}
 
-        :param nu_r: relative velocity vector :math:`\nu_r = [u \: v \: w \: p \: q \: r]^T`
+        :param nu_r: relative velocity vector :math:`\boldsymbol{\nu}_r = [u \: v \: w \: p \: q \: r]^T`
         :return: array 6x6
         """
         nu_2 = nu_r[3:6]
@@ -157,4 +161,6 @@ class StateSpace:
         ])
         return C_RB_CO
 
-# TODO Add the reduced matrices in the Bluerov subclass description
+# TODO Add the reduced matrices in the Bluerov subclass description as xml? Plus B matrix
+
+
