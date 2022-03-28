@@ -161,6 +161,9 @@ class StateSpace:
         ])
         return C_RB_CO
 
+    def C_A(self, nu_r: np.ndarray) -> np.ndarray:
+        pass
+
 # TODO Add the reduced matrices in the Bluerov subclass description as xml? Plus B matrix
 
 
