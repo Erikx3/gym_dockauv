@@ -1,11 +1,13 @@
 import numpy as np
 from functools import cached_property
+from abc import ABC, abstractmethod
 from numpy.linalg import inv
+from math import cos, sin
 
 import gym_dockauv.utils.geomutils as geom
 
 
-class StateSpace:
+class StateSpace(ABC):
     r"""
     This class represents the Parentclass for a statespace. It basically serves as template for AUV dynamics with
     6dof. The __init__ function can be overwritten by simply adding the derivatives of the state space, that are not
@@ -37,6 +39,8 @@ class StateSpace:
     def __init__(self):
         # General AUV parameters
         self.m = 0
+        self.g = 9.81
+        self.B = 0  # Buoyancy in [N]
 
         # Moments of Inertia
         self.I_x = 0
@@ -47,6 +51,9 @@ class StateSpace:
         # [meters], x_G, y_G, z_G distance CG from CO (typically at CB)
         self.x_G = self.y_G = self.z_G = 0
 
+        # [meters], x_B, y_B, z_B distance CB from CO (typically at CB, thus all zero)
+        self.x_B = self.y_B = self.z_B = 0
+
         # Added Mass variables
         self.X_udot = self.Y_vdot = self.Z_wdot = self.K_pdot = self.M_qdot = self.N_rdot = 0
 
@@ -56,6 +63,9 @@ class StateSpace:
         # Quadratic Damping parameters
         self.X_uu = self.Y_vv = self.Z_ww = self.K_pp = self.M_qq = self.N_rr = 0
 
+    @cached_property
+    def W(self) -> float:
+        return self.m * self.g
 
     @cached_property
     def I_g(self) -> np.ndarray:
@@ -79,6 +89,15 @@ class StateSpace:
         :return: array 3x1
         """
         return np.array([self.x_G, self.y_G, self.z_G])
+
+    @cached_property
+    def r_B(self) -> np.ndarray:
+        r"""
+        :math:`\boldsymbol{r}_B = [x_B \: y_B \: z_B]^T` distance CB from CO (typically at CB, thus all zero)
+
+        :return: array 3x1
+        """
+        return np.array([self.x_B, self.y_B, self.z_B])
 
     @cached_property
     def M_RB(self) -> np.ndarray:
@@ -153,10 +172,10 @@ class StateSpace:
         .. math::
 
             \boldsymbol{C}_{RB} = \begin{bmatrix}
-            m \boldsymbol{S}(\boldsymbol{\nu}_2) &
-            -m \boldsymbol{S}(\boldsymbol{\nu}_2) \boldsymbol{S}(\boldsymbol{r}_G) \\
-            m \boldsymbol{S}(\boldsymbol{r}_G) \boldsymbol{S}(\boldsymbol{\nu}_2) &
-            -\boldsymbol{S}(\boldsymbol{I}_b \boldsymbol{\nu}_2)
+                m \boldsymbol{S}(\boldsymbol{\nu}_2) &
+                -m \boldsymbol{S}(\boldsymbol{\nu}_2) \boldsymbol{S}(\boldsymbol{r}_G) \\
+                m \boldsymbol{S}(\boldsymbol{r}_G) \boldsymbol{S}(\boldsymbol{\nu}_2) &
+                -\boldsymbol{S}(\boldsymbol{I}_b \boldsymbol{\nu}_2)
             \end{bmatrix}
 
         :param nu_r: relative velocity vector :math:`\boldsymbol{\nu}_r = [u \: v \: w \: p \: q \: r]^T`
@@ -182,10 +201,10 @@ class StateSpace:
         .. math::
 
             \boldsymbol{C}_{A} = \begin{bmatrix}
-            \boldsymbol{0}_{3x3} &
-            -\boldsymbol{S}(\boldsymbol{M}_{A,11} \boldsymbol{\nu}_1 + \boldsymbol{M}_{A,12} \boldsymbol{\nu}_2) \\
-            -\boldsymbol{S}(\boldsymbol{M}_{A,11} \boldsymbol{\nu}_1 + \boldsymbol{M}_{A,12} \boldsymbol{\nu}_2) &
-            -\boldsymbol{S}(\boldsymbol{M}_{A,21} \boldsymbol{\nu}_1 + \boldsymbol{M}_{A,22} \boldsymbol{\nu}_2)
+                \boldsymbol{0}_{3 \times 3} &
+                -\boldsymbol{S}(\boldsymbol{M}_{A,11} \boldsymbol{\nu}_1 + \boldsymbol{M}_{A,12} \boldsymbol{\nu}_2) \\
+                -\boldsymbol{S}(\boldsymbol{M}_{A,11} \boldsymbol{\nu}_1 + \boldsymbol{M}_{A,12} \boldsymbol{\nu}_2) &
+                -\boldsymbol{S}(\boldsymbol{M}_{A,21} \boldsymbol{\nu}_1 + \boldsymbol{M}_{A,22} \boldsymbol{\nu}_2)
             \end{bmatrix}
 
         In the case of a diagonal added mass matrix :math:`\boldsymbol{M}_{A}`, this leads to the following result
@@ -193,12 +212,12 @@ class StateSpace:
         .. math::
 
             \boldsymbol{C}_{A} = \begin{bmatrix}
-            0 & 0 & 0 & 0 & -Z_{\dot{w}} w & Y_{\dot{v}} v \\
-            0 & 0 & 0 & Z_{\dot{w}} w & 0 & -X_{\dot{u}} u \\
-            0 & 0 & 0 & -Y_{\dot{v}} v & X_{\dot{u}} u & 0 \\
-            0 & -Z_{\dot{w}} w & Y_{\dot{v}} v & 0 & -N_{\dot{r}} r & M_{\dot{q}} q \\
-            Z_{\dot{w}} w & 0 & -X_{\dot{u}} u & N_{\dot{r}} r & 0 & -K_{\dot{p}} p \\
-            -Y_{\dot{v}} v & X_{\dot{u}} u & 0 & -M_{\dot{q}} q & K_{\dot{p}} p & 0 \\
+                0 & 0 & 0 & 0 & -Z_{\dot{w}} w & Y_{\dot{v}} v \\
+                0 & 0 & 0 & Z_{\dot{w}} w & 0 & -X_{\dot{u}} u \\
+                0 & 0 & 0 & -Y_{\dot{v}} v & X_{\dot{u}} u & 0 \\
+                0 & -Z_{\dot{w}} w & Y_{\dot{v}} v & 0 & -N_{\dot{r}} r & M_{\dot{q}} q \\
+                Z_{\dot{w}} w & 0 & -X_{\dot{u}} u & N_{\dot{r}} r & 0 & -K_{\dot{p}} p \\
+                -Y_{\dot{v}} v & X_{\dot{u}} u & 0 & -M_{\dot{q}} q & K_{\dot{p}} p & 0 \\
             \end{bmatrix}
 
         :param nu_r: relative velocity vector :math:`\boldsymbol{\nu}_r = [u \: v \: w \: p \: q \: r]^T`
@@ -210,7 +229,7 @@ class StateSpace:
         M_A11 = self.M_A[0:3, 0:3]
         M_A12 = self.M_A[0:3, 3:6]
         M_A21 = M_A12.T
-        M_A22 = self.M_a[3:6, 3:6]
+        M_A22 = self.M_A[3:6, 3:6]
 
         C_A_CO = np.vstack([
             np.hstack([np.zeros((3, 3)), -geom.S_skew(M_A11 @ nu_1 + M_A12 @ nu_2)]),
@@ -278,20 +297,82 @@ class StateSpace:
         r = abs(nu_r[5])
 
         D_L = -np.array([[self.X_u, 0, 0, 0, 0, 0],
-                       [0, self.Y_v, 0, 0, 0, 0],
-                       [0, 0, self.Z_w, 0, 0, 0],
-                       [0, 0, 0, self.K_p, 0, 0],
-                       [0, 0, 0, 0, self.M_q, 0],
-                       [0, 0, 0, 0, 0, self.N_r]])
+                         [0, self.Y_v, 0, 0, 0, 0],
+                         [0, 0, self.Z_w, 0, 0, 0],
+                         [0, 0, 0, self.K_p, 0, 0],
+                         [0, 0, 0, 0, self.M_q, 0],
+                         [0, 0, 0, 0, 0, self.N_r]])
+
         D_NL = -np.array([[self.X_uu * u, 0, 0, 0, 0, 0],
-                         [0, self.Y_vv * v, 0, 0, 0, 0],
-                         [0, 0, self.Z_ww * w, 0, 0, 0],
-                         [0, 0, 0, self.K_pp * p, 0, 0],
-                         [0, 0, 0, 0, self.M_qq * q, 0],
-                         [0, 0, 0, 0, 0, self.N_rr * r]])
+                          [0, self.Y_vv * v, 0, 0, 0, 0],
+                          [0, 0, self.Z_ww * w, 0, 0, 0],
+                          [0, 0, 0, self.K_pp * p, 0, 0],
+                          [0, 0, 0, 0, self.M_qq * q, 0],
+                          [0, 0, 0, 0, 0, self.N_rr * r]])
 
         return D_L + D_NL
 
+    def G(self, eta: np.ndarray) -> np.ndarray:
+        r"""
+        returns the restoring forces acting on the AUV
+
+        .. math::
+
+            \boldsymbol{G}(\boldsymbol{\eta}) = \begin{bmatrix}
+                (W-B) \sin(\theta) \\
+                - (W-B) \cos(\theta) \sin(\phi) \\
+                - (W-B) \cos(\theta) \cos(\phi) \\
+                - (y_G W - y_B B) \cos(\theta) \cos(\phi) + (z_G W - z_B B) \cos(\theta) \sin(\phi) \\
+                (z_G W - z_B B) \sin(\theta) + (x_G W - x_B B) \cos(\theta) \cos(\phi) \\
+                - (x_G W - x_B B) \cos(\theta) \sin(\phi) - (y_G W - y_B B) \sin(\theta)
+            \end{bmatrix}
+
+        .. note:: Assuming that the Center of Origin lies in the Center of Buoyancy and only :math:`z_g` is different
+            from zero, this equation simplifies further to:
+
+            .. math::
+                \boldsymbol{G}(\boldsymbol{\eta}) = \begin{bmatrix}
+                    (W-B) \sin(\theta) \\
+                    - (W-B) \cos(\theta) \sin(\phi) \\
+                    - (W-B) \cos(\theta) \cos(\phi) \\
+                    z_G W \cos(\theta) \sin(\phi) \\
+                    z_G W \sin(\theta)\\
+                    0
+                \end{bmatrix}
+
+        :param eta: pose coordinates vector :math:`\boldsymbol{\eta} = [x \: y \: z \: \phi \: \theta \: \psi]^T`
+        :return: 6x1 array
+        """
+
+        phi = eta[3]
+        theta = eta[4]
+        G = np.array([(self.W - self.B) * sin(theta),
+                      -(self.W - self.B) * cos(theta) * sin(phi),
+                      -(self.W - self.B) * cos(theta) * cos(phi),
+                      -(self.y_G * self.W - self.y_B * self.B) * cos(theta) * cos(phi) + (
+                                  self.z_G * self.W - self.z_B * self.B) * cos(theta) * sin(phi),
+                      (self.z_G * self.W - self.z_B * self.B) * sin(theta) + (
+                                  self.x_G * self.W - self.x_B * self.B) * cos(theta) * cos(phi),
+                      - (self.x_G * self.W - self.x_B * self.B) * cos(theta) * sin(phi) - (
+                                  self.y_G * self.W - self.y_B * self.B) * sin(theta)
+                      ])
+        return G
+
+    @abstractmethod
+    def B(self) -> np.ndarray:
+        r"""
+        this function returns the control matrix :math:`\boldsymbol{B}` and is individual for each AUV and thus an
+        abstract method
+
+        When :math:`\boldsymbol{\tau}` represents the external forces and :math:`\boldsymbol{u}` the control input, then
+
+        .. math::
+
+            \boldsymbol{\tau} = \boldsymbol{B}_{6\times a} \boldsymbol{u}_{a\times 1}
+
+        Where the dimension :math:`\boldsymbol{a}` is the number of actions available for the system
+        :return:
+        """
+        pass
+
 # TODO Add the reduced matrices in the Bluerov subclass description as xml? Plus B matrix
-
-
