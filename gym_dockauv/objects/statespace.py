@@ -277,18 +277,20 @@ class StateSpace:
         q = abs(nu_r[4])
         r = abs(nu_r[5])
 
-        D = -np.array([[self.X_u, 0, 0, 0, 0, 0],
+        D_L = -np.array([[self.X_u, 0, 0, 0, 0, 0],
                        [0, self.Y_v, 0, 0, 0, 0],
                        [0, 0, self.Z_w, 0, 0, 0],
                        [0, 0, 0, self.K_p, 0, 0],
                        [0, 0, 0, 0, self.M_q, 0],
                        [0, 0, 0, 0, 0, self.N_r]])
-        D_n = -np.array([[self.X_uu * u, 0, 0, 0, 0, 0],
+        D_NL = -np.array([[self.X_uu * u, 0, 0, 0, 0, 0],
                          [0, self.Y_vv * v, 0, 0, 0, 0],
                          [0, 0, self.Z_ww * w, 0, 0, 0],
                          [0, 0, 0, self.K_pp * p, 0, 0],
                          [0, 0, 0, 0, self.M_qq * q, 0],
                          [0, 0, 0, 0, 0, self.N_rr * r]])
+
+        return D_L + D_NL
 
 # TODO Add the reduced matrices in the Bluerov subclass description as xml? Plus B matrix
 
