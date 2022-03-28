@@ -12,9 +12,12 @@ Notes:
 
 
 ## Sphinx:
-Update rst files
+Update rst files, is no module is added, skip first command
 ```shell
 sphinx-apidoc -f -o source gym_dockauv
+cd docs/
+make clean
+make html
 ```
 + add modules to index.rst
 
