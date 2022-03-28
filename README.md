@@ -23,7 +23,7 @@ make html
 If u want to update the html files and make them available on github:
 ```shell
 make github
-``
+```
 + add modules to index.rst
 
 
