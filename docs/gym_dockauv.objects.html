@@ -93,10 +93,10 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="gym_dockauv.objects.statespace.StateSpace">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gym_dockauv.objects.statespace.</span></span><span class="sig-name descname"><span class="pre">StateSpace</span></span><a class="headerlink" href="#gym_dockauv.objects.statespace.StateSpace" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
 <p>This class represents the Parentclass for a statespace. It basically serves as template for AUV dynamics with
 6dof. The __init__ function can be overwritten by simply adding the derivatives of the state space, that are not
-zero or by using the function for reading it these in via a xml file. Do not forget to call super().__init__() in
+zero or by using the function for reading these values in via a xml file. Do not forget to call super().__init__() in
 any child class __init__ constructor.</p>
 <p>The formula below is used as a description of the <strong>kinetic</strong> state space and retrieved by
 <a class="reference external" href="https://onlinelibrary.wiley.com/doi/book/10.1002/9781119994138">Fossen2011</a>, page 188,
@@ -115,6 +115,24 @@ Equations of Relative Motion with the assumption of irrotational current:</p>
 term by creating matrix <span class="math notranslate nohighlight">\(\boldsymbol{L}\)</span> and multiplying with speed component <span class="math notranslate nohighlight">\(u\)</span>. An example for
 another AUV dynamics implementation, where we also need more variables, is shown under ….</p>
 </div>
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.objects.statespace.StateSpace.B">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">B</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.statespace.StateSpace.B" title="Permalink to this definition"></a></dt>
+<dd><p>this function returns the control matrix <span class="math notranslate nohighlight">\(\boldsymbol{B}\)</span> and is individual for each AUV and thus an
+abstract method</p>
+<p>When <span class="math notranslate nohighlight">\(\boldsymbol{\tau}\)</span> represents the external forces and <span class="math notranslate nohighlight">\(\boldsymbol{u}\)</span> the control input, then</p>
+<div class="math notranslate nohighlight">
+\[\boldsymbol{\tau} = \boldsymbol{B}_{6\times a} \boldsymbol{u}_{a\times 1}\]</div>
+<p>Where the dimension <span class="math notranslate nohighlight">\(\boldsymbol{a}\)</span> is the number of actions available for the system
+:rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>
+:return: array 6x1</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="gym_dockauv.objects.statespace.StateSpace.C">
 <span class="sig-name descname"><span class="pre">C</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nu_r</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.statespace.StateSpace.C" title="Permalink to this definition"></a></dt>
@@ -140,20 +158,20 @@ Coriolis matrix <span class="math notranslate nohighlight">\(\boldsymbol{C}_{A}\
 changes someone made to <span class="math notranslate nohighlight">\(\boldsymbol{M}_{A}\)</span></p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\boldsymbol{C}_{A} = \begin{bmatrix}
-\boldsymbol{0}_{3x3} &amp;
--\boldsymbol{S}(\boldsymbol{M}_{A,11} \boldsymbol{\nu}_1 + \boldsymbol{M}_{A,12} \boldsymbol{\nu}_2) \\
--\boldsymbol{S}(\boldsymbol{M}_{A,11} \boldsymbol{\nu}_1 + \boldsymbol{M}_{A,12} \boldsymbol{\nu}_2) &amp;
--\boldsymbol{S}(\boldsymbol{M}_{A,21} \boldsymbol{\nu}_1 + \boldsymbol{M}_{A,22} \boldsymbol{\nu}_2)
+    \boldsymbol{0}_{3 \times 3} &amp;
+    -\boldsymbol{S}(\boldsymbol{M}_{A,11} \boldsymbol{\nu}_1 + \boldsymbol{M}_{A,12} \boldsymbol{\nu}_2) \\
+    -\boldsymbol{S}(\boldsymbol{M}_{A,11} \boldsymbol{\nu}_1 + \boldsymbol{M}_{A,12} \boldsymbol{\nu}_2) &amp;
+    -\boldsymbol{S}(\boldsymbol{M}_{A,21} \boldsymbol{\nu}_1 + \boldsymbol{M}_{A,22} \boldsymbol{\nu}_2)
 \end{bmatrix}\end{split}\]</div>
 <p>In the case of a diagonal added mass matrix <span class="math notranslate nohighlight">\(\boldsymbol{M}_{A}\)</span>, this leads to the following result</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\boldsymbol{C}_{A} = \begin{bmatrix}
-0 &amp; 0 &amp; 0 &amp; 0 &amp; -Z_{\dot{w}} w &amp; Y_{\dot{v}} v \\
-0 &amp; 0 &amp; 0 &amp; Z_{\dot{w}} w &amp; 0 &amp; -X_{\dot{u}} u \\
-0 &amp; 0 &amp; 0 &amp; -Y_{\dot{v}} v &amp; X_{\dot{u}} u &amp; 0 \\
-0 &amp; -Z_{\dot{w}} w &amp; Y_{\dot{v}} v &amp; 0 &amp; -N_{\dot{r}} r &amp; M_{\dot{q}} q \\
-Z_{\dot{w}} w &amp; 0 &amp; -X_{\dot{u}} u &amp; N_{\dot{r}} r &amp; 0 &amp; -K_{\dot{p}} p \\
--Y_{\dot{v}} v &amp; X_{\dot{u}} u &amp; 0 &amp; -M_{\dot{q}} q &amp; K_{\dot{p}} p &amp; 0 \\
+    0 &amp; 0 &amp; 0 &amp; 0 &amp; -Z_{\dot{w}} w &amp; Y_{\dot{v}} v \\
+    0 &amp; 0 &amp; 0 &amp; Z_{\dot{w}} w &amp; 0 &amp; -X_{\dot{u}} u \\
+    0 &amp; 0 &amp; 0 &amp; -Y_{\dot{v}} v &amp; X_{\dot{u}} u &amp; 0 \\
+    0 &amp; -Z_{\dot{w}} w &amp; Y_{\dot{v}} v &amp; 0 &amp; -N_{\dot{r}} r &amp; M_{\dot{q}} q \\
+    Z_{\dot{w}} w &amp; 0 &amp; -X_{\dot{u}} u &amp; N_{\dot{r}} r &amp; 0 &amp; -K_{\dot{p}} p \\
+    -Y_{\dot{v}} v &amp; X_{\dot{u}} u &amp; 0 &amp; -M_{\dot{q}} q &amp; K_{\dot{p}} p &amp; 0 \\
 \end{bmatrix}\end{split}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -178,10 +196,10 @@ where <span class="math notranslate nohighlight">\(\boldsymbol{\nu}_2\)</span> r
 and <span class="math notranslate nohighlight">\(\boldsymbol{I}_b\)</span> is the inertia matrix about an arbitrary origin (p.51)</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\boldsymbol{C}_{RB} = \begin{bmatrix}
-m \boldsymbol{S}(\boldsymbol{\nu}_2) &amp;
--m \boldsymbol{S}(\boldsymbol{\nu}_2) \boldsymbol{S}(\boldsymbol{r}_G) \\
-m \boldsymbol{S}(\boldsymbol{r}_G) \boldsymbol{S}(\boldsymbol{\nu}_2) &amp;
--\boldsymbol{S}(\boldsymbol{I}_b \boldsymbol{\nu}_2)
+    m \boldsymbol{S}(\boldsymbol{\nu}_2) &amp;
+    -m \boldsymbol{S}(\boldsymbol{\nu}_2) \boldsymbol{S}(\boldsymbol{r}_G) \\
+    m \boldsymbol{S}(\boldsymbol{r}_G) \boldsymbol{S}(\boldsymbol{\nu}_2) &amp;
+    -\boldsymbol{S}(\boldsymbol{I}_b \boldsymbol{\nu}_2)
 \end{bmatrix}\end{split}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -235,6 +253,46 @@ m \boldsymbol{S}(\boldsymbol{r}_G) \boldsymbol{S}(\boldsymbol{\nu}_2) &amp;
 </dd>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>array 6x6</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.objects.statespace.StateSpace.G">
+<span class="sig-name descname"><span class="pre">G</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eta</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.statespace.StateSpace.G" title="Permalink to this definition"></a></dt>
+<dd><p>returns the restoring forces acting on the AUV</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\boldsymbol{G}(\boldsymbol{\eta}) = \begin{bmatrix}
+    (W-B) \sin(\theta) \\
+    - (W-B) \cos(\theta) \sin(\phi) \\
+    - (W-B) \cos(\theta) \cos(\phi) \\
+    - (y_G W - y_B B) \cos(\theta) \cos(\phi) + (z_G W - z_B B) \cos(\theta) \sin(\phi) \\
+    (z_G W - z_B B) \sin(\theta) + (x_G W - x_B B) \cos(\theta) \cos(\phi) \\
+    - (x_G W - x_B B) \cos(\theta) \sin(\phi) - (y_G W - y_B B) \sin(\theta)
+\end{bmatrix}\end{split}\]</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Assuming that the Center of Origin lies in the Center of Buoyancy and only <span class="math notranslate nohighlight">\(z_g\)</span> is different
+from zero, this equation simplifies further to:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\boldsymbol{G}(\boldsymbol{\eta}) = \begin{bmatrix}
+    (W-B) \sin(\theta) \\
+    - (W-B) \cos(\theta) \sin(\phi) \\
+    - (W-B) \cos(\theta) \cos(\phi) \\
+    z_G W \cos(\theta) \sin(\phi) \\
+    z_G W \sin(\theta)\\
+    0
+\end{bmatrix}\end{split}\]</div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>eta</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – pose coordinates vector <span class="math notranslate nohighlight">\(\boldsymbol{\eta} = [x \: y \: z \: \phi \: \theta \: \psi]^T\)</span></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>6x1 array</p>
 </dd>
 </dl>
 </dd></dl>
@@ -304,6 +362,22 @@ the full added mass Matrix, simply overwrite this method in your child class</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>array 6x6</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gym_dockauv.objects.statespace.StateSpace.W">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">W</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#gym_dockauv.objects.statespace.StateSpace.W" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gym_dockauv.objects.statespace.StateSpace.r_B">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">r_B</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#gym_dockauv.objects.statespace.StateSpace.r_B" title="Permalink to this definition"></a></dt>
+<dd><p><span class="math notranslate nohighlight">\(\boldsymbol{r}_B = [x_B \: y_B \: z_B]^T\)</span> distance CB from CO (typically at CB, thus all zero)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>array 3x1</p>
 </dd>
 </dl>
 </dd></dl>
