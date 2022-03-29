@@ -47,9 +47,6 @@ class StateSpace(ABC):
         Further on make sure the initialized variables are in the correct type, e.g. do not write mass = None
     """
 
-    # TODO: Think about doing this with xml file and setattr function later (add B matrix by hand for now and read in
-    #  ... Bluerov data by xml file
-
     def __init__(self):
         # General AUV description
         self.name = "AUV_name_here"
@@ -58,7 +55,7 @@ class StateSpace(ABC):
         # General AUV parameters
         self.m = 0.0
         self.g = 9.81
-        self.B = 0.0  # Buoyancy in [N]
+        self.BY = 0.0  # Buoyancy in [N]
 
         # Moments of Inertia
         self.I_x = 0.0
@@ -364,15 +361,15 @@ class StateSpace(ABC):
 
         phi = eta[3]
         theta = eta[4]
-        G = np.array([(self.W - self.B) * sin(theta),
-                      -(self.W - self.B) * cos(theta) * sin(phi),
-                      -(self.W - self.B) * cos(theta) * cos(phi),
-                      -(self.y_G * self.W - self.y_B * self.B) * cos(theta) * cos(phi) + (
-                                  self.z_G * self.W - self.z_B * self.B) * cos(theta) * sin(phi),
-                      (self.z_G * self.W - self.z_B * self.B) * sin(theta) + (
-                                  self.x_G * self.W - self.x_B * self.B) * cos(theta) * cos(phi),
-                      - (self.x_G * self.W - self.x_B * self.B) * cos(theta) * sin(phi) - (
-                                  self.y_G * self.W - self.y_B * self.B) * sin(theta)
+        G = np.array([(self.W - self.BY) * sin(theta),
+                      -(self.W - self.BY) * cos(theta) * sin(phi),
+                      -(self.W - self.BY) * cos(theta) * cos(phi),
+                      -(self.y_G * self.W - self.y_B * self.BY) * cos(theta) * cos(phi) + (
+                                  self.z_G * self.W - self.z_B * self.BY) * cos(theta) * sin(phi),
+                      (self.z_G * self.W - self.z_B * self.BY) * sin(theta) + (
+                                  self.x_G * self.W - self.x_B * self.BY) * cos(theta) * cos(phi),
+                      - (self.x_G * self.W - self.x_B * self.BY) * cos(theta) * sin(phi) - (
+                                  self.y_G * self.W - self.y_B * self.BY) * sin(theta)
                       ])
         return G
 
