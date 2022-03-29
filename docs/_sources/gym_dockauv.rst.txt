@@ -13,14 +13,6 @@ Subpackages
 Submodules
 ----------
 
-gym\_dockauv.notes module
--------------------------
-
-.. automodule:: gym_dockauv.notes
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 gym\_dockauv.train module
 -------------------------
 

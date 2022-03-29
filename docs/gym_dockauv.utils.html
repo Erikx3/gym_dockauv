@@ -15,6 +15,7 @@
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -46,7 +47,6 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="gym_dockauv.html#submodules">Submodules</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gym_dockauv.html#module-gym_dockauv.notes">gym_dockauv.notes module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gym_dockauv.html#module-gym_dockauv.train">gym_dockauv.train module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gym_dockauv.html#module-gym_dockauv">Module contents</a></li>
 </ul>
@@ -91,32 +91,146 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="gym_dockauv.utils.geomutils.J">
 <span class="sig-prename descclassname"><span class="pre">gym_dockauv.utils.geomutils.</span></span><span class="sig-name descname"><span class="pre">J</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eta</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.geomutils.J" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Transformation and rotation matrix combined for obtaining kinematic equation with <span class="math notranslate nohighlight">\(\dot{\boldsymbol{\eta}}
+= \boldsymbol{J}_{\Theta}(\boldsymbol{\eta}) \boldsymbol{\nu}\)</span> and</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\boldsymbol{J}_{\Theta}(\boldsymbol{\eta}) = \begin{bmatrix}
+    \boldsymbol{R}_b^n(\boldsymbol{\Theta}_{nb}) &amp; 0\\
+    0 &amp; \boldsymbol{T}_{\Theta}(\boldsymbol{\Theta}_{nb})
+\end{bmatrix}\end{split}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>eta</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – pose coordinates vector <span class="math notranslate nohighlight">\(\boldsymbol{\eta} = [x \: y \: z \: \phi \: \theta \: \psi]^T\)</span></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>array 6x6</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="gym_dockauv.utils.geomutils.Rzyx">
 <span class="sig-prename descclassname"><span class="pre">gym_dockauv.utils.geomutils.</span></span><span class="sig-name descname"><span class="pre">Rzyx</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">psi</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.geomutils.Rzyx" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Rotation matrix from {b} to {n}, to obtain a vector in NED coordinates that is expressed in the body frame,
+a matrix multiplication with the rotation matrix is used. For the reserve way, use the transposed rotation
+matrix. In the formula below abbreviations <span class="math notranslate nohighlight">\(s\)</span> for sin and <span class="math notranslate nohighlight">\(c\)</span> for cos are used.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\boldsymbol{R}_b^n(\boldsymbol{\Theta}_{nb}) = \begin{bmatrix}
+    c \psi c \theta &amp; -s \psi c \phi + c \psi s \theta s \phi &amp; s \psi s \phi + c \psi c \phi s \theta \\
+    s \psi c \theta &amp; c \psi c \phi + s \phi s \theta s \psi &amp; -c \psi s \phi + s \theta s \psi c \phi \\
+    -s \theta &amp; c \theta s \phi &amp; c \theta c \phi
+\end{bmatrix}\end{split}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>phi</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – euler angle around the x axis</p></li>
+<li><p><strong>theta</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – euler angle around the y axis</p></li>
+<li><p><strong>psi</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – euler angle around the z axis</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>array 3x3</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="gym_dockauv.utils.geomutils.S_skew">
 <span class="sig-prename descclassname"><span class="pre">gym_dockauv.utils.geomutils.</span></span><span class="sig-name descname"><span class="pre">S_skew</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.geomutils.S_skew" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Returns symmetric skew matrix 3x3, where <span class="math notranslate nohighlight">\(\boldsymbol{a} = [a_1, a_2, a_3]^T\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\boldsymbol{S}(\boldsymbol{a}) = \begin{bmatrix}
+    0 &amp; -a_3 &amp; a_2 \\
+    a_3 &amp; 0 &amp; -a_1 \\
+    -a_2 &amp; a_1 &amp; 0
+\end{bmatrix}\end{split}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>a</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – 3x1 input vector</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>array 3x3</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="gym_dockauv.utils.geomutils.Tzyx">
-<span class="sig-prename descclassname"><span class="pre">gym_dockauv.utils.geomutils.</span></span><span class="sig-name descname"><span class="pre">Tzyx</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">psi</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.geomutils.Tzyx" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">gym_dockauv.utils.geomutils.</span></span><span class="sig-name descname"><span class="pre">Tzyx</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.geomutils.Tzyx" title="Permalink to this definition"></a></dt>
+<dd><p>Angular transformation matrix from {b} to {n}. In the formula below abbreviations <span class="math notranslate nohighlight">\(s\)</span> for sin, <span class="math notranslate nohighlight">\(c\)</span>
+for cos and <span class="math notranslate nohighlight">\(t\)</span> for tan are used.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Note that this transformation is not well-defined for <span class="math notranslate nohighlight">\(\theta = \frac{\pi}{2}\)</span>, however we do not
+expect an AUV to do that. An alternative approach could be quaternions, but are not implemented here.</p>
+</div>
+<div class="math notranslate nohighlight">
+\[\begin{split}\boldsymbol{T}_{\Theta}^n(\boldsymbol{\Theta}_{nb}) = \begin{bmatrix}
+    1 &amp; s \phi t \theta &amp; c \phi t \theta \\
+    0 &amp; c \phi &amp; -s \phi \\
+    0 &amp; \frac{s \phi}{c \theta} &amp; \frac{c \phi}{c \theta}
+\end{bmatrix}\end{split}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>phi</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – euler angle around the x axis</p></li>
+<li><p><strong>theta</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – euler angle around the y axis</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>array 3x3</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="gym_dockauv.utils.geomutils.move_to_CO">
 <span class="sig-prename descclassname"><span class="pre">gym_dockauv.utils.geomutils.</span></span><span class="sig-name descname"><span class="pre">move_to_CO</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A_CG</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_g</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.geomutils.move_to_CO" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Function for e.g. the rigid body mass matrix to include the offset of the center of origin to the center of gravity</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A_CG</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – input matrix without offset</p></li>
+<li><p><strong>r_g</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – distance from origin</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>array 6x6</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="gym_dockauv.utils.geomutils.ssa">
 <span class="sig-prename descclassname"><span class="pre">gym_dockauv.utils.geomutils.</span></span><span class="sig-name descname"><span class="pre">ssa</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">angle</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.geomutils.ssa" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Express input angle between <span class="math notranslate nohighlight">\(-\pi\)</span> and <span class="math notranslate nohighlight">\(+\pi\)</span> rad</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>angle</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – input angle in rad</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>angle in rad</p>
+</dd>
+</dl>
+</dd></dl>
 
 </section>
 <section id="module-gym_dockauv.utils">

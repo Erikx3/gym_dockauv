@@ -146,6 +146,7 @@ def _H(r: np.ndarray) -> np.ndarray:
 def move_to_CO(A_CG: np.ndarray, r_g: np.ndarray) -> np.ndarray:
     """
     Function for e.g. the rigid body mass matrix to include the offset of the center of origin to the center of gravity
+
     :param A_CG: input matrix without offset
     :param r_g: distance from origin
     :return: array 6x6
