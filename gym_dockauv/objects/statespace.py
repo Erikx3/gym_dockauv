@@ -11,7 +11,7 @@ class StateSpace(ABC):
     r"""
     This class represents the Parentclass for a statespace. It basically serves as template for AUV dynamics with
     6dof. The __init__ function can be overwritten by simply adding the derivatives of the state space, that are not
-    zero or by using the function for reading it these in via a xml file. Do not forget to call super().__init__() in
+    zero or by using the function for reading these values in via a xml file. Do not forget to call super().__init__() in
     any child class __init__ constructor.
 
     The formula below is used as a description of the **kinetic** state space and retrieved by
@@ -371,7 +371,7 @@ class StateSpace(ABC):
             \boldsymbol{\tau} = \boldsymbol{B}_{6\times a} \boldsymbol{u}_{a\times 1}
 
         Where the dimension :math:`\boldsymbol{a}` is the number of actions available for the system
-        :return:
+        :return: array 6x1
         """
         pass
 
