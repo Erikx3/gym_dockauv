@@ -30,6 +30,7 @@ If u want to update the html files and make them available on github:
 make github
 ```
 
+Cheers, Erik :)
 
 
 
