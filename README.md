@@ -30,6 +30,16 @@ If u want to update the html files and make them available on github:
 make github
 ```
 
+
+### Unittests
+
+I provided some unittests, since I wanted to make sure in a structured manner, that my modules are working as expected. Since as many things in this world, I did not have unlimited time in my Master Thesis, I did not achieve a 100% test coverage and test driven development. However, it should function as an inspiration for further development and always make sure the basics of the program works.
+
+Here is the command to execute all tests. Make sure to be at the root of this repository.
+```shell
+python -m unittest discover -v -s tests -t gym_dockauv
+```
+
 Cheers, Erik :)
 
 

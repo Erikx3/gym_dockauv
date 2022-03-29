@@ -32,14 +32,19 @@ class StateSpace(ABC):
     .. note:: Assumptions:
 
         - Lift forces are neglected here for speeds up to 2m/s, however they can be easily added to the damping term by
-          creating matrix :math:`\boldsymbol{L}`. An example for another AUV dynamics implementation, where we also need
-          more variables, is shown under ...
+          creating matrix :math:`\boldsymbol{L}`.
 
         - The current is irrotational and constant in {n}
 
 
-    .. note:: Child Class: Make sure to call super().__init__() within the Child class initialization function,
-        when you overwrite the base class init, and then add further needed variables to your class
+    .. note:: Child Class:
+
+        The BlueROV2 is implemented and an example for another AUV dynamics implementation, where we also need more
+        variables, is shown under ...
+
+        Make sure to call super().__init__() within the Child class initialization function, when you overwrite the
+        base class init, and then add further needed variables to your class (for example using the xml parser).
+        Further on make sure the initialized variables are in the correct type, e.g. do not write mass = None
     """
 
     # TODO: Think about doing this with xml file and setattr function later (add B matrix by hand for now and read in
@@ -48,33 +53,33 @@ class StateSpace(ABC):
     def __init__(self):
         # General AUV description
         self.name = "AUV_name_here"
-        self.version = 0
+        self.version = 0.0
 
         # General AUV parameters
-        self.m = 0
+        self.m = 0.0
         self.g = 9.81
-        self.B = 0  # Buoyancy in [N]
+        self.B = 0.0  # Buoyancy in [N]
 
         # Moments of Inertia
-        self.I_x = 0
-        self.I_y = 0
-        self.I_z = 0
-        self.I_xy = self.I_xz = self.I_yz = 0
+        self.I_x = 0.0
+        self.I_y = 0.0
+        self.I_z = 0.0
+        self.I_xy = self.I_xz = self.I_yz = 0.0
 
         # [meters], x_G, y_G, z_G distance CG from CO (typically at CB)
-        self.x_G = self.y_G = self.z_G = 0
+        self.x_G = self.y_G = self.z_G = 0.0
 
         # [meters], x_B, y_B, z_B distance CB from CO (typically at CB, thus all zero)
-        self.x_B = self.y_B = self.z_B = 0
+        self.x_B = self.y_B = self.z_B = 0.0
 
         # Added Mass variables
-        self.X_udot = self.Y_vdot = self.Z_wdot = self.K_pdot = self.M_qdot = self.N_rdot = 0
+        self.X_udot = self.Y_vdot = self.Z_wdot = self.K_pdot = self.M_qdot = self.N_rdot = 0.0
 
         # Linear Damping parameters
-        self.X_u = self.Y_v = self.Z_w = self.K_p = self.M_q = self.N_r = 0
+        self.X_u = self.Y_v = self.Z_w = self.K_p = self.M_q = self.N_r = 0.0
 
         # Quadratic Damping parameters
-        self.X_uu = self.Y_vv = self.Z_ww = self.K_pp = self.M_qq = self.N_rr = 0
+        self.X_uu = self.Y_vv = self.Z_ww = self.K_pp = self.M_qq = self.N_rr = 0.0
 
     @cached_property
     def W(self) -> float:
@@ -404,7 +409,8 @@ class StateSpace(ABC):
 
         for child in root:
             if hasattr(obj, child.tag):
-                setattr(obj, child.tag, child.text)
+                # Get the initialized attribute type of the instance
+                setattr(obj, child.tag, type(getattr(obj, child.tag))(child.text))
             else:
                 raise AttributeError("Bad and not allowed practice: Trying to parse xml data tag without it being "
                                      "initialized")
