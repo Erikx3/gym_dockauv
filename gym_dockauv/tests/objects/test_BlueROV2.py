@@ -22,14 +22,29 @@ class TestInit(TestBlueROV2):
         self.assertEqual(self.BlueROV2.m, 11.5)
 
     def test_initial_buoyancy(self):
-        self.assertEqual(self.BlueROV2.B, 114.8)
+        self.assertEqual(self.BlueROV2.BY, 114.8)
 
     def test_initial_name(self):
         self.assertEqual(self.BlueROV2.name, "BlueROV2")
 
+    def test_initial_X_udot(self):
+        self.assertEqual(self.BlueROV2.X_udot, -5.5)
+
+    def test_initial_Y_vv(self):
+        self.assertEqual(self.BlueROV2.Y_vv, -21.66)
+
     # Test, if values are initialized from parent class as zero and not changed
     def test_initial_x_G(self):
-        self.assertEqual(self.BlueROV2.z_G, 0.0)
+        self.assertEqual(self.BlueROV2.x_G, 0.0)
+
+
+class TestStateSpace(TestBlueROV2):
+    """
+    This function is to test some state space matrices
+    """
+    def test_B_matrix_dimension(self):
+        self.assertEqual(self.BlueROV2.B.shape[0], 6)
+        self.assertGreaterEqual(self.BlueROV2.B.shape[1], 1)
 
 
 if __name__ == '__main__':
