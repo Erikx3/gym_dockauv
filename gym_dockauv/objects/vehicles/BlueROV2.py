@@ -12,14 +12,12 @@ class BlueROV2(StateSpace):
     Also make note about loading in the data and where they re from for future easier reference
     """
 
-    def __init__(self):
+    def __init__(self,  xml_path):
         super().__init__()  # Call inherited init functions and then add to it
-        StateSpace.read_para_from_xml(self, XML_PATH)  # Assign BlueROV2 parameters
+        StateSpace.read_para_from_xml(self, xml_path)  # Assign BlueROV2 parameters
 
     def B(self) -> np.ndarray:
         # TODO: Adapt input of BlueROV2 (for now it applies direct force uncoupled in each direction, maybe do
         #  feasibility study also about control of thrusters, make combination etc
         B = np.diag(np.ones(6))
         return B
-
-

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- This xml file is a test configuration of parameters for the BlueROV2, used for unit tests, since it uses the first version of the BlueROV2 -->
+
+<!-- Author: Erik Suer-->
+<!-- Date: 29.03.2022-->
+
+<Parameters>
+    <name>BlueROV2</name>
+    <m>11.5</m>
+    <B>114.8</B>
+</Parameters>
