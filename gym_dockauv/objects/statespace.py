@@ -16,7 +16,7 @@ class StateSpace(ABC):
 
     The formula below is used as a description of the **kinetic** state space and retrieved by
     `Fossen2011 <https://onlinelibrary.wiley.com/doi/book/10.1002/9781119994138>`_, page 188,
-    Equations of Relative Motion with the assumption of irrotational current:
+    Equations of Relative Motion with the assumption of an irrotational and constant (or very slow changing) current:
 
     .. math ::
         \underbrace{\boldsymbol{M}_{RB} \boldsymbol{\dot{\nu}}
@@ -28,15 +28,21 @@ class StateSpace(ABC):
     Where the relative velocity results from the absolute velocity and current velocity :math:`\boldsymbol{\nu}_r
     = \boldsymbol{\nu} - \boldsymbol{\nu}_c`
 
-    .. note:: Lift forces are neglected here for speeds up to 2m/s, however they can be easily added to the damping
-        term by creating matrix :math:`\boldsymbol{L}` and multiplying with speed component :math:`u`. An example for
-        another AUV dynamics implementation, where we also need more variables, is shown under ....
+    .. note:: Assumptions:
+        - Lift forces are neglected here for speeds up to 2m/s, however they can be easily added to the damping
+        term by creating matrix :math:`\boldsymbol{L}`. An example for
+        another AUV dynamics implementation, where we also need more variables, is shown under ...
+        - The current is irrotational and constant in {n}
+
     """
 
     # TODO: Think about doing this with xml file and setattr function later (add B matrix by hand for now and read in
     #  ... Bluerov data by xml file
 
     def __init__(self):
+        # General AUV description
+        self.name = "AUV_name_here"
+
         # General AUV parameters
         self.m = 0
         self.g = 9.81
@@ -264,7 +270,7 @@ class StateSpace(ABC):
 
         .. math::
 
-            \boldsymbol{M}_A = \begin{bmatrix}
+            \boldsymbol{D}_L = \begin{bmatrix}
                 X_u & 0 & 0 & 0 & 0 & 0 \\
                 0 & Y_v & 0 & 0 & 0 & 0 \\
                 0 & 0 & Z_w & 0 & 0 & 0 \\
@@ -277,7 +283,7 @@ class StateSpace(ABC):
 
         .. math::
 
-            \boldsymbol{M}_A = \begin{bmatrix}
+            \boldsymbol{D}_{NL} = \begin{bmatrix}
                 X_{u|u|} |u| & 0 & 0 & 0 & 0 & 0 \\
                 0 & Y_{v|v|} |v| & 0 & 0 & 0 & 0 \\
                 0 & 0 & Z_{w|w|} |w| & 0 & 0 & 0 \\
@@ -375,4 +381,6 @@ class StateSpace(ABC):
         """
         pass
 
-# TODO Add the reduced matrices in the Bluerov subclass description as xml? Plus B matrix
+    def read_para_from_xml(self, xml: str) -> None:
+        pass
+

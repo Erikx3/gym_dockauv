@@ -48,7 +48,6 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="gym_dockauv.html#submodules">Submodules</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gym_dockauv.html#module-gym_dockauv.notes">gym_dockauv.notes module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gym_dockauv.html#module-gym_dockauv.train">gym_dockauv.train module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gym_dockauv.html#module-gym_dockauv">Module contents</a></li>
 </ul>
@@ -100,7 +99,7 @@ zero or by using the function for reading these values in via a xml file. Do not
 any child class __init__ constructor.</p>
 <p>The formula below is used as a description of the <strong>kinetic</strong> state space and retrieved by
 <a class="reference external" href="https://onlinelibrary.wiley.com/doi/book/10.1002/9781119994138">Fossen2011</a>, page 188,
-Equations of Relative Motion with the assumption of irrotational current:</p>
+Equations of Relative Motion with the assumption of an irrotational and constant (or very slow changing) current:</p>
 <div class="math notranslate nohighlight">
 \[\underbrace{\boldsymbol{M}_{RB} \boldsymbol{\dot{\nu}}
 + \boldsymbol{C}_{RB}(\boldsymbol{\nu})\boldsymbol{\nu}}_{\text{rigid-body terms}}
@@ -111,9 +110,11 @@ Equations of Relative Motion with the assumption of irrotational current:</p>
 = \boldsymbol{\nu} - \boldsymbol{\nu}_c\)</span></p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Lift forces are neglected here for speeds up to 2m/s, however they can be easily added to the damping
-term by creating matrix <span class="math notranslate nohighlight">\(\boldsymbol{L}\)</span> and multiplying with speed component <span class="math notranslate nohighlight">\(u\)</span>. An example for
-another AUV dynamics implementation, where we also need more variables, is shown under ….</p>
+<p>Assumptions:
+- Lift forces are neglected here for speeds up to 2m/s, however they can be easily added to the damping
+term by creating matrix <span class="math notranslate nohighlight">\(\boldsymbol{L}\)</span>. An example for
+another AUV dynamics implementation, where we also need more variables, is shown under …
+- The current is irrotational and constant in {n}</p>
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="gym_dockauv.objects.statespace.StateSpace.B">
@@ -226,7 +227,7 @@ and <span class="math notranslate nohighlight">\(\boldsymbol{I}_b\)</span> is th
 \[\boldsymbol{D}(\boldsymbol{\nu}_r) = \boldsymbol{D}_L + \boldsymbol{D}_{NL}(\boldsymbol{\nu}_r)\]</div>
 <p>Linear Damping Matrix</p>
 <div class="math notranslate nohighlight">
-\[\begin{split}\boldsymbol{M}_A = \begin{bmatrix}
+\[\begin{split}\boldsymbol{D}_L = \begin{bmatrix}
     X_u &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
     0 &amp; Y_v &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
     0 &amp; 0 &amp; Z_w &amp; 0 &amp; 0 &amp; 0 \\
@@ -236,7 +237,7 @@ and <span class="math notranslate nohighlight">\(\boldsymbol{I}_b\)</span> is th
 \end{bmatrix}\end{split}\]</div>
 <p>Nonlinear (quadratic) damping matrix</p>
 <div class="math notranslate nohighlight">
-\[\begin{split}\boldsymbol{M}_A = \begin{bmatrix}
+\[\begin{split}\boldsymbol{D}_{NL} = \begin{bmatrix}
     X_{u|u|} |u| &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
     0 &amp; Y_{v|v|} |v| &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
     0 &amp; 0 &amp; Z_{w|w|} |w| &amp; 0 &amp; 0 &amp; 0 \\
@@ -389,6 +390,19 @@ the full added mass Matrix, simply overwrite this method in your child class</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>array 3x1</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.objects.statespace.StateSpace.read_para_from_xml">
+<span class="sig-name descname"><span class="pre">read_para_from_xml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xml</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.statespace.StateSpace.read_para_from_xml" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><p><strong>xml</strong> (<em>str</em>) – </p>
 </dd>
 </dl>
 </dd></dl>
