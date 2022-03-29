@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- This xml file is the configuration of parameters for the BlueROV2 -->
+<!-- These parameters should be loaded into the vehicle instance and overwrite them-->
+
+<!-- Author: Erik Suer-->
+<!-- Date: 29.03.2022-->
+
+<Parameters>
+    <m>11.5</m>
+    <B>114.8</B>
+</Parameters>
