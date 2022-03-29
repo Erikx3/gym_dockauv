@@ -1,4 +1,5 @@
 import numpy as np
+import xml.etree.ElementTree as ET
 from functools import cached_property
 from abc import ABC, abstractmethod
 from numpy.linalg import inv
@@ -11,8 +12,8 @@ class StateSpace(ABC):
     r"""
     This class represents the Parentclass for a statespace. It basically serves as template for AUV dynamics with
     6dof. The __init__ function can be overwritten by simply adding the derivatives of the state space, that are not
-    zero or by using the function for reading these values in via a xml file. Do not forget to call super().__init__() in
-    any child class __init__ constructor.
+    zero or by using the function for reading these values in via a xml file.
+    Do not forget to call super().__init__() in any child class __init__ constructor.
 
     The formula below is used as a description of the **kinetic** state space and retrieved by
     `Fossen2011 <https://onlinelibrary.wiley.com/doi/book/10.1002/9781119994138>`_, page 188,
@@ -29,11 +30,16 @@ class StateSpace(ABC):
     = \boldsymbol{\nu} - \boldsymbol{\nu}_c`
 
     .. note:: Assumptions:
-        - Lift forces are neglected here for speeds up to 2m/s, however they can be easily added to the damping
-        term by creating matrix :math:`\boldsymbol{L}`. An example for
-        another AUV dynamics implementation, where we also need more variables, is shown under ...
+
+        - Lift forces are neglected here for speeds up to 2m/s, however they can be easily added to the damping term by
+          creating matrix :math:`\boldsymbol{L}`. An example for another AUV dynamics implementation, where we also need
+          more variables, is shown under ...
+
         - The current is irrotational and constant in {n}
 
+
+    .. note:: Child Class: Make sure to call super().__init__() within the Child class initialization function,
+        when you overwrite the base class init, and then add further needed variables to your class
     """
 
     # TODO: Think about doing this with xml file and setattr function later (add B matrix by hand for now and read in
@@ -42,6 +48,7 @@ class StateSpace(ABC):
     def __init__(self):
         # General AUV description
         self.name = "AUV_name_here"
+        self.version = 0
 
         # General AUV parameters
         self.m = 0
@@ -381,6 +388,24 @@ class StateSpace(ABC):
         """
         pass
 
-    def read_para_from_xml(self, xml: str) -> None:
-        pass
+    @staticmethod
+    def read_para_from_xml(obj, xml_path: str) -> None:
+        r"""
+        Parse flat xml with parameters for the vehicle and update them as an attribute to the instance. This function
+        also checks, if the xml keys are already available as an attribute, otherwise this will throw an exception,
+        since any Child classes from StateSpace should take care of any additional attributes in its init function
+
+        :param obj: instance where attributes should be applied to
+        :param xml_path: xml path to flat vehicle config
+        :return: None
+        """
+        tree = ET.parse(xml_path)
+        root = tree.getroot()
+
+        for child in root:
+            if hasattr(obj, child.tag):
+                setattr(obj, child.tag, child.text)
+            else:
+                raise AttributeError("Bad and not allowed practice: Trying to parse xml data tag without it being "
+                                     "initialized")
 
