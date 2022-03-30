@@ -47,6 +47,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-gym_dockauv.notes">gym_dockauv.notes module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-gym_dockauv.train">gym_dockauv.train module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-gym_dockauv">Module contents</a></li>
 </ul>
@@ -87,6 +88,15 @@
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="gym_dockauv.objects.html">gym_dockauv.objects package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="gym_dockauv.objects.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="gym_dockauv.objects.vehicles.html">gym_dockauv.objects.vehicles package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="gym_dockauv.objects.vehicles.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gym_dockauv.objects.vehicles.html#module-gym_dockauv.objects.vehicles.BlueROV2">gym_dockauv.objects.vehicles.BlueROV2 module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gym_dockauv.objects.vehicles.html#module-gym_dockauv.objects.vehicles">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="gym_dockauv.objects.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gym_dockauv.objects.html#module-gym_dockauv.objects.statespace">gym_dockauv.objects.statespace module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gym_dockauv.objects.html#module-gym_dockauv.objects">Module contents</a></li>
@@ -103,6 +113,67 @@
 </section>
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+</section>
+<section id="module-gym_dockauv.notes">
+<span id="gym-dockauv-notes-module"></span><h2>gym_dockauv.notes module<a class="headerlink" href="#module-gym_dockauv.notes" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="gym_dockauv.notes.Circle">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gym_dockauv.notes.</span></span><span class="sig-name descname"><span class="pre">Circle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">radius</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.notes.Circle" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gym_dockauv.notes.Polygon" title="gym_dockauv.notes.Polygon"><code class="xref py py-class docutils literal notranslate"><span class="pre">gym_dockauv.notes.Polygon</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.notes.Circle.area">
+<span class="sig-name descname"><span class="pre">area</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.notes.Circle.area" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.notes.Circle.diameter">
+<span class="sig-name descname"><span class="pre">diameter</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.notes.Circle.diameter" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gym_dockauv.notes.DictToXML">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gym_dockauv.notes.</span></span><span class="sig-name descname"><span class="pre">DictToXML</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">structure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">list_mappings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.notes.DictToXML" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.notes.DictToXML.build">
+<span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">father</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">structure</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.notes.DictToXML.build" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gym_dockauv.notes.DictToXML.default_list_item_name">
+<span class="sig-name descname"><span class="pre">default_list_item_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'item'</span></em><a class="headerlink" href="#gym_dockauv.notes.DictToXML.default_list_item_name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.notes.DictToXML.display">
+<span class="sig-name descname"><span class="pre">display</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.notes.DictToXML.display" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.notes.DictToXML.get_string">
+<span class="sig-name descname"><span class="pre">get_string</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.notes.DictToXML.get_string" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gym_dockauv.notes.Polygon">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gym_dockauv.notes.</span></span><span class="sig-name descname"><span class="pre">Polygon</span></span><a class="headerlink" href="#gym_dockauv.notes.Polygon" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.notes.Polygon.area">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">area</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.notes.Polygon.area" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.notes.Polygon.say_hi">
+<span class="sig-name descname"><span class="pre">say_hi</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.notes.Polygon.say_hi" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 <section id="module-gym_dockauv.train">
 <span id="gym-dockauv-train-module"></span><h2>gym_dockauv.train module<a class="headerlink" href="#module-gym_dockauv.train" title="Permalink to this headline"></a></h2>

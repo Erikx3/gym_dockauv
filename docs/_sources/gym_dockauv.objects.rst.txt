@@ -1,6 +1,14 @@
 gym\_dockauv.objects package
 ============================
 
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   gym_dockauv.objects.vehicles
+
 Submodules
 ----------
 

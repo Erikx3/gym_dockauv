@@ -19,7 +19,7 @@ ___
 ### Sphinx:
 Update rst and html files, if no module is added, skip first command, otherwise add new modules to index.rst after first command.
 ```shell
-sphinx-apidoc -f -o docsrc/source gym_dockauv
+sphinx-apidoc -f -o docsrc/source gym_dockauv EXCLUDE_PATTERN /*tests*
 cd docsrc/
 make clean
 make html
@@ -37,7 +37,7 @@ I provided some unittests, since I wanted to make sure in a structured manner, t
 
 Here is the command to execute all tests. Make sure to be at the root of this repository.
 ```shell
-python -m unittest discover -v -s tests -t gym_dockauv
+python -m unittest discover -v -s gym_dockauv/tests
 ```
 
 Cheers, Erik :)

@@ -1,7 +1,7 @@
 import unittest
 import os
 
-from objects.vehicles.BlueROV2 import BlueROV2
+from gym_dockauv.objects.vehicles.BlueROV2 import BlueROV2
 
 
 class TestBlueROV2(unittest.TestCase):

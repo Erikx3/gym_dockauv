@@ -11,7 +11,10 @@ class BlueROV2(StateSpace):
     Some description about the BlueROV2 used here ...
 
     The parameters for the BlueROV2 are loaded via a xml file, SI units are used.
-    The system identification data of the BlueROV2 are publicly available from ...
+    The system identification data of the BlueROV2 are publicly available from
+    - Einarsson, Emil Már, and Andris Lipenitis. n.d. “Model Predictive Control for the BlueROV2,”
+    - Wu, Chu-Jou, and B Eng. n.d. “6-DoF Modelling and Control of a Remotely Operated Vehicle,”
+
     """
 
     def __init__(self,  xml_path):
