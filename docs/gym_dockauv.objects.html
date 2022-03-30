@@ -19,7 +19,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="gym_dockauv.utils package" href="gym_dockauv.utils.html" />
+    <link rel="next" title="gym_dockauv.objects.vehicles package" href="gym_dockauv.objects.vehicles.html" />
     <link rel="prev" title="gym_dockauv package" href="gym_dockauv.html" /> 
 </head>
 
@@ -48,6 +48,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="gym_dockauv.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gym_dockauv.html#module-gym_dockauv.notes">gym_dockauv.notes module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gym_dockauv.html#module-gym_dockauv.train">gym_dockauv.train module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gym_dockauv.html#module-gym_dockauv">Module contents</a></li>
 </ul>
@@ -84,6 +85,19 @@
              
   <section id="gym-dockauv-objects-package">
 <h1>gym_dockauv.objects package<a class="headerlink" href="#gym-dockauv-objects-package" title="Permalink to this headline"></a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="gym_dockauv.objects.vehicles.html">gym_dockauv.objects.vehicles package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="gym_dockauv.objects.vehicles.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gym_dockauv.objects.vehicles.html#module-gym_dockauv.objects.vehicles.BlueROV2">gym_dockauv.objects.vehicles.BlueROV2 module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gym_dockauv.objects.vehicles.html#module-gym_dockauv.objects.vehicles">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
 </section>
@@ -95,8 +109,8 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
 <p>This class represents the Parentclass for a statespace. It basically serves as template for AUV dynamics with
 6dof. The __init__ function can be overwritten by simply adding the derivatives of the state space, that are not
-zero or by using the function for reading these values in via a xml file. Do not forget to call super().__init__() in
-any child class __init__ constructor.</p>
+zero or by using the function for reading these values in via a xml file.
+Do not forget to call super().__init__() in any child class __init__ constructor.</p>
 <p>The formula below is used as a description of the <strong>kinetic</strong> state space and retrieved by
 <a class="reference external" href="https://onlinelibrary.wiley.com/doi/book/10.1002/9781119994138">Fossen2011</a>, page 188,
 Equations of Relative Motion with the assumption of an irrotational and constant (or very slow changing) current:</p>
@@ -110,11 +124,21 @@ Equations of Relative Motion with the assumption of an irrotational and constant
 = \boldsymbol{\nu} - \boldsymbol{\nu}_c\)</span></p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Assumptions:
-- Lift forces are neglected here for speeds up to 2m/s, however they can be easily added to the damping
-term by creating matrix <span class="math notranslate nohighlight">\(\boldsymbol{L}\)</span>. An example for
-another AUV dynamics implementation, where we also need more variables, is shown under …
-- The current is irrotational and constant in {n}</p>
+<p>Assumptions:</p>
+<ul class="simple">
+<li><p>Lift forces are neglected here for speeds up to 2m/s, however they can be easily added to the damping term by
+creating matrix <span class="math notranslate nohighlight">\(\boldsymbol{L}\)</span>.</p></li>
+<li><p>The current is irrotational and constant in {n}</p></li>
+</ul>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Child Class:</p>
+<p>The BlueROV2 is implemented and an example for another AUV dynamics implementation, where we also need more
+variables, is shown under …</p>
+<p>Make sure to call super().__init__() within the Child class initialization function, when you overwrite the
+base class init, and then add further needed variables to your class (for example using the xml parser).
+Further on make sure the initialized variables are in the correct type, e.g. do not write mass = None</p>
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="gym_dockauv.objects.statespace.StateSpace.B">
@@ -396,13 +420,22 @@ the full added mass Matrix, simply overwrite this method in your child class</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gym_dockauv.objects.statespace.StateSpace.read_para_from_xml">
-<span class="sig-name descname"><span class="pre">read_para_from_xml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xml</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.statespace.StateSpace.read_para_from_xml" title="Permalink to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_para_from_xml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xml_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.statespace.StateSpace.read_para_from_xml" title="Permalink to this definition"></a></dt>
+<dd><p>Parse flat xml with parameters for the vehicle and update them as an attribute to the instance. This function
+also checks, if the xml keys are already available as an attribute, otherwise this will throw an exception,
+since any Child classes from StateSpace should take care of any additional attributes in its init function</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obj</strong> – instance where attributes should be applied to</p></li>
+<li><p><strong>xml_path</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – xml path to flat vehicle config</p></li>
+</ul>
 </dd>
-<dt class="field-even">Parameters</dt>
-<dd class="field-even"><p><strong>xml</strong> (<em>str</em>) – </p>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
 </dd>
 </dl>
 </dd></dl>
@@ -420,7 +453,7 @@ the full added mass Matrix, simply overwrite this method in your child class</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="gym_dockauv.html" class="btn btn-neutral float-left" title="gym_dockauv package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="gym_dockauv.utils.html" class="btn btn-neutral float-right" title="gym_dockauv.utils package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="gym_dockauv.objects.vehicles.html" class="btn btn-neutral float-right" title="gym_dockauv.objects.vehicles package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
