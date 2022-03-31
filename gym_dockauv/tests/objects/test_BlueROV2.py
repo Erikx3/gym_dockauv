@@ -90,7 +90,22 @@ class TestStateSpace(TestBlueROV2):
         self.assertAlmostEqual(self.BlueROV2.C_RB(self.nu_r)[2, 3], -0.069)
         self.assertAlmostEqual(self.BlueROV2.C_RB(self.nu_r)[5, 4], -0.06438)
 
-        # print("\n", self.BlueROV2.G(np.array([1, 1, 1, 0, 0, 0])), "\n", self.BlueROV2.D(self.nu_r))
+    def test_G_matrix(self):
+        test_eta = np.array([0, 0, 0, 0, 0, 0])
+        test_eta_moved = np.array([3, 2, 1, 0.3, 0.2, 0.1])
+
+        # Check if all values except for the Z force is zero
+        self.assertEqual(self.BlueROV2.G(test_eta)[0], 0)
+        self.assertEqual(self.BlueROV2.G(test_eta)[1], 0)
+        self.assertNotEqual(self.BlueROV2.G(test_eta)[2], 0)
+
+        # Check by movement all are non-zero except last element
+        self.assertNotEqual(self.BlueROV2.G(test_eta_moved)[3], 0)
+        self.assertNotEqual(self.BlueROV2.G(test_eta_moved)[4], 0)
+        self.assertEqual(self.BlueROV2.G(test_eta_moved)[5], 0)
+
+        print("\n", self.BlueROV2.G(test_eta), "\n", self.BlueROV2.G(test_eta_moved))
+        # print("\n", self.BlueROV2.D(self.nu_r))
 
 
 if __name__ == '__main__':
