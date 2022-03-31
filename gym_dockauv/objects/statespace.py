@@ -5,15 +5,15 @@ from abc import ABC, abstractmethod
 from numpy.linalg import inv
 from math import cos, sin
 
-import gym_dockauv.utils.geomutils as geom
+from ..utils import geomutils as geom
 
 
 class StateSpace(ABC):
     r"""
-    This class represents the Parentclass for a statespace. It basically serves as template for AUV dynamics with
-    6dof. The __init__ function can be overwritten by simply adding the derivatives of the state space, that are not
-    zero or by using the function for reading these values in via a xml file.
-    Do not forget to call super().__init__() in any child class __init__ constructor.
+    This class represents the baseclass for a statespace. It basically serves as template for AUV dynamics with 6dof.
+    The __init__ function can be overwritten by simply adding the derivatives of the state space, that are not zero
+    or by using the function for reading these values in via a xml file. Do not forget to call super().__init__() in
+    any child class __init__ constructor. Look at the example vehicles in the directory "vehicles"
 
     The formula below is used as a description of the **kinetic** state space and retrieved by
     `Fossen2011 <https://onlinelibrary.wiley.com/doi/book/10.1002/9781119994138>`_, page 188,
@@ -36,18 +36,20 @@ class StateSpace(ABC):
 
         - The current is irrotational and constant in {n}
 
-        - Values for the Inertia in this class can be entered as the origin at center of gravity, the trnsformation
+        - Values for the Inertia in this class can be entered as the origin at center of gravity, the transformation
           will be performed by this class
 
 
     .. note:: Child Class:
 
         The BlueROV2 is implemented and an example for another AUV dynamics implementation, where we also need more
-        variables, is shown under ...
+        variables, is shown under **TODO**. We use multiple inheritance for the vechicles, since they share a lot of
+        basic functionality.
 
         Make sure to call super().__init__() within the Child class initialization function, when you overwrite the
         base class init, and then add further needed variables to your class (for example using the xml parser).
-        Further on make sure the initialized variables are in the correct type, e.g. do not write mass = None
+        Further on make sure the initialized variables are in the correct type, e.g. do not write mass = None,
+        since the xml parser inherit the variable type from the initialization
     """
 
     def __init__(self):
@@ -411,11 +413,12 @@ class StateSpace(ABC):
         pass
 
     @staticmethod
-    def read_para_from_xml(obj, xml_path: str) -> None:
+    def read_phys_para_from_xml(obj, xml_path: str) -> None:
         r"""
-        Parse flat xml with parameters for the vehicle and update them as an attribute to the instance. This function
-        also checks, if the xml keys are already available as an attribute, otherwise this will throw an exception,
-        since any Child classes from StateSpace should take care of any additional attributes in its init function
+        Parse flat xml with physical parameters for the vehicle and update them as an attribute to the instance. This
+        function also checks, if the xml keys are already available as an attribute, otherwise this will throw an
+        exception, since any Child classes from StateSpace should take care of any additional attributes in its init
+        function
 
         :param obj: instance where attributes should be applied to
         :param xml_path: xml path to flat vehicle config
