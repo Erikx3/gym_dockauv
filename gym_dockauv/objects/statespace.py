@@ -36,6 +36,9 @@ class StateSpace(ABC):
 
         - The current is irrotational and constant in {n}
 
+        - Values for the Inertia in this class can be entered as the origin at center of gravity, the trnsformation
+          will be performed by this class
+
 
     .. note:: Child Class:
 
@@ -57,7 +60,7 @@ class StateSpace(ABC):
         self.g = 9.81
         self.BY = 0.0  # Buoyancy in [N]
 
-        # Moments of Inertia
+        # Moments of Inertia with origin at gravity! (We do the transformation later)
         self.I_x = 0.0
         self.I_y = 0.0
         self.I_z = 0.0
@@ -85,7 +88,7 @@ class StateSpace(ABC):
     @cached_property
     def I_g(self) -> np.ndarray:
         """
-        Inertia Moments matrix
+        Inertia Moments matrix about the body's center of gravity
 
         :return: array 3x3
         """
@@ -95,6 +98,21 @@ class StateSpace(ABC):
             [self.I_xz, -self.I_yz, self.I_z]
         ])
         return Ig
+
+    @cached_property
+    def I_b(self) -> np.ndarray:
+        """
+        Inertia Moments matrix about an arbitrary origin
+
+        .. math::
+            \boldsymbol{I}_b = \boldsymbol{I}_g - m \boldsymbol{S}^2(\boldsymbol{r}_g)
+
+        :return: array 3x3
+        """
+        # Both calculation yield the same
+        I_b = self.I_g + self.m * geom.S_skew(self.r_G).dot(geom.S_skew(self.r_G).T)
+        # I_b = self.I_g - self.m * (self.r_G[:, None].dot(self.r_G[:, None].T) - self.r_G.T.dot(self.r_G) * np.identity(3))
+        return I_b
 
     @cached_property
     def r_G(self) -> np.ndarray:
@@ -133,8 +151,8 @@ class StateSpace(ABC):
         :return: array 6x6
         """
         M_RB_CG = np.vstack([
-            np.hstack([self.m * np.identity(3), np.zeros(3)]),
-            np.hstack([np.zeros(3), self.I_g])
+            np.hstack([self.m * np.identity(3), np.zeros((3, 3))]),
+            np.hstack([np.zeros((3, 3)), self.I_g])
         ])
 
         M_RB_CO = geom.move_to_CO(M_RB_CG, self.r_G)
@@ -180,9 +198,12 @@ class StateSpace(ABC):
         r"""
         The skew-symmetric cross-product operation on :math:`\boldsymbol{M}_{RB}` yields the rigid-body centripetal
         Coriolis matrix :math:`\boldsymbol{C}_{RB}`. We use the velocity-independent parametrization as in
-        `Fossen2011 <https://onlinelibrary.wiley.com/doi/book/10.1002/9781119994138>`_, page 55,
-        where :math:`\boldsymbol{\nu}_2` represents the angular velocity vector, :math:`S` the cross product operator
-        and :math:`\boldsymbol{I}_b` is the inertia matrix about an arbitrary origin (p.51)
+        `Fossen2011 <https://onlinelibrary.wiley.com/doi/book/10.1002/9781119994138>`_, page 55, or Havenstrøm,
+        Simen Theie. 2020. “From Beginner to Expert: Deep Reinforcement Learning Controller for 3D Path Following and
+        Collision Avoidance by Autonomous Underwater Vehicles.”
+        https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2780864 p. 19. where :math:`\boldsymbol{\nu}_2` represents the
+        angular velocity vector, :math:`S` the cross product operator and :math:`\boldsymbol{I}_b` is the inertia
+        matrix about an arbitrary origin (p.51)
 
         .. math::
 
@@ -198,11 +219,9 @@ class StateSpace(ABC):
         """
         nu_2 = nu_r[3:6]
 
-        Ib = self.I_g - self.m * geom.S_skew(self.r_G).dot(geom.S_skew(self.r_G))
-
         C_RB_CO = np.vstack([
             np.hstack([self.m * geom.S_skew(nu_2), -self.m * geom.S_skew(nu_2).dot(geom.S_skew(self.r_G))]),
-            np.hstack([self.m * geom.S_skew(self.r_G).dot(geom.S_skew(nu_2)), -geom.S_skew(Ib.dot(nu_2))])
+            np.hstack([self.m * geom.S_skew(self.r_G).dot(geom.S_skew(nu_2)), -geom.S_skew(self.I_b.dot(nu_2))])
         ])
         return C_RB_CO
 
@@ -250,8 +269,6 @@ class StateSpace(ABC):
             np.hstack([np.zeros((3, 3)), -geom.S_skew(M_A11 @ nu_1 + M_A12 @ nu_2)]),
             np.hstack([-geom.S_skew(M_A11 @ nu_1 + M_A12 @ nu_2), -geom.S_skew(M_A21 @ nu_1 + M_A22 @ nu_2)])
         ])
-
-        # TODO: Make unit test for this with result from Simen!
 
         return C_A_CO
 
@@ -311,6 +328,9 @@ class StateSpace(ABC):
         q = abs(nu_r[4])
         r = abs(nu_r[5])
 
+        # Minus sign check: Necessary, since Derivatives are negative, then when on RHS of equation, there is another
+        # minus sign, thus we need this minus sign so the drag counteracts actual movement, is also defined in Fossen
+        # like that
         D_L = -np.array([[self.X_u, 0, 0, 0, 0, 0],
                          [0, self.Y_v, 0, 0, 0, 0],
                          [0, 0, self.Z_w, 0, 0, 0],
