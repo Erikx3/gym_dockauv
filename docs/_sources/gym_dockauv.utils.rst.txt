@@ -12,6 +12,14 @@ gym\_dockauv.utils.geomutils module
    :undoc-members:
    :show-inheritance:
 
+gym\_dockauv.utils.lowpassfilter module
+---------------------------------------
+
+.. automodule:: gym_dockauv.utils.lowpassfilter
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Module contents
 ---------------
 

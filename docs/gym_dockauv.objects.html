@@ -101,16 +101,177 @@
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
 </section>
+<section id="module-gym_dockauv.objects.auvsim">
+<span id="gym-dockauv-objects-auvsim-module"></span><h2>gym_dockauv.objects.auvsim module<a class="headerlink" href="#module-gym_dockauv.objects.auvsim" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="gym_dockauv.objects.auvsim.AUVSim">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gym_dockauv.objects.auvsim.</span></span><span class="sig-name descname"><span class="pre">AUVSim</span></span><a class="headerlink" href="#gym_dockauv.objects.auvsim.AUVSim" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gym_dockauv.objects.statespace.StateSpace" title="gym_dockauv.objects.statespace.StateSpace"><code class="xref py py-class docutils literal notranslate"><span class="pre">gym_dockauv.objects.statespace.StateSpace</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>This class serves as an interface base class for the AUV instance. It handles the input and output to deal with
+the state space equations, save the state of the vehicle and represent the state of the vehicle in the
+Simulation. Below you find the most important definitions:</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\boldsymbol{\eta} = \begin{bmatrix}
+    x &amp; y &amp; z &amp; \phi &amp; \theta &amp; \psi
+\end{bmatrix}^T\\\boldsymbol{\nu} = \begin{bmatrix}
+    u &amp; v &amp; w &amp; p &amp; q &amp; r
+\end{bmatrix}^T\end{aligned}\end{align} \]</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Assumtpions:</p>
+<ul class="simple">
+<li><p>This implementation always assumes a low pass filter over the input for simplification
+(can always be overwritten, in case you have your own implementation from input to external forces)</p></li>
+<li><p>Action space for the DRL agent or NN is in the interval of [-1, 1]</p></li>
+</ul>
+</div>
+<dl class="py property">
+<dt class="sig sig-object py" id="gym_dockauv.objects.auvsim.AUVSim.angular_velocity">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">angular_velocity</span></span><a class="headerlink" href="#gym_dockauv.objects.auvsim.AUVSim.angular_velocity" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the rate of rotation about the Body frame.</p>
+<div class="math notranslate nohighlight">
+\[\boldsymbol{\omega} = \begin{bmatrix}
+    p &amp; q &amp; r
+\end{bmatrix}^T\]</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gym_dockauv.objects.auvsim.AUVSim.attitude">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">attitude</span></span><a class="headerlink" href="#gym_dockauv.objects.auvsim.AUVSim.attitude" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the attitude (euler angles) of the AUV wrt. to NED coordinates roll, pitch, yaw.</p>
+<div class="math notranslate nohighlight">
+\[\boldsymbol{\Theta} = \begin{bmatrix}
+    \phi &amp; \theta &amp; \psi
+\end{bmatrix}^T\]</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gym_dockauv.objects.auvsim.AUVSim.chi">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">chi</span></span><a class="headerlink" href="#gym_dockauv.objects.auvsim.AUVSim.chi" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the azimuth angle <span class="math notranslate nohighlight">\(\chi\)</span> .</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gym_dockauv.objects.auvsim.AUVSim.position">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">position</span></span><a class="headerlink" href="#gym_dockauv.objects.auvsim.AUVSim.position" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the position of the AUV in NED coordinates x, y, z.</p>
+<div class="math notranslate nohighlight">
+\[\boldsymbol{p} = \begin{bmatrix}
+    x &amp; y &amp; z
+\end{bmatrix}^T\]</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gym_dockauv.objects.auvsim.AUVSim.relative_speed">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">relative_speed</span></span><a class="headerlink" href="#gym_dockauv.objects.auvsim.AUVSim.relative_speed" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the total speed of the AUV.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gym_dockauv.objects.auvsim.AUVSim.relative_velocity">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">relative_velocity</span></span><a class="headerlink" href="#gym_dockauv.objects.auvsim.AUVSim.relative_velocity" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the surge, sway and heave velocity of the AUV.</p>
+<div class="math notranslate nohighlight">
+\[\boldsymbol{v} = \begin{bmatrix}
+    u &amp; v &amp; w
+\end{bmatrix}^T\]</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.objects.auvsim.AUVSim.state_dot">
+<span class="sig-name descname"><span class="pre">state_dot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nu_c</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.auvsim.AUVSim.state_dot" title="Permalink to this definition"></a></dt>
+<dd><p>The right-hand side (RHS) of the 12 ODEs governing the AUV dynamics. Including:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\boldsymbol{\dot{\eta}} = \boldsymbol{J}_{\Theta}(\boldsymbol{\eta}) \boldsymbol{\nu}
+\iff
+\begin{bmatrix}
+    \boldsymbol{\dot{p}} \\
+    \boldsymbol{\dot{\Theta}_{nb}}
+\end{bmatrix}
+=
+\begin{bmatrix}
+    \boldsymbol{R}_b^n(\boldsymbol{\Theta}_{nb}) &amp; 0\\
+    0 &amp; \boldsymbol{T}_{\Theta}(\boldsymbol{\Theta}_{nb})
+\end{bmatrix}
+\begin{bmatrix}
+    \boldsymbol{v}^b \\
+    \boldsymbol{\omega}^b
+\end{bmatrix}\end{split}\]</div>
+<div class="math notranslate nohighlight">
+\[\underbrace{\boldsymbol{M}_{RB} \boldsymbol{\dot{\nu}}
++ \boldsymbol{C}_{RB}(\boldsymbol{\nu})\boldsymbol{\nu}}_{\text{rigid-body terms}}
++ \underbrace{\boldsymbol{M}_A \boldsymbol{\dot{\nu}}_r + C_A(\boldsymbol{\nu}_r) \boldsymbol{\nu}_r
++ D(\boldsymbol{\nu}_r) \boldsymbol{\nu}_r}_{\text{hydrodynamic terms}}
++ \underbrace{g(\eta)}_{\text{hydrostatic terms}} = \boldsymbol{\tau}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>nu_c</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – current nu state vector</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>array 12x1</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.objects.auvsim.AUVSim.step">
+<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nu_c</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.auvsim.AUVSim.step" title="Permalink to this definition"></a></dt>
+<dd><p>Apply one simulation step with Un-normalize action input from DRL or NN and apply low-pass filter</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>action</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – normalized input by DRL agent or NN</p></li>
+<li><p><strong>nu_c</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – water current speed</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.objects.auvsim.AUVSim.unnormalize_input">
+<span class="sig-name descname"><span class="pre">unnormalize_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">norm_input</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.auvsim.AUVSim.unnormalize_input" title="Permalink to this definition"></a></dt>
+<dd><p>Assumes action space between -1 and 1 and converts in linear to the bounded real action space of the vehicle</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>norm_input</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – input from e.g. a neural network (nn) array ax1</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>arrax ax1</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gym_dockauv.objects.auvsim.AUVSim.upsilon">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">upsilon</span></span><a class="headerlink" href="#gym_dockauv.objects.auvsim.AUVSim.upsilon" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the inclination (path) angle <span class="math notranslate nohighlight">\(\Upsilon\)</span></p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
 <section id="module-gym_dockauv.objects.statespace">
 <span id="gym-dockauv-objects-statespace-module"></span><h2>gym_dockauv.objects.statespace module<a class="headerlink" href="#module-gym_dockauv.objects.statespace" title="Permalink to this headline"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="gym_dockauv.objects.statespace.StateSpace">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gym_dockauv.objects.statespace.</span></span><span class="sig-name descname"><span class="pre">StateSpace</span></span><a class="headerlink" href="#gym_dockauv.objects.statespace.StateSpace" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
-<p>This class represents the Parentclass for a statespace. It basically serves as template for AUV dynamics with
-6dof. The __init__ function can be overwritten by simply adding the derivatives of the state space, that are not
-zero or by using the function for reading these values in via a xml file.
-Do not forget to call super().__init__() in any child class __init__ constructor.</p>
+<p>This class represents the baseclass for a statespace. It basically serves as template for AUV dynamics with 6dof.
+The __init__ function can be overwritten by simply adding the derivatives of the state space, that are not zero
+or by using the function for reading these values in via a xml file. Do not forget to call super().__init__() in
+any child class __init__ constructor. Look at the example vehicles in the directory “vehicles”</p>
 <p>The formula below is used as a description of the <strong>kinetic</strong> state space and retrieved by
 <a class="reference external" href="https://onlinelibrary.wiley.com/doi/book/10.1002/9781119994138">Fossen2011</a>, page 188,
 Equations of Relative Motion with the assumption of an irrotational and constant (or very slow changing) current:</p>
@@ -129,20 +290,24 @@ Equations of Relative Motion with the assumption of an irrotational and constant
 <li><p>Lift forces are neglected here for speeds up to 2m/s, however they can be easily added to the damping term by
 creating matrix <span class="math notranslate nohighlight">\(\boldsymbol{L}\)</span>.</p></li>
 <li><p>The current is irrotational and constant in {n}</p></li>
+<li><p>Values for the Inertia in this class can be entered as the origin at center of gravity, the transformation
+will be performed by this class</p></li>
 </ul>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Child Class:</p>
 <p>The BlueROV2 is implemented and an example for another AUV dynamics implementation, where we also need more
-variables, is shown under …</p>
+variables, is shown under <strong>TODO</strong>. We use multiple inheritance for the vechicles, since they share a lot of
+basic functionality.</p>
 <p>Make sure to call super().__init__() within the Child class initialization function, when you overwrite the
 base class init, and then add further needed variables to your class (for example using the xml parser).
-Further on make sure the initialized variables are in the correct type, e.g. do not write mass = None</p>
+Further on make sure the initialized variables are in the correct type, e.g. do not write mass = None,
+since the xml parser inherit the variable type from the initialization</p>
 </div>
-<dl class="py method">
+<dl class="py property">
 <dt class="sig sig-object py" id="gym_dockauv.objects.statespace.StateSpace.B">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">B</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.statespace.StateSpace.B" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">B</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#gym_dockauv.objects.statespace.StateSpace.B" title="Permalink to this definition"></a></dt>
 <dd><p>this function returns the control matrix <span class="math notranslate nohighlight">\(\boldsymbol{B}\)</span> and is individual for each AUV and thus an
 abstract method</p>
 <p>When <span class="math notranslate nohighlight">\(\boldsymbol{\tau}\)</span> represents the external forces and <span class="math notranslate nohighlight">\(\boldsymbol{u}\)</span> the control input, then</p>
@@ -151,11 +316,6 @@ abstract method</p>
 <p>Where the dimension <span class="math notranslate nohighlight">\(\boldsymbol{a}\)</span> is the number of actions available for the system
 :rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>
 :return: array 6x1</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>numpy.ndarray</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -216,9 +376,12 @@ changes someone made to <span class="math notranslate nohighlight">\(\boldsymbol
 <span class="sig-name descname"><span class="pre">C_RB</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nu_r</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.statespace.StateSpace.C_RB" title="Permalink to this definition"></a></dt>
 <dd><p>The skew-symmetric cross-product operation on <span class="math notranslate nohighlight">\(\boldsymbol{M}_{RB}\)</span> yields the rigid-body centripetal
 Coriolis matrix <span class="math notranslate nohighlight">\(\boldsymbol{C}_{RB}\)</span>. We use the velocity-independent parametrization as in
-<a class="reference external" href="https://onlinelibrary.wiley.com/doi/book/10.1002/9781119994138">Fossen2011</a>, page 55,
-where <span class="math notranslate nohighlight">\(\boldsymbol{\nu}_2\)</span> represents the angular velocity vector, <span class="math notranslate nohighlight">\(S\)</span> the cross product operator
-and <span class="math notranslate nohighlight">\(\boldsymbol{I}_b\)</span> is the inertia matrix about an arbitrary origin (p.51)</p>
+<a class="reference external" href="https://onlinelibrary.wiley.com/doi/book/10.1002/9781119994138">Fossen2011</a>, page 55, or Havenstrøm,
+Simen Theie. 2020. “From Beginner to Expert: Deep Reinforcement Learning Controller for 3D Path Following and
+Collision Avoidance by Autonomous Underwater Vehicles.”
+<a class="reference external" href="https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2780864">https://ntnuopen.ntnu.no/ntnu-xmlui/handle/11250/2780864</a> p. 19. where <span class="math notranslate nohighlight">\(\boldsymbol{\nu}_2\)</span> represents the
+angular velocity vector, <span class="math notranslate nohighlight">\(S\)</span> the cross product operator and <span class="math notranslate nohighlight">\(\boldsymbol{I}_b\)</span> is the inertia
+matrix about an arbitrary origin (p.51)</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\boldsymbol{C}_{RB} = \begin{bmatrix}
     m \boldsymbol{S}(\boldsymbol{\nu}_2) &amp;
@@ -323,9 +486,22 @@ from zero, this equation simplifies further to:</p>
 </dd></dl>
 
 <dl class="py property">
+<dt class="sig sig-object py" id="gym_dockauv.objects.statespace.StateSpace.I_b">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">I_b</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#gym_dockauv.objects.statespace.StateSpace.I_b" title="Permalink to this definition"></a></dt>
+<dd><p>Inertia Moments matrix about an arbitrary origin</p>
+<div class="math notranslate nohighlight">
+\[oldsymbol{I}_b = oldsymbol{I}_g - m oldsymbol{S}^2(oldsymbol{r}_g)\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>array 3x3</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
 <dt class="sig sig-object py" id="gym_dockauv.objects.statespace.StateSpace.I_g">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">I_g</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#gym_dockauv.objects.statespace.StateSpace.I_g" title="Permalink to this definition"></a></dt>
-<dd><p>Inertia Moments matrix</p>
+<dd><p>Inertia Moments matrix about the body’s center of gravity</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>array 3x3</p>
@@ -419,11 +595,12 @@ the full added mass Matrix, simply overwrite this method in your child class</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="gym_dockauv.objects.statespace.StateSpace.read_para_from_xml">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_para_from_xml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xml_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.statespace.StateSpace.read_para_from_xml" title="Permalink to this definition"></a></dt>
-<dd><p>Parse flat xml with parameters for the vehicle and update them as an attribute to the instance. This function
-also checks, if the xml keys are already available as an attribute, otherwise this will throw an exception,
-since any Child classes from StateSpace should take care of any additional attributes in its init function</p>
+<dt class="sig sig-object py" id="gym_dockauv.objects.statespace.StateSpace.read_phys_para_from_xml">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_phys_para_from_xml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xml_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.statespace.StateSpace.read_phys_para_from_xml" title="Permalink to this definition"></a></dt>
+<dd><p>Parse flat xml with physical parameters for the vehicle and update them as an attribute to the instance. This
+function also checks, if the xml keys are already available as an attribute, otherwise this will throw an
+exception, since any Child classes from StateSpace should take care of any additional attributes in its init
+function</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -436,6 +613,21 @@ since any Child classes from StateSpace should take care of any additional attri
 </dd>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gym_dockauv.objects.statespace.StateSpace.u_bound">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">u_bound</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#gym_dockauv.objects.statespace.StateSpace.u_bound" title="Permalink to this definition"></a></dt>
+<dd><p>This function shall return the upper and lower boundaries for the input u, where the first column represent
+the lower boundary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>array ax2</p>
 </dd>
 </dl>
 </dd></dl>

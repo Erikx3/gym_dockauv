@@ -94,7 +94,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="gym_dockauv.objects.vehicles.BlueROV2.BlueROV2">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gym_dockauv.objects.vehicles.BlueROV2.</span></span><span class="sig-name descname"><span class="pre">BlueROV2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xml_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.vehicles.BlueROV2.BlueROV2" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="gym_dockauv.objects.html#gym_dockauv.objects.statespace.StateSpace" title="gym_dockauv.objects.statespace.StateSpace"><code class="xref py py-class docutils literal notranslate"><span class="pre">gym_dockauv.objects.statespace.StateSpace</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="gym_dockauv.objects.html#gym_dockauv.objects.auvsim.AUVSim" title="gym_dockauv.objects.auvsim.AUVSim"><code class="xref py py-class docutils literal notranslate"><span class="pre">gym_dockauv.objects.auvsim.AUVSim</span></code></a></p>
 <p>Some description about the BlueROV2 used here …</p>
 <p>The parameters for the BlueROV2 are loaded via a xml file, SI units are used.
 The system identification data of the BlueROV2 are publicly available from
@@ -110,6 +110,28 @@ abstract method</p>
 \[\boldsymbol{\tau} = \boldsymbol{B}_{6\times a} \boldsymbol{u}_{a\times 1}\]</div>
 <p>Where the dimension <span class="math notranslate nohighlight">\(\boldsymbol{a}\)</span> is the number of actions available for the system
 :return: array 6x1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.objects.vehicles.BlueROV2.BlueROV2.set_B">
+<span class="sig-name descname"><span class="pre">set_B</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.vehicles.BlueROV2.BlueROV2.set_B" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.objects.vehicles.BlueROV2.BlueROV2.set_u_bound">
+<span class="sig-name descname"><span class="pre">set_u_bound</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.vehicles.BlueROV2.BlueROV2.set_u_bound" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gym_dockauv.objects.vehicles.BlueROV2.BlueROV2.u_bound">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">u_bound</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#gym_dockauv.objects.vehicles.BlueROV2.BlueROV2.u_bound" title="Permalink to this definition"></a></dt>
+<dd><p>This function shall return the upper and lower boundaries for the input u, where the first column represent
+the lower boundary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>array ax2</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>

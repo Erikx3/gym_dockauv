@@ -12,6 +12,14 @@ Subpackages
 Submodules
 ----------
 
+gym\_dockauv.objects.auvsim module
+----------------------------------
+
+.. automodule:: gym_dockauv.objects.auvsim
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 gym\_dockauv.objects.statespace module
 --------------------------------------
 
