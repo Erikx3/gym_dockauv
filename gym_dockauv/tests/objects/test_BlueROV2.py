@@ -9,16 +9,27 @@ class TestBlueROV2(unittest.TestCase):
     """
     Setup that is always called before all other test functions to read in instance
     """
+
     def setUp(self):
         xml_path = os.path.join(os.path.dirname(__file__), 'test_BlueROV2.xml')
         self.BlueROV2 = BlueROV2(xml_path)
+        # Use consistent test values
         self.nu_r = np.array([3, 2, 1, 0.3, 0.2, 0.1])
+        self.BlueROV2.set_B(np.identity(6))
+        self.BlueROV2.set_u_bound(np.array([
+            [-5, 5],
+            [-5, 5],
+            [-5, 5],
+            [-1, 3],
+            [-1, 1],
+            [-1, 1]]))
 
 
 class TestInit(TestBlueROV2):
     """
     Test functions after the initialization of the BlueROV2 (includes reading the xml file)
     """
+
     # Test, if values from xml are actually read
     def test_initial_mass(self):
         self.assertEqual(self.BlueROV2.m, 11.5)
@@ -44,6 +55,7 @@ class TestStateSpace(TestBlueROV2):
     """
     Test functions to test some state space matrices
     """
+
     def test_B_matrix_dimension(self):
         self.assertEqual(self.BlueROV2.B.shape[0], 6)
         self.assertGreaterEqual(self.BlueROV2.B.shape[1], 1)
@@ -104,8 +116,24 @@ class TestStateSpace(TestBlueROV2):
         self.assertNotEqual(self.BlueROV2.G(test_eta_moved)[4], 0)
         self.assertEqual(self.BlueROV2.G(test_eta_moved)[5], 0)
 
-        print("\n", self.BlueROV2.G(test_eta), "\n", self.BlueROV2.G(test_eta_moved))
+        # print("\n", self.BlueROV2.G(test_eta), "\n", self.BlueROV2.G(test_eta_moved))
         # print("\n", self.BlueROV2.D(self.nu_r))
+
+
+class TestAUVSim(TestBlueROV2):
+    """
+    Test functions for the AUV Sim simulation functionalities (unit tests, integration tests are in another file)
+    """
+
+    def test_unnormalize_input(self):
+        input_test = np.array([-1.0, -0.5, 0.0, 0.5, 0.5, 1.0])
+        # print("\n", self.BlueROV2.unnormalize_input(input_test))
+        self.assertEqual(self.BlueROV2.unnormalize_input(input_test)[0], -5)
+        self.assertEqual(self.BlueROV2.unnormalize_input(input_test)[1], -2.5)
+        self.assertEqual(self.BlueROV2.unnormalize_input(input_test)[2], 0.0)
+        self.assertEqual(self.BlueROV2.unnormalize_input(input_test)[3], 2.0)
+        self.assertEqual(self.BlueROV2.unnormalize_input(input_test)[4], 0.5)
+        self.assertEqual(self.BlueROV2.unnormalize_input(input_test)[5], 1.0)
 
 
 if __name__ == '__main__':

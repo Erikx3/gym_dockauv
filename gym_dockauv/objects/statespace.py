@@ -387,14 +387,15 @@ class StateSpace(ABC):
                       -(self.W - self.BY) * cos(theta) * sin(phi),
                       -(self.W - self.BY) * cos(theta) * cos(phi),
                       -(self.y_G * self.W - self.y_B * self.BY) * cos(theta) * cos(phi) + (
-                                  self.z_G * self.W - self.z_B * self.BY) * cos(theta) * sin(phi),
+                              self.z_G * self.W - self.z_B * self.BY) * cos(theta) * sin(phi),
                       (self.z_G * self.W - self.z_B * self.BY) * sin(theta) + (
-                                  self.x_G * self.W - self.x_B * self.BY) * cos(theta) * cos(phi),
+                              self.x_G * self.W - self.x_B * self.BY) * cos(theta) * cos(phi),
                       - (self.x_G * self.W - self.x_B * self.BY) * cos(theta) * sin(phi) - (
-                                  self.y_G * self.W - self.y_B * self.BY) * sin(theta)
+                              self.y_G * self.W - self.y_B * self.BY) * sin(theta)
                       ])
         return G
 
+    @property
     @abstractmethod
     def B(self) -> np.ndarray:
         r"""
@@ -409,6 +410,17 @@ class StateSpace(ABC):
 
         Where the dimension :math:`\boldsymbol{a}` is the number of actions available for the system
         :return: array 6x1
+        """
+        pass
+
+    @property
+    @abstractmethod
+    def u_bound(self) -> np.ndarray:
+        r"""
+        This function shall return the upper and lower boundaries for the input u, where the first column represent
+        the lower boundary.
+
+        :return: array ax2
         """
         pass
 
@@ -434,4 +446,3 @@ class StateSpace(ABC):
             else:
                 raise AttributeError("Bad and not allowed practice: Trying to parse xml data tag without it being "
                                      "initialized")
-
