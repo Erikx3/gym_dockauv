@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def ssa(angle: float) -> float:
+def ssa(angle: np.ndarray) -> np.ndarray:
     r"""
     Express input angle between :math:`-\pi` and :math:`+\pi` rad
 
