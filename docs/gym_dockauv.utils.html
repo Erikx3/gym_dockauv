@@ -222,15 +222,62 @@ expect an AUV to do that. An alternative approach could be quaternions, but are 
 <dd><p>Express input angle between <span class="math notranslate nohighlight">\(-\pi\)</span> and <span class="math notranslate nohighlight">\(+\pi\)</span> rad</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>angle</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – input angle in rad</p>
+<dd class="field-odd"><p><strong>angle</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – input angle in rad</p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></p>
 </dd>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>angle in rad</p>
 </dd>
 </dl>
+</dd></dl>
+
+</section>
+<section id="module-gym_dockauv.utils.lowpassfilter">
+<span id="gym-dockauv-utils-lowpassfilter-module"></span><h2>gym_dockauv.utils.lowpassfilter module<a class="headerlink" href="#module-gym_dockauv.utils.lowpassfilter" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="gym_dockauv.utils.lowpassfilter.LowPassFilter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gym_dockauv.utils.lowpassfilter.</span></span><span class="sig-name descname"><span class="pre">LowPassFilter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">T1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.lowpassfilter.LowPassFilter" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Provide Low pass Filter calculations</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="gym_dockauv.utils.lowpassfilter.LowPassFilter.alpha">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">alpha</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#gym_dockauv.utils.lowpassfilter.LowPassFilter.alpha" title="Permalink to this definition"></a></dt>
+<dd><p>Smoothing factor for discrete time implementation, <span class="math notranslate nohighlight">\(0 &lt;= \alpha &lt;= 1\)</span>. When <span class="math notranslate nohighlight">\(\alpha=0.5\)</span>,
+the low pass time constant is equal to the sample time, if it is smaller than 0.5, the time constant is larger
+than then the sample time.</p>
+<div class="math notranslate nohighlight">
+\[\alpha = \frac{\Delta_T}{T_1 + \Delta_T}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>smoothing factor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.utils.lowpassfilter.LowPassFilter.apply_lowpass">
+<span class="sig-name descname"><span class="pre">apply_lowpass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_prev</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.lowpassfilter.LowPassFilter.apply_lowpass" title="Permalink to this definition"></a></dt>
+<dd><p>Applies low-pass according to a discrete-time implementation of a simple low-pass filter:</p>
+<div class="math notranslate nohighlight">
+\[y_i = \alpha x_i + (1 - \alpha) * y_{i-1}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – e.g. command at time i</p></li>
+<li><p><strong>y_prev</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – previous command at time i-1</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>resulting command at time i</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </section>
