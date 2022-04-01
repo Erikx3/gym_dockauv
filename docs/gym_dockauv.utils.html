@@ -281,6 +281,29 @@ than then the sample time.</p>
 </dd></dl>
 
 </section>
+<section id="module-gym_dockauv.utils.odesolver45">
+<span id="gym-dockauv-utils-odesolver45-module"></span><h2>gym_dockauv.utils.odesolver45 module<a class="headerlink" href="#module-gym_dockauv.utils.odesolver45" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="gym_dockauv.utils.odesolver45.odesolver45">
+<span class="sig-prename descclassname"><span class="pre">gym_dockauv.utils.odesolver45.</span></span><span class="sig-name descname"><span class="pre">odesolver45</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.odesolver45.odesolver45" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate the next step of an IVP of a time-invariant ODE with a RHS
+described by f, with an order 4 approx. and an order 5 approx.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>f</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>) – functions RHS</p></li>
+<li><p><strong>t</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – time (dummy here)</p></li>
+<li><p><strong>y</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – state vector</p></li>
+<li><p><strong>h</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – step size (fixed)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>4th and 5th order approximation results</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
 <section id="module-gym_dockauv.utils">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-gym_dockauv.utils" title="Permalink to this headline"></a></h2>
 </section>

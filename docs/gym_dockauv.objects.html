@@ -179,7 +179,7 @@ Simulation. Below you find the most important definitions:</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gym_dockauv.objects.auvsim.AUVSim.state_dot">
-<span class="sig-name descname"><span class="pre">state_dot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nu_c</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.auvsim.AUVSim.state_dot" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">state_dot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nu_c</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.auvsim.AUVSim.state_dot" title="Permalink to this definition"></a></dt>
 <dd><p>The right-hand side (RHS) of the 12 ODEs governing the AUV dynamics. Including:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\boldsymbol{\dot{\eta}} = \boldsymbol{J}_{\Theta}(\boldsymbol{\eta}) \boldsymbol{\nu}
@@ -205,7 +205,11 @@ Simulation. Below you find the most important definitions:</p>
 + \underbrace{g(\eta)}_{\text{hydrostatic terms}} = \boldsymbol{\tau}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>nu_c</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – current nu state vector</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>t</strong> – Dummy variable used for most ode solvers</p></li>
+<li><p><strong>state</strong> – state vector 12x1 of vehicle</p></li>
+<li><p><strong>nu_c</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – current nu state vector</p></li>
+</ul>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></p>
@@ -224,7 +228,7 @@ Simulation. Below you find the most important definitions:</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>action</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – normalized input by DRL agent or NN</p></li>
-<li><p><strong>nu_c</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – water current speed</p></li>
+<li><p><strong>nu_c</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – water current speed vector</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
@@ -232,6 +236,17 @@ Simulation. Below you find the most important definitions:</p>
 </dd>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gym_dockauv.objects.auvsim.AUVSim.u">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">u</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#gym_dockauv.objects.auvsim.AUVSim.u" title="Permalink to this definition"></a></dt>
+<dd><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>rtype</p>
 </dd>
 </dl>
 </dd></dl>
@@ -315,7 +330,7 @@ abstract method</p>
 \[\boldsymbol{\tau} = \boldsymbol{B}_{6\times a} \boldsymbol{u}_{a\times 1}\]</div>
 <p>Where the dimension <span class="math notranslate nohighlight">\(\boldsymbol{a}\)</span> is the number of actions available for the system
 :rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>
-:return: array 6x1</p>
+:return: array 6xa</p>
 </dd></dl>
 
 <dl class="py method">
