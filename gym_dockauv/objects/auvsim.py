@@ -4,6 +4,7 @@ import numpy as np
 from .statespace import StateSpace
 from ..utils import geomutils as geom
 from ..utils.lowpassfilter import LowPassFilter
+from ..utils.odesolver45 import odesolver45
 
 
 class AUVSim(StateSpace, ABC):
@@ -39,7 +40,8 @@ class AUVSim(StateSpace, ABC):
         self.safety_radius = 1
 
         # Standard initialization
-        self.u = np.zeros(3)  # Input that is not normalized
+        # Make B dependent implementation of input vector u:
+        self._u = None
         self.position_dot = np.zeros(3)
 
     def __setattr__(self, name, value):
@@ -56,28 +58,42 @@ class AUVSim(StateSpace, ABC):
         :return: arrax ax1
         """
         input_c = np.clip(norm_input, -1, 1)
-        return self.u_bound[:, 0] + (self.u_bound[:, 1] - self.u_bound[:, 0]) * (input_c+1)/2
+        return self.u_bound[:, 0] + (self.u_bound[:, 1] - self.u_bound[:, 0]) * (input_c + 1) / 2
 
     def step(self, action: np.ndarray, nu_c: np.ndarray) -> None:
         r"""
         Apply one simulation step with Un-normalize action input from DRL or NN and apply low-pass filter
 
         :param action: normalized input by DRL agent or NN
-        :param nu_c: water current speed
+        :param nu_c: water current speed vector
         :return: None
         """
         # Un-normalize action input from outside and apply low-pass filter to changes
         self.u = self.lowpassfilter.apply_lowpass(self.unnormalize_input(action), self.u)
         self._sim(nu_c)
 
-    def _sim(self, nu_c):
-        # TODO: All of this here, especially docstring and thinking about how to use python ode solver
-        self.state, q = choose_odesolver45_TODO(self.state_dot, self.state, self.step_size, nu_c)
+    def _sim(self, nu_c: np.ndarray) -> None:
+        """
+        Simulation step with own defined odesolver45. It has been checked against the python scipy.integrate module
+        and achieves the same result in less time due to less overhead
+
+        :param nu_c: water current speed vector
+        :return: None
+        """
+        # Perform ODE simulation step
+        self.state, q = odesolver45(f=self.state_dot, t=0, y=self.state, h=self.step_size, **{"nu_c": nu_c})
+
+        # Alternative with official python package - Note: There are a lot of ways to hack a constant step size,
+        # none of them are beautiful
+        # res = solve_ivp(fun=self.state_dot, t_span=[0, self.step_size],
+        #                 y0=self.state, t_eval=[self.step_size], method='RK45', args=(nu_c,))
+        # self.state = res.y.flatten()
+
         # Convert angle in applicable range
         self.state[3:5] = geom.ssa(self.state[3:5])
-        self.position_dot = self.state_dot(nu_c)[0:3]  # Save the speed here
+        self.position_dot = self.state_dot(0, self.state, nu_c)[0:3]  # Save the speed here
 
-    def state_dot(self, nu_c: np.ndarray) -> np.ndarray:
+    def state_dot(self, t, state, nu_c: np.ndarray) -> np.ndarray:
         r"""
         The right-hand side (RHS) of the 12 ODEs governing the AUV dynamics. Including:
 
@@ -107,11 +123,13 @@ class AUVSim(StateSpace, ABC):
             + D(\boldsymbol{\nu}_r) \boldsymbol{\nu}_r}_{\text{hydrodynamic terms}}
             + \underbrace{g(\eta)}_{\text{hydrostatic terms}} = \boldsymbol{\tau}
 
+        :param t: Dummy variable used for most ode solvers
+        :param state: state vector 12x1 of vehicle
         :param nu_c: current nu state vector
         :return: array 12x1
         """
-        eta = self.state[:6]
-        nu_r = self.state[6:]
+        eta = state[:6]
+        nu_r = state[6:]
 
         # Kinematic Model
         eta_dot = geom.J(eta).dot(nu_r + nu_c)
@@ -200,3 +218,14 @@ class AUVSim(StateSpace, ABC):
         """
         [N_dot, E_dot, D_dot] = self.position_dot
         return np.arctan2(-D_dot, np.sqrt(N_dot ** 2 + E_dot ** 2))
+
+    @property
+    def u(self) -> np.ndarray:
+        # After B is known in child class, make sure it is initialized to the right size and as zero
+        if self._u is None:
+            self._u = np.zeros(self.B.shape[1])
+        return self._u
+
+    @u.setter
+    def u(self, value):
+        self._u = value

@@ -409,7 +409,7 @@ class StateSpace(ABC):
             \boldsymbol{\tau} = \boldsymbol{B}_{6\times a} \boldsymbol{u}_{a\times 1}
 
         Where the dimension :math:`\boldsymbol{a}` is the number of actions available for the system
-        :return: array 6x1
+        :return: array 6xa
         """
         pass
 
