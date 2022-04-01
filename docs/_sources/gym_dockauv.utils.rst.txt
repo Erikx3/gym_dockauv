@@ -20,6 +20,14 @@ gym\_dockauv.utils.lowpassfilter module
    :undoc-members:
    :show-inheritance:
 
+gym\_dockauv.utils.odesolver45 module
+-------------------------------------
+
+.. automodule:: gym_dockauv.utils.odesolver45
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Module contents
 ---------------
 
