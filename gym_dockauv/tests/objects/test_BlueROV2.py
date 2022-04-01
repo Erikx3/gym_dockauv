@@ -1,6 +1,7 @@
 import unittest
 import os
 import numpy as np
+from scipy.integrate import solve_ivp
 
 from gym_dockauv.objects.vehicles.BlueROV2 import BlueROV2
 
@@ -134,6 +135,43 @@ class TestAUVSim(TestBlueROV2):
         self.assertEqual(self.BlueROV2.unnormalize_input(input_test)[3], 2.0)
         self.assertEqual(self.BlueROV2.unnormalize_input(input_test)[4], 0.5)
         self.assertEqual(self.BlueROV2.unnormalize_input(input_test)[5], 1.0)
+
+    def test_sim_ode(self):
+        """
+        Comparison of ODE Solver solutions for the BlueROV2 simulation
+        """
+        # Just moving forward
+        action = np.array([1, 0, 0, -0.5, 0, 0])
+        # Pick smaller stepsize
+        self.BlueROV2.step_size = 0.01
+        # Reset nu_r here
+        self.BlueROV2.state = np.zeros(12)
+        # No current for now
+        nu_c = np.zeros(6)
+        # Make sure starting position is as we expect
+        # print(self.BlueROV2.position)
+
+        # Simulate own implementation and save results
+        for _ in range(1000):
+            self.BlueROV2.step(action, nu_c)
+        state = self.BlueROV2.state
+        # print("\n Position: ", self.BlueROV2.position)
+        # print("\n u: ", self.BlueROV2.u)
+
+        # Now compare with python ode solution, reset first
+        self.BlueROV2.u = np.zeros(6)
+        self.BlueROV2.state = np.zeros(12)
+        for _ in range(1000):
+            self.BlueROV2.u = self.BlueROV2.lowpassfilter.apply_lowpass(self.BlueROV2.unnormalize_input(action),
+                                                                        self.BlueROV2.u)
+            res = solve_ivp(fun=self.BlueROV2.state_dot, t_span=[0, self.BlueROV2.step_size],
+                            y0=self.BlueROV2.state, t_eval=[self.BlueROV2.step_size], method='RK45', args=(nu_c,))
+            self.BlueROV2.state = res.y.flatten()
+        # print("\n Position: ", self.BlueROV2.position)
+        # print("\n u: ", self.BlueROV2.u)
+
+        # Finally, compare results
+        self.assertIsNone(np.testing.assert_array_almost_equal(self.BlueROV2.state, state))
 
 
 if __name__ == '__main__':
