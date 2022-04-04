@@ -7,6 +7,8 @@ def odesolver45(f: Callable, t: float, y: np.ndarray, h: float, *args, **kwargs)
     Calculate the next step of an IVP of a time-invariant ODE with a RHS
     described by f, with an order 4 approx. and an order 5 approx.
 
+    Adapted from here: https://github.com/simentha/gym-auv/blob/master/gym_auv/objects/auv3d.py
+
     :param f: functions RHS
     :param t: time (dummy here)
     :param y: state vector

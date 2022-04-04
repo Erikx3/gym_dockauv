@@ -129,6 +129,7 @@ class TestAUVSim(TestBlueROV2):
     def test_unnormalize_input(self):
         input_test = np.array([-1.0, -0.5, 0.0, 0.5, 0.5, 1.0])
         # print("\n", self.BlueROV2.unnormalize_input(input_test))
+        # Will be un-normalized with the u_bound, which is picked non-symmetrical for test purposes.
         self.assertEqual(self.BlueROV2.unnormalize_input(input_test)[0], -5)
         self.assertEqual(self.BlueROV2.unnormalize_input(input_test)[1], -2.5)
         self.assertEqual(self.BlueROV2.unnormalize_input(input_test)[2], 0.0)
