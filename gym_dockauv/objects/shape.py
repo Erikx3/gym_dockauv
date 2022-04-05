@@ -14,7 +14,7 @@ class Shape(ABC):
         self.position = np.array(position)
 
     @abstractmethod
-    def plot_variables(self) -> List[np.ndarray]:
+    def get_plot_variables(self) -> List[np.ndarray]:
         """
         Function that returns the plot variables for the matplotlib axes.surface_plot function
 
@@ -29,15 +29,14 @@ class Sphere(Shape):
         super().__init__(position)  # Call inherited init functions and then add to it
         self.radius = radius
 
-    @abstractmethod
-    def plot_variables(self):
-        x_c, y_c, z_c = self.plot_shape
+    def get_plot_variables(self):
+        x_c, y_c, z_c = self.get_plot_shape
         return [self.position[0] + x_c,
                 self.position[1] + y_c,
                 self.position[2] + z_c]
 
     @cached_property
-    def plot_shape(self):
+    def get_plot_shape(self):
         u, v = np.mgrid[0:2 * np.pi:20j, 0:np.pi:10j]
         x_c = self.radius * np.cos(u) * np.sin(v)
         y_c = self.radius * np.sin(u) * np.sin(v)

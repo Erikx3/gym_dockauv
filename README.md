@@ -40,6 +40,20 @@ Here is the command to execute all tests. Make sure to be at the root of this re
 python -m unittest discover -v -s gym_dockauv/tests
 ```
 
+
+### Other install
+
+Chosen matplotlib backend:
+
+```shell
+sudo apt-get install python3-tk
+```
+
+### OpenAI, stable baseline (..)
+
+... TBD!
+
+
 Cheers, Erik :)
 
 
