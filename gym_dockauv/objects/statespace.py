@@ -43,7 +43,7 @@ class StateSpace(ABC):
     .. note:: Child Class:
 
         The BlueROV2 is implemented and an example for another AUV dynamics implementation, where we also need more
-        variables, is shown under **TODO**. We use multiple inheritance for the vechicles, since they share a lot of
+        variables, is shown under **TODO**. We use multiple inheritance for the vehicles, since they share a lot of
         basic functionality.
 
         Make sure to call super().__init__() within the Child class initialization function, when you overwrite the

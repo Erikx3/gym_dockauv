@@ -20,6 +20,14 @@ gym\_dockauv.objects.auvsim module
    :undoc-members:
    :show-inheritance:
 
+gym\_dockauv.objects.current module
+-----------------------------------
+
+.. automodule:: gym_dockauv.objects.current
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 gym\_dockauv.objects.statespace module
 --------------------------------------
 

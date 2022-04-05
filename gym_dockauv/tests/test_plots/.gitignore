@@ -1,0 +1,4 @@
+# Ignore everything in this directory, I just want the empty folder for saving plots during test runs
+*
+# Except this file
+!.gitignore
