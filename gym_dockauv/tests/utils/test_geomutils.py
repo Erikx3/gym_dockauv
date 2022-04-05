@@ -31,7 +31,7 @@ class TestGeoMutils(unittest.TestCase):
         test_T = geom.Tzyx(*test_Theta[:2])
         test_vector_n1 = test_T.dot(test_vector_b1)
         test_vector_n2 = test_T.dot(test_vector_b2)
-        print(test_vector_n1, test_vector_n2)
+        #print(test_vector_n1, test_vector_n2)
         self.assertAlmostEqual(test_vector_n1[0], 1.0)
         self.assertAlmostEqual(test_vector_n1[1], 0.0)
         self.assertAlmostEqual(test_vector_n1[2], 0.0)

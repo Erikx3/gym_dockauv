@@ -22,9 +22,9 @@ class Current:
                  white_noise_std: float):
 
         self.mu = mu
-        self.Vmin = V_min
-        self.Vmax = V_max
-        self.Vc = Vc_init
+        self.V_min = V_min
+        self.V_max = V_max
+        self.V_c = Vc_init
         self.alpha = alpha_init
         self.beta = beta_init
         self.white_noise_std = white_noise_std
@@ -68,9 +68,9 @@ class Current:
 
         :return: 3x1 array
         """
-        vel_current_NED = np.array([self.Vc * np.cos(self.alpha) * np.cos(self.beta),
-                                    self.Vc * np.sin(self.beta),
-                                    self.Vc * np.sin(self.alpha) * np.cos(self.beta)])
+        vel_current_NED = np.array([self.V_c * np.cos(self.alpha) * np.cos(self.beta),
+                                    self.V_c * np.sin(self.beta),
+                                    self.V_c * np.sin(self.alpha) * np.cos(self.beta)])
 
         return vel_current_NED
 
@@ -86,8 +86,11 @@ class Current:
         :return: None
         """
         w = np.random.normal(0, self.white_noise_std)
-        if self.Vc >= self.Vmax and w >= 0 or self.Vc <= self.Vmin and w <= 0:
-            Vc_dot = 0
-        else:
-            Vc_dot = -self.mu * self.Vc + w
-        self.Vc += Vc_dot * h
+        Vc_dot = -self.mu * self.V_c + w
+        self.V_c += Vc_dot * h
+
+        # From Simen
+        # V_c = self.V_c+Vc_dot*h
+        # self.V_c = 0.99*self.V_c + 0.01*V_c
+
+        self.V_c = np.clip(self.V_c, self.V_min, self.V_max)

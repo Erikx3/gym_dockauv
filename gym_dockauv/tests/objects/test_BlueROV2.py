@@ -149,11 +149,14 @@ class TestAUVSim(TestBlueROV2):
         self.BlueROV2.state = np.zeros(12)
         # No current for now
         nu_c = np.zeros(6)
+        # Number of simulation
+        n_sim = 100
+
         # Make sure starting position is as we expect
         # print(self.BlueROV2.position)
 
         # Simulate own implementation and save results
-        for _ in range(1000):
+        for _ in range(n_sim):
             self.BlueROV2.step(action, nu_c)
         state = self.BlueROV2.state
         # print("\n Position: ", self.BlueROV2.position)
@@ -162,7 +165,7 @@ class TestAUVSim(TestBlueROV2):
         # Now compare with python ode solution, reset first
         self.BlueROV2.u = np.zeros(6)
         self.BlueROV2.state = np.zeros(12)
-        for _ in range(1000):
+        for _ in range(n_sim):
             self.BlueROV2.u = self.BlueROV2.lowpassfilter.apply_lowpass(self.BlueROV2.unnormalize_input(action),
                                                                         self.BlueROV2.u)
             res = solve_ivp(fun=self.BlueROV2.state_dot, t_span=[0, self.BlueROV2.step_size],
