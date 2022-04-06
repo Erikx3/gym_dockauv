@@ -4,7 +4,7 @@ import unittest
 import gym_dockauv.utils.geomutils as geom
 
 
-class TestGeoMutils(unittest.TestCase):
+class TestGeomUtils(unittest.TestCase):
 
     def test_ssa(self):
         x = geom.ssa(np.array([3 * np.pi, 3 * np.pi - 0.001, np.pi/2, 0, -4/3 * np.pi, 10/3 * np.pi]))

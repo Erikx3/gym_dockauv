@@ -1,5 +1,3 @@
-
-
 class BlitManager:
     def __init__(self, canvas, animated_artists=()):
         """

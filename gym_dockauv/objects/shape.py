@@ -42,3 +42,26 @@ class Sphere(Shape):
         y_c = self.radius * np.sin(u) * np.sin(v)
         z_c = self.radius * np.cos(v)
         return x_c, y_c, z_c
+
+
+class Cylinder(Shape):
+
+    def __init__(self, position: np.ndarray, radius: float, height: float):
+        super().__init__(position)  # Call inherited init functions and then add to it
+        self.radius = radius
+        self.height = height
+
+    def get_plot_variables(self):
+        x_c, y_c, z_c = self.get_plot_shape
+        return [self.position[0] + x_c,
+                self.position[1] + y_c,
+                self.position[2] + z_c]
+
+    @cached_property
+    def get_plot_shape(self):
+        z = np.linspace(-self.height/2, self.height/2, 40)
+        theta = np.linspace(0, 2 * np.pi, 20)
+        theta_grid, z_c = np.meshgrid(theta, z)
+        x_c = self.radius * np.cos(theta_grid)
+        y_c = self.radius * np.sin(theta_grid)
+        return x_c, y_c, z_c

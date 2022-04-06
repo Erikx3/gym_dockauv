@@ -42,6 +42,9 @@ class TestCurrentFunc(TestCurrent):
         plt.title(title)
         plt.xlabel("t [s]")
         plt.ylabel("V_c [m/s]")
-        save_path = os.path.join(os.path.dirname(__file__), '..', 'test_plots', title)
+        save_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'test_plots', title))
         print(f"\nSave plot at {save_path}")
         plt.savefig(save_path)
+        plt.close()
+        self.assertEqual(os.path.isfile(save_path), True)
+
