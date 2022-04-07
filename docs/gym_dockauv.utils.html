@@ -87,6 +87,40 @@
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
 </section>
+<section id="module-gym_dockauv.utils.blitmanager">
+<span id="gym-dockauv-utils-blitmanager-module"></span><h2>gym_dockauv.utils.blitmanager module<a class="headerlink" href="#module-gym_dockauv.utils.blitmanager" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="gym_dockauv.utils.blitmanager.BlitManager">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gym_dockauv.utils.blitmanager.</span></span><span class="sig-name descname"><span class="pre">BlitManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">canvas</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">animated_artists</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.blitmanager.BlitManager" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.utils.blitmanager.BlitManager.add_artists">
+<span class="sig-name descname"><span class="pre">add_artists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arts</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.blitmanager.BlitManager.add_artists" title="Permalink to this definition"></a></dt>
+<dd><p>Add an artist to be managed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>arts</strong> (<em>List of Artists</em>) – The artist to be added.  Will be set to ‘animated’ (just
+to be safe).  <em>art</em> must be in the figure associated with
+the canvas this class is managing.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.utils.blitmanager.BlitManager.on_draw">
+<span class="sig-name descname"><span class="pre">on_draw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.blitmanager.BlitManager.on_draw" title="Permalink to this definition"></a></dt>
+<dd><p>Callback to register with ‘draw_event’.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.utils.blitmanager.BlitManager.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.blitmanager.BlitManager.update" title="Permalink to this definition"></a></dt>
+<dd><p>Update the screen with animated artists.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
 <section id="module-gym_dockauv.utils.geomutils">
 <span id="gym-dockauv-utils-geomutils-module"></span><h2>gym_dockauv.utils.geomutils module<a class="headerlink" href="#module-gym_dockauv.utils.geomutils" title="Permalink to this headline"></a></h2>
 <dl class="py function">
@@ -288,6 +322,7 @@ than then the sample time.</p>
 <span class="sig-prename descclassname"><span class="pre">gym_dockauv.utils.odesolver45.</span></span><span class="sig-name descname"><span class="pre">odesolver45</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.odesolver45.odesolver45" title="Permalink to this definition"></a></dt>
 <dd><p>Calculate the next step of an IVP of a time-invariant ODE with a RHS
 described by f, with an order 4 approx. and an order 5 approx.</p>
+<p>Adapted from here: <a class="reference external" href="https://github.com/simentha/gym-auv/blob/master/gym_auv/objects/auv3d.py">https://github.com/simentha/gym-auv/blob/master/gym_auv/objects/auv3d.py</a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -301,6 +336,156 @@ described by f, with an order 4 approx. and an order 5 approx.</p>
 <dd class="field-even"><p>4th and 5th order approximation results</p>
 </dd>
 </dl>
+</dd></dl>
+
+</section>
+<section id="module-gym_dockauv.utils.plotutils">
+<span id="gym-dockauv-utils-plotutils-module"></span><h2>gym_dockauv.utils.plotutils module<a class="headerlink" href="#module-gym_dockauv.utils.plotutils" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="gym_dockauv.utils.plotutils.EpisodeAnimation">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gym_dockauv.utils.plotutils.</span></span><span class="sig-name descname"><span class="pre">EpisodeAnimation</span></span><a class="headerlink" href="#gym_dockauv.utils.plotutils.EpisodeAnimation" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.utils.plotutils.EpisodeAnimation.add_episode_text">
+<span class="sig-name descname"><span class="pre">add_episode_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">episode_nr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.plotutils.EpisodeAnimation.add_episode_text" title="Permalink to this definition"></a></dt>
+<dd><p>Add episode number top right, needs to be in blit manager to display during live animation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ax</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">axes</span></code>) – existent axes (of this instance!)</p></li>
+<li><p><strong>episode_nr</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – episode nr</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.utils.plotutils.EpisodeAnimation.add_shapes">
+<span class="sig-name descname"><span class="pre">add_shapes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shapes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.plotutils.EpisodeAnimation.add_shapes" title="Permalink to this definition"></a></dt>
+<dd><p>Ass shape as static to existent axes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>shapes</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="gym_dockauv.objects.html#gym_dockauv.objects.shape.Shape" title="gym_dockauv.objects.shape.Shape"><code class="xref py py-class docutils literal notranslate"><span class="pre">Shape</span></code></a>]) – list of shapes objects (e.g. Cylinder)</p></li>
+<li><p><strong>ax</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">axes</span></code>) – existent axes (of this instance!)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.utils.plotutils.EpisodeAnimation.get_quiver_coords_from_attitude">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_quiver_coords_from_attitude</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attitude</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.plotutils.EpisodeAnimation.get_quiver_coords_from_attitude" title="Permalink to this definition"></a></dt>
+<dd><p>Function to return the attitude</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>attitude</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – array 3x1, including the euler angles (fixed to rigid body coord)</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>]</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>List of arrays for the coordinates of the quiver arrows direction uvw</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.utils.plotutils.EpisodeAnimation.init_path_animation">
+<span class="sig-name descname"><span class="pre">init_path_animation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.plotutils.EpisodeAnimation.init_path_animation" title="Permalink to this definition"></a></dt>
+<dd><p>Initialization of the live animation plot for the path, includes:
+- path + head</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">axes</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>axes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.utils.plotutils.EpisodeAnimation.save_animation">
+<span class="sig-name descname"><span class="pre">save_animation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">save_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frames</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.plotutils.EpisodeAnimation.save_animation" title="Permalink to this definition"></a></dt>
+<dd><p>Saves video as mp4 for the animation</p>
+<p>Depending on the amount of subplots etc, necessary arguments need to be given in kwargs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>frames</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – should be number of time steps for an episode</p></li>
+<li><p><strong>fps</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – fps of the saved video, if you want it in real time, enter, 1/dt here, where dt is the step size</p></li>
+<li><p><strong>save_path</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – absolute path of where to store the video</p></li>
+</ul>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><em>position</em> (<code class="docutils literal notranslate"><span class="pre">np.ndarray</span></code>) –
+array nx3, where n is the total number of all available position data points after the episode</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.utils.plotutils.EpisodeAnimation.save_wrap_update_animation">
+<span class="sig-name descname"><span class="pre">save_wrap_update_animation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">step_nr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.plotutils.EpisodeAnimation.save_wrap_update_animation" title="Permalink to this definition"></a></dt>
+<dd><p>Wrapper function to deal with saving animation (done to keep the original update functions, which update
+LIVE, meaning we simulate the available data bei each frame by the step_nr variable</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>step_nr</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – actual step number</p></li>
+<li><p><strong>kwargs</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>) – kwargs, as they appear in save_animation()</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.utils.plotutils.EpisodeAnimation.update_path_animation">
+<span class="sig-name descname"><span class="pre">update_path_animation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attitudes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.plotutils.EpisodeAnimation.update_path_animation" title="Permalink to this definition"></a></dt>
+<dd><p>Update the path animation plot by updating the according elements</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>attitudes</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – array 3x1, including the euler angles (fixed to rigid body coord) so far available</p></li>
+<li><p><strong>positions</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – array nx3, where n is the number of all available position data points so far in this episode</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </section>

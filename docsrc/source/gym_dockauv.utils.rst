@@ -4,6 +4,14 @@ gym\_dockauv.utils package
 Submodules
 ----------
 
+gym\_dockauv.utils.blitmanager module
+-------------------------------------
+
+.. automodule:: gym_dockauv.utils.blitmanager
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 gym\_dockauv.utils.geomutils module
 -----------------------------------
 
@@ -24,6 +32,14 @@ gym\_dockauv.utils.odesolver45 module
 -------------------------------------
 
 .. automodule:: gym_dockauv.utils.odesolver45
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+gym\_dockauv.utils.plotutils module
+-----------------------------------
+
+.. automodule:: gym_dockauv.utils.plotutils
    :members:
    :undoc-members:
    :show-inheritance:

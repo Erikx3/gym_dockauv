@@ -277,6 +277,164 @@ Simulation. Below you find the most important definitions:</p>
 </dd></dl>
 
 </section>
+<section id="module-gym_dockauv.objects.current">
+<span id="gym-dockauv-objects-current-module"></span><h2>gym_dockauv.objects.current module<a class="headerlink" href="#module-gym_dockauv.objects.current" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="gym_dockauv.objects.current.Current">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gym_dockauv.objects.current.</span></span><span class="sig-name descname"><span class="pre">Current</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mu</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">V_min</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">V_max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Vc_init</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha_init</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta_init</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">white_noise_std</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.current.Current" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Ocean current with constant alpha and beta and first order gauss markov process (linear state model) for simulation.</p>
+<p><a class="reference external" href="https://onlinelibrary.wiley.com/doi/book/10.1002/9781119994138">Fossen2011</a>, Chapter 8</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mu</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Constant in</p></li>
+<li><p><strong>V_min</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Lower boundary for current speed</p></li>
+<li><p><strong>V_max</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – upper boundary for current speed</p></li>
+<li><p><strong>Vc_init</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Initial current speed</p></li>
+<li><p><strong>alpha_init</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Initial <span class="math notranslate nohighlight">\(\alpha\)</span> angle in rad</p></li>
+<li><p><strong>beta_init</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Initial <span class="math notranslate nohighlight">\(\beta\)</span> angle in rad</p></li>
+<li><p><strong>white_noise_std</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Standard deviation <span class="math notranslate nohighlight">\(\sigma\)</span> of the white noise</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.objects.current.Current.get_current_NED">
+<span class="sig-name descname"><span class="pre">get_current_NED</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.current.Current.get_current_NED" title="Permalink to this definition"></a></dt>
+<dd><p>Returns current in NED coordinates</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(\beta\)</span> angles from initialization are assumed to be constant in NED,
+thus transformation from FLOW coordinate system to NED can be done here with varying <span class="math notranslate nohighlight">\(V_c\)</span></p>
+</div>
+<div class="math notranslate nohighlight">
+\[\begin{split}\boldsymbol{v}_c = V_c \begin{bmatrix}
+    \cos \alpha_c \\
+    \sin \beta_c \\
+    \sin \alpha_c cos \beta_c
+\end{bmatrix}^T\end{split}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>3x1 array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.objects.current.Current.sim">
+<span class="sig-name descname"><span class="pre">sim</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">h</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.current.Current.sim" title="Permalink to this definition"></a></dt>
+<dd><p>Simulate one time step of the current dynamics according to linear state model</p>
+<div class="math notranslate nohighlight">
+\[\dot{V}_c + \mu V_c = w\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>h</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – time step</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-gym_dockauv.objects.shape">
+<span id="gym-dockauv-objects-shape-module"></span><h2>gym_dockauv.objects.shape module<a class="headerlink" href="#module-gym_dockauv.objects.shape" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="gym_dockauv.objects.shape.Cylinder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gym_dockauv.objects.shape.</span></span><span class="sig-name descname"><span class="pre">Cylinder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.shape.Cylinder" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gym_dockauv.objects.shape.Shape" title="gym_dockauv.objects.shape.Shape"><code class="xref py py-class docutils literal notranslate"><span class="pre">gym_dockauv.objects.shape.Shape</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>position</strong> (<em>numpy.ndarray</em>) – </p></li>
+<li><p><strong>radius</strong> (<em>float</em>) – </p></li>
+<li><p><strong>height</strong> (<em>float</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="gym_dockauv.objects.shape.Cylinder.get_plot_shape">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_plot_shape</span></span><a class="headerlink" href="#gym_dockauv.objects.shape.Cylinder.get_plot_shape" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.objects.shape.Cylinder.get_plot_variables">
+<span class="sig-name descname"><span class="pre">get_plot_variables</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.shape.Cylinder.get_plot_variables" title="Permalink to this definition"></a></dt>
+<dd><p>Function that returns the plot variables for the matplotlib axes.surface_plot function</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>return list of 1d arrays for plotting</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gym_dockauv.objects.shape.Shape">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gym_dockauv.objects.shape.</span></span><span class="sig-name descname"><span class="pre">Shape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.shape.Shape" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>This is a base class for any shape, should always contain coordinates of position.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>position</strong> (<em>numpy.ndarray</em>) – </p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.objects.shape.Shape.get_plot_variables">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_plot_variables</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.shape.Shape.get_plot_variables" title="Permalink to this definition"></a></dt>
+<dd><p>Function that returns the plot variables for the matplotlib axes.surface_plot function</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>return list of 1d arrays for plotting</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gym_dockauv.objects.shape.Sphere">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gym_dockauv.objects.shape.</span></span><span class="sig-name descname"><span class="pre">Sphere</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.shape.Sphere" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gym_dockauv.objects.shape.Shape" title="gym_dockauv.objects.shape.Shape"><code class="xref py py-class docutils literal notranslate"><span class="pre">gym_dockauv.objects.shape.Shape</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>position</strong> (<em>numpy.ndarray</em>) – </p></li>
+<li><p><strong>radius</strong> (<em>float</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="gym_dockauv.objects.shape.Sphere.get_plot_shape">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_plot_shape</span></span><a class="headerlink" href="#gym_dockauv.objects.shape.Sphere.get_plot_shape" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.objects.shape.Sphere.get_plot_variables">
+<span class="sig-name descname"><span class="pre">get_plot_variables</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.shape.Sphere.get_plot_variables" title="Permalink to this definition"></a></dt>
+<dd><p>Function that returns the plot variables for the matplotlib axes.surface_plot function</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>return list of 1d arrays for plotting</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
 <section id="module-gym_dockauv.objects.statespace">
 <span id="gym-dockauv-objects-statespace-module"></span><h2>gym_dockauv.objects.statespace module<a class="headerlink" href="#module-gym_dockauv.objects.statespace" title="Permalink to this headline"></a></h2>
 <dl class="py class">
@@ -313,7 +471,7 @@ will be performed by this class</p></li>
 <p class="admonition-title">Note</p>
 <p>Child Class:</p>
 <p>The BlueROV2 is implemented and an example for another AUV dynamics implementation, where we also need more
-variables, is shown under <strong>TODO</strong>. We use multiple inheritance for the vechicles, since they share a lot of
+variables, is shown under <strong>TODO</strong>. We use multiple inheritance for the vehicles, since they share a lot of
 basic functionality.</p>
 <p>Make sure to call super().__init__() within the Child class initialization function, when you overwrite the
 base class init, and then add further needed variables to your class (for example using the xml parser).

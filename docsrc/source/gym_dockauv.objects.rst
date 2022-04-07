@@ -28,6 +28,14 @@ gym\_dockauv.objects.current module
    :undoc-members:
    :show-inheritance:
 
+gym\_dockauv.objects.shape module
+---------------------------------
+
+.. automodule:: gym_dockauv.objects.shape
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 gym\_dockauv.objects.statespace module
 --------------------------------------
 
