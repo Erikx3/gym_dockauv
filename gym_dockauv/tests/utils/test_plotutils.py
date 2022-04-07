@@ -1,10 +1,8 @@
 import matplotlib.pyplot as plt
+import matplotlib
 import numpy as np
 import unittest
 import os
-import matplotlib.animation as animation
-
-from gym_dockauv.utils.blitmanager import BlitManager
 from gym_dockauv.objects.shape import Sphere, Cylinder
 from gym_dockauv.utils.plotutils import EpisodeAnimation
 
@@ -14,16 +12,17 @@ class TestPlotUtils(unittest.TestCase):
     def test_episode_animation(self):
         cylinder = Cylinder(position=np.array([0.5, 0.5, 0.5]), radius=0.15, height=0.5)
         epi_anim = EpisodeAnimation()
-        ax = epi_anim.init_path_animation(shapes=[cylinder], episode_nr=123)
+        ax = epi_anim.init_path_animation()
+        epi_anim.add_shapes(ax, [cylinder])
+        epi_anim.add_episode_text(ax, 123)
 
         # Some extra axes manipulation for testing
         title = "Testing_Episode_Animations"
         ax.set(title=title)
         ax.set_proj_type('ortho')
-        plt.show(block=False)
 
         # Fake episodic process and test update function
-        num_steps = 100
+        num_steps = 200
         positions = random_walk(num_steps)
         for i in range(num_steps):
             position = positions[:i + 1, :]  # Fake available data so far
@@ -33,7 +32,7 @@ class TestPlotUtils(unittest.TestCase):
 
         # TODO: Test saving here real quick
         save_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'test_plots', title+'.mp4'))
-        epi_anim.save_animation(save_path=save_path, fps=20, position=positions)
+        epi_anim.save_animation(save_path=save_path, fps=20, frames=positions.shape[0], position=positions)
 
         plt.close(epi_anim.fig)
 

@@ -1,3 +1,6 @@
+import matplotlib.pyplot as plt
+
+
 class BlitManager:
     def __init__(self, canvas, animated_artists=()):
         """
@@ -19,8 +22,7 @@ class BlitManager:
         self._bg = None
         self._artists = []
 
-        for a in animated_artists:
-            self.add_artist(a)
+        self.add_artists(animated_artists)
         # grab the background on every draw
         self.cid = canvas.mpl_connect("draw_event", self.on_draw)
 
