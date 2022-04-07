@@ -33,23 +33,24 @@ class BlitManager:
         self._bg = cv.copy_from_bbox(cv.figure.bbox)
         self._draw_animated()
 
-    def add_artist(self, art):
+    def add_artists(self, arts):
         """
         Add an artist to be managed.
 
         Parameters
         ----------
-        art : Artist
+        arts : List of Artists
 
             The artist to be added.  Will be set to 'animated' (just
             to be safe).  *art* must be in the figure associated with
             the canvas this class is managing.
 
         """
-        if art.figure != self.canvas.figure:
-            raise RuntimeError
-        art.set_animated(True)
-        self._artists.append(art)
+        for art in arts:
+            if art.figure != self.canvas.figure:
+                raise RuntimeError
+            art.set_animated(True)
+            self._artists.append(art)
 
     def _draw_animated(self):
         """Draw all of the animated artists."""

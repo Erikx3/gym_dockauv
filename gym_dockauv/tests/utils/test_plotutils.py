@@ -6,97 +6,52 @@ import matplotlib.animation as animation
 
 from gym_dockauv.utils.blitmanager import BlitManager
 from gym_dockauv.objects.shape import Sphere, Cylinder
+from gym_dockauv.utils.plotutils import EpisodeAnimation
 
 
 class TestPlotUtils(unittest.TestCase):
 
-    def test_blitmanager(self):
-        """
-        Test function for the blit manager with minimum example to see, whether it works on this text computer.
-        """
+    def test_episode_animation(self):
+        cylinder = Cylinder(position=np.array([0.5, 0.5, 0.5]), radius=0.15, height=0.5)
+        epi_anim = EpisodeAnimation()
+        ax = epi_anim.init_path_animation(shapes=[cylinder], episode_nr=123)
 
-        # Example use with example adopted from:
-        # https: // matplotlib.org / stable / gallery / animation / random_walk.html
-
-        np.random.seed(3)
-        # Attaching 3D axis to the figure
-        fig = plt.figure()
-        ax = fig.add_subplot(projection="3d")
-
-        # Data: 100 random walks as (num_steps, 3) arrays
-        num_steps = 100
-        # Create example artists
-        walk, line, fr_number, dot = create_example_artists(num_steps=num_steps, ax=ax)
-
-        # Setting the axes properties
-        ax.set(xlim3d=(0, 1), xlabel='X')
-        ax.set(ylim3d=(0, 1), ylabel='Y')
-        ax.set(zlim3d=(0, 1), zlabel='Z')
-        ax.set(title="Testing Blit Manager and Animations")
-
-        bm = BlitManager(fig.canvas, [line, fr_number, dot])
-        # make sure our window is on the screen and drawn
-        plt.show(block=False)
-        plt.pause(0.5)
-
-        for j in range(num_steps):
-            # update the artists
-            update(j, walk, line, fr_number, dot)
-
-            # Setting the axes properties dynamically, need to add whole ax to BlitManager
-            # If needed, would reduce to a minimum level of usage to not slow down visualization
-            # ax.set(xlim3d=(0-j/num_steps, 1+j/num_steps), xlabel='X')
-            # ax.set(ylim3d=(0-j/num_steps, 1+j/num_steps), ylabel='Y')
-            # ax.set(zlim3d=(0-j/num_steps, 1+j/num_steps), zlabel='Z')
-
-            # Let the blitting manager update
-            bm.update()
-            # Optional for slowing down speed
-            plt.pause(0.05)
-
-        plt.close(fig)
-        # If made it until this point, give some kind of unit test feedback
-        self.assertEqual(1, 1)
-
-    def test_save_animation(self):
-        """
-        Testing whether animation can be saved as a video
-        """
-        # here add example of how to save video in a clean way after "live" animating stuff (With the saved data!)
-        title = 'test_plotutils.TestPlotUtils.test_save_animation.mp4'
-        fig = plt.figure()
-        ax = fig.add_subplot(projection="3d")
+        # Some extra axes manipulation for testing
+        title = "Testing_Episode_Animations"
         ax.set(title=title)
-        fps = 10
-        # Data: 100 random walks as (num_steps, 3) arrays
+        ax.set_proj_type('ortho')
+        plt.show(block=False)
+
+        # Fake episodic process and test update function
         num_steps = 100
-        # Create example artists
-        walk, line, fr_number, dot = create_example_artists(num_steps=num_steps, ax=ax)
+        positions = random_walk(num_steps)
+        for i in range(num_steps):
+            position = positions[:i + 1, :]  # Fake available data so far
+            epi_anim.update_path_animation(position=position)
+            # Some pausing for seeing the plot:
+            plt.pause(0.01)
 
-        ani = animation.FuncAnimation(
-            fig, func=update, frames=num_steps, fargs=(walk, line, fr_number, dot), interval=100)
-
-        writer_video = animation.FFMpegWriter(fps=fps)
-        save_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'test_plots', title))
-        print(f"\nSave video at {save_path}")
-        ani.save(save_path, writer=writer_video)
-        self.assertEqual(os.path.isfile(save_path), True)
+        # TODO: Test saving here real quick
+        save_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'test_plots', title+'.mp4'))
+        epi_anim.save_path_animation(position=positions, save_path=save_path, interval=100)
+        plt.close(epi_anim.fig)
 
     def test_plot_shape(self):
         title = 'test_plotutils.TestPlotUtils.test_plot_shape.png'
         fig = plt.figure()
         ax = fig.add_subplot(projection="3d")
         ax.set(title=title)
+        ax.set_proj_type('ortho')
 
         # Sphere
         sphere = Sphere(position=np.array([0, 0, 1]), radius=.1)
         # Create Sphere instance Note: Hard to update Sphere position only for Blitmanager, rather need to update
         # whole axis (set_verts did not work out, there is a lot under the hood of plot_surface)
-        surface_sphere = ax.plot_surface(*sphere.get_plot_variables(), color='b', alpha=0.5)
+        surface_sphere = ax.plot_surface(*sphere.get_plot_variables(), color='b', alpha=0.7)
 
         # Cylinder
         cylinder = Cylinder(position=np.array([1, 1, 0]), radius=0.15, height=1)
-        surface_cylinder = ax.plot_surface(*cylinder.get_plot_variables(), color='r', alpha=0.5)
+        surface_cylinder = ax.plot_surface(*cylinder.get_plot_variables(), color='r', alpha=0.7)
 
         save_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'test_plots', title))
         print(f"\nSave plot at {save_path}")
@@ -151,3 +106,81 @@ def create_example_artists(num_steps, ax):
     dot = ax.plot([], [], [], 'b.', alpha=0.8, markersize=10, animated=True)[0]
 
     return walk, line, fr_number, dot
+
+
+# class Deprecated:
+#
+#     @staticmethod
+#     def test_blitmanager():
+#         """
+#         Test function for the blit manager with minimum example to see, whether it works on this text computer.
+#         """
+#
+#         # Example use with example adopted from:
+#         # https: // matplotlib.org / stable / gallery / animation / random_walk.html
+#
+#         np.random.seed(3)
+#         # Attaching 3D axis to the figure
+#         fig = plt.figure()
+#         ax = fig.add_subplot(projection="3d")
+#
+#         # Data: 100 random walks as (num_steps, 3) arrays
+#         num_steps = 100
+#         # Create example artists
+#         walk, line, fr_number, dot = create_example_artists(num_steps=num_steps, ax=ax)
+#
+#         # Setting the axes properties
+#         ax.set(xlim3d=(0, 1), xlabel='X')
+#         ax.set(ylim3d=(0, 1), ylabel='Y')
+#         ax.set(zlim3d=(0, 1), zlabel='Z')
+#         ax.set(title="Testing Blit Manager and Animations")
+#         ax.set_proj_type('ortho')
+#
+#         bm = BlitManager(fig.canvas, [line, fr_number, dot])
+#         # make sure our window is on the screen and drawn
+#         plt.show(block=False)
+#         plt.pause(0.5)
+#
+#         for j in range(num_steps):
+#             # update the artists
+#             update(j, walk, line, fr_number, dot)
+#
+#             # Setting the axes properties dynamically, need to add whole ax to BlitManager
+#             # If needed, would reduce to a minimum level of usage to not slow down visualization
+#             # ax.set(xlim3d=(0-j/num_steps, 1+j/num_steps), xlabel='X')
+#             # ax.set(ylim3d=(0-j/num_steps, 1+j/num_steps), ylabel='Y')
+#             # ax.set(zlim3d=(0-j/num_steps, 1+j/num_steps), zlabel='Z')
+#
+#             # Let the blitting manager update
+#             bm.update()
+#             # Optional for slowing down speed
+#             plt.pause(0.05)
+#
+#         plt.close(fig)
+#         # If made it until this point, give some kind of unit test feedback
+#         # self.assertEqual(1, 1)
+#
+#     @staticmethod
+#     def test_save_animation(self):
+#         """
+#         Testing whether animation can be saved as a video
+#         """
+#         # here add example of how to save video in a clean way after "live" animating stuff (With the saved data!)
+#         title = 'test_plotutils.TestPlotUtils.test_save_animation.mp4'
+#         fig = plt.figure()
+#         ax = fig.add_subplot(projection="3d")
+#         ax.set(title=title)
+#         fps = 10
+#         # Data: 100 random walks as (num_steps, 3) arrays
+#         num_steps = 100
+#         # Create example artists
+#         walk, line, fr_number, dot = create_example_artists(num_steps=num_steps, ax=ax)
+#
+#         ani = animation.FuncAnimation(
+#             fig, func=update, frames=num_steps, fargs=(walk, line, fr_number, dot), interval=100)
+#
+#         writer_video = animation.FFMpegWriter(fps=fps)
+#         save_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'test_plots', title))
+#         print(f"\nSave video at {save_path}")
+#         ani.save(save_path, writer=writer_video)
+#         #self.assertEqual(os.path.isfile(save_path), True)
