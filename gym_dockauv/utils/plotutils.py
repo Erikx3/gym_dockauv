@@ -9,6 +9,8 @@ import numpy as np
 from ..objects.shape import Shape
 from .blitmanager import BlitManager
 
+from .geomutils import Rzyx
+
 
 # TODO: Think about adding more plots like input, state variables etc
 class EpisodeAnimation:
@@ -39,6 +41,9 @@ class EpisodeAnimation:
 
         # Create dot instance
         self.ax_path.head_art = self.ax_path.plot([], [], [], 'b.', alpha=1.0, markersize=10, animated=True)[0]
+
+        # Add attitude
+        self.ax_path.attitude_art = self.ax_path.quiver([], [], [], [], [], [], length=0.1, normalize=True)
 
         self.bm.add_artists([self.ax_path.path_art, self.ax_path.head_art])
         # Pause for any initialization to be done
@@ -80,19 +85,29 @@ class EpisodeAnimation:
         for shape in shapes:
             ax.plot_surface(*shape.get_plot_variables(), color='r', alpha=1.00)
 
-    def update_path_animation(self, position: np.ndarray) -> None:
+    def update_path_animation(self, positions: np.ndarray, attitudes: np.ndarray) -> None:
         """
         Update the path animation plot by updating the according elements
 
-        :param position: array nx3, where n is the number of all available position data points so far in this episode
+        :param attitudes: array 3x1, including the euler angles (fixed to rigid body coord) so far available
+        :param positions: array nx3, where n is the number of all available position data points so far in this episode
         :return: None
         """
 
         # Update path line
-        self.ax_path.path_art.set_data_3d(position[:, 0], position[:, 1], position[:, 2])
+        self.ax_path.path_art.set_data_3d(positions[:, 0], positions[:, 1], positions[:, 2])
 
         # Update head dot
-        self.ax_path.head_art.set_data_3d(position[-1, 0], position[-1, 1], position[-1, 2])
+        self.ax_path.head_art.set_data_3d(positions[-1, 0], positions[-1, 1], positions[-1, 2])
+
+        # Update attitude arrows:
+        self.ax_path.attitude_art.remove()
+        self.ax_path.attitude_art = self.ax_path.quiver(
+            np.full((3,), positions[-1, 0]),
+            np.full((3,), positions[-1, 1]),
+            np.full((3,), positions[-1, 2]),
+            *self.get_quiver_coords_from_attitude(attitudes[-1, :].flatten()),
+            length=0.2, normalize=True)
 
         # Alternative way of older Matplotlib API
         # self.ax_path.path_art.set_data(position[:, :2].T)
@@ -105,19 +120,32 @@ class EpisodeAnimation:
 
         self.bm.update()
 
+    @staticmethod
+    def get_quiver_coords_from_attitude(attitude: np.ndarray) -> List[np.ndarray]:
+        """
+        Function to return the attitude
+
+        :param attitude: array 3x1, including the euler angles (fixed to rigid body coord)
+        :return: List of arrays for the coordinates of the quiver arrows direction uvw
+        """
+        u = Rzyx(*attitude).T.dot(np.array([1, 0, 0]))
+        v = Rzyx(*attitude).T.dot(np.array([0, 1, 0]))
+        w = Rzyx(*attitude).T.dot(np.array([0, 0, 1]))
+        return [u, v, w]
+
     def save_wrap_update_animation(self, step_nr: int, kwargs: dict) -> None:
         """
-        Wrapper function to deal with saving animation
+        Wrapper function to deal with saving animation (done to keep the original update functions, which update
+        LIVE, meaning we simulate the available data bei each frame by the step_nr variable
 
         :param step_nr: actual step number
         :param kwargs: kwargs, as they appear in save_animation()
 
         :return: None
         """
-
-        for key, value in kwargs.items():
-            if key == "position":
-                self.update_path_animation(position=np.array(value[:step_nr + 1, :]))
+        if hasattr(self, 'ax_path') and "positions" in kwargs and "attitudes" in kwargs:
+            self.update_path_animation(positions=np.array(kwargs["positions"][:step_nr + 1, :]),
+                                       attitudes=np.array(kwargs["attitudes"][:step_nr + 1, :]))
 
     def save_animation(self, save_path: str, frames: int, fps: int = 10, **kwargs) -> None:
         """

@@ -22,17 +22,21 @@ class TestPlotUtils(unittest.TestCase):
         ax.set_proj_type('ortho')
 
         # Fake episodic process and test update function
-        num_steps = 200
-        positions = random_walk(num_steps)
+        num_steps = 100
+        positions = random_walk(num_steps, max_step=0.02)
+        attitudes = random_walk(num_steps, max_step=0.05)
         for i in range(num_steps):
-            position = positions[:i + 1, :]  # Fake available data so far
-            epi_anim.update_path_animation(position=position)
+            # Fake available data so far
+            position = positions[:i + 1, :]
+            attitude = attitudes[:i + 1, :]
+            epi_anim.update_path_animation(positions=position, attitudes=attitude)
             # Some pausing for seeing the plot:
             plt.pause(0.01)
 
         # TODO: Test saving here real quick
         save_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'test_plots', title+'.mp4'))
-        epi_anim.save_animation(save_path=save_path, fps=20, frames=positions.shape[0], position=positions)
+        epi_anim.save_animation(save_path=save_path, fps=20, frames=positions.shape[0],
+                                positions=positions, attitudes=attitudes)
 
         plt.close(epi_anim.fig)
 
