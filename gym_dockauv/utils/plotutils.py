@@ -25,7 +25,6 @@ class EpisodeAnimation:
     def __del__(self):
         plt.close(self.fig)
 
-    # TODO: Add attitude visualization
     def init_path_animation(self) -> matplotlib.pyplot.axes:
         """
         Initialization of the live animation plot for the path, includes:
@@ -107,7 +106,7 @@ class EpisodeAnimation:
             np.full((3,), positions[-1, 1]),
             np.full((3,), positions[-1, 2]),
             *self.get_quiver_coords_from_attitude(attitudes[-1, :].flatten()),
-            length=0.2, normalize=True)
+            length=0.2, normalize=True, color='y')
 
         # Alternative way of older Matplotlib API
         # self.ax_path.path_art.set_data(position[:, :2].T)
