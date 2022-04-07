@@ -1,18 +1,52 @@
 import matplotlib.pyplot
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d.proj3d import proj_transform
+from mpl_toolkits.mplot3d.axes3d import Axes3D
 import matplotlib.animation as animation
 
 # Used for typehints
 from typing import List
-
 import numpy as np
 
 from ..objects.shape import Shape
-
 from .blitmanager import BlitManager
 
+from matplotlib.patches import FancyArrowPatch
 
-# TODO: Think about adding more plots like input, state etc.
+
+class Arrow3D(FancyArrowPatch):
+    """
+    Publicly available class for 3d arrows
+
+    https://gist.github.com/WetHat/1d6cd0f7309535311a539b42cccca89c
+    """
+
+    def __init__(self, x, y, z, dx, dy, dz, *args, **kwargs):
+        super().__init__((0, 0), (0, 0), *args, **kwargs)
+        self._xyz = (x, y, z)
+        self._dxdydz = (dx, dy, dz)
+
+    def draw(self, renderer):
+        x1, y1, z1 = self._xyz
+        dx, dy, dz = self._dxdydz
+        x2, y2, z2 = (x1 + dx, y1 + dy, z1 + dz)
+
+        xs, ys, zs = proj_transform((x1, x2), (y1, y2), (z1, z2), self.axes.M)
+        self.set_positions((xs[0], ys[0]), (xs[1], ys[1]))
+        super().draw(renderer)
+
+
+# For seamless integration we add the arrow3D method to the Axes3D class.
+
+# Add this function during runtime with: setattr(Axes3D, 'arrow3D', _arrow3D)
+def _arrow3D(ax, x, y, z, dx, dy, dz, *args, **kwargs):
+    """Add a 3d arrow to an `Axes3D` instance."""
+
+    arrow = Arrow3D(x, y, z, dx, dy, dz, *args, **kwargs)
+    ax.add_artist(arrow)
+
+
+# TODO: Think about adding more plots like input, state variables etc
 class EpisodeAnimation:
 
     def __init__(self):
@@ -43,12 +77,8 @@ class EpisodeAnimation:
         # Create dot instance
         self.ax_path.head_art = self.ax_path.plot([], [], [], 'b.', alpha=1.0, markersize=10, animated=True)[0]
 
-        self.bm.add_artists([self.ax_path.path_art, self.ax_path.head_art])
-
-        # TODO: This alwys disappears for the live animation, fix it!
-        # Static elements:
-        # add a episode number
-        self.ax_path.annotate(
+        # Add a episode number (need to be added to the blit manager, so it is drawn correctly on each call)
+        dummy = self.ax_path.annotate(
             f"{episode_nr}",
             (0, 1),
             xycoords="axes fraction",
@@ -59,6 +89,9 @@ class EpisodeAnimation:
             animated=True,
         )
 
+        self.bm.add_artists([self.ax_path.path_art, self.ax_path.head_art, dummy])
+
+        # Static shapes (assumed for now, drawing these dynamically could slow down the system significantly):
         for shape in shapes:
             self.ax_path.plot_surface(*shape.get_plot_variables(), color='r', alpha=1.00)
 
@@ -75,45 +108,49 @@ class EpisodeAnimation:
         :return: None
         """
         # Update path line
-        self.ax_path.path_art.set_data(position[:, :2].T)
-        self.ax_path.path_art.set_3d_properties(position[:, 2])
+        self.ax_path.path_art.set_data_3d(position[:, 0], position[:, 1], position[:, 2])
 
         # Update head dot
-        # Note: Little workaround, since set_data only except 2d np arrays
-        self.ax_path.head_art.set_data(np.array(position[-1, :2].T)[:, None])
-        self.ax_path.head_art.set_3d_properties(np.array(position[-1, 2]))  # Note: Always 1d array fine here
+        self.ax_path.head_art.set_data_3d(position[-1, 0], position[-1, 1], position[-1, 2])
 
         # Update animation plot
         self.bm.update()
 
-    def save_wrap_update_path_animation(self, step_nr: int, position: np.ndarray) -> None:
+    def save_wrap_update_animation(self, step_nr: int, kwargs: dict) -> None:
         """
         Wrapper function to deal with saving animation
 
         :param step_nr: actual step number
-        :param position: array nx3, where n is the total number of all available position data points after the episode
+        :param kwargs: kwargs, as they appear in save_animation()
 
         :return: None
         """
-        self.update_path_animation(position=np.array(position[:step_nr+1, :]))
 
-    def save_path_animation(self, position: np.ndarray, save_path: str, interval: int = 100) -> None:
+        for key, value in kwargs.items():
+            if key == "position":
+                self.update_path_animation(position=np.array(value[:step_nr + 1, :]))
+
+    def save_animation(self, save_path: str, fps: int = 10, **kwargs) -> None:
         """
         Saves video as mp4 for the animation
 
-        :param position: array nx3, where n is the total number of all available position data points after the episode
-        :param interval: of each time step in ms for the video (can be set to dt, OR smaller if video would be too long)
+        Depending on the amount of subplots etc, necessary arguments need to be given in kwargs.
+
+        :param fps: fps of the saved video, if you want it in real time, enter, 1/dt here, where dt is the step size
         :param save_path: absolute path of where to store the video
+
+        :Keyword Arguments:
+            * *position* (``np.ndarray``) --
+              array nx3, where n is the total number of all available position data points after the episode
+
         :return: None
         """
-
         ani = animation.FuncAnimation(
-            self.fig, func=self.save_wrap_update_path_animation,
-            frames=position.shape[0], fargs=(position,), interval=interval)
+            self.fig, func=self.save_wrap_update_animation, fargs=(kwargs,))
 
-        writer_video = animation.FFMpegWriter(fps=30)
+        writer_video = animation.FFMpegWriter(fps=fps)
 
+        # TODO: Make this a logger statement
         print(f"\nSave video at {save_path}")
         ani.save(save_path, writer=writer_video)
-        # TODO Rework saving (fps, interval etc)
-        # TODO: Think about the structure (since save_animation would mean for whole figure maybe, save with **kwargs!)
+        # TODO: Stop showing Animation when saving!

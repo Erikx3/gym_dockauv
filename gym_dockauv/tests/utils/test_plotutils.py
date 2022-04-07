@@ -33,7 +33,8 @@ class TestPlotUtils(unittest.TestCase):
 
         # TODO: Test saving here real quick
         save_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'test_plots', title+'.mp4'))
-        epi_anim.save_path_animation(position=positions, save_path=save_path, interval=100)
+        epi_anim.save_animation(save_path=save_path, fps=20, position=positions)
+
         plt.close(epi_anim.fig)
 
     def test_plot_shape(self):
