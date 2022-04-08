@@ -3,7 +3,15 @@ from copy import deepcopy
 from ..objects.auvsim import AUVSim
 
 
-class DataStorage:
+class FullDataStorage:
+    """
+    TODO
+    Class to save general simulation over all the runs of simulation (e.g. length, success/collison, reward)
+    """
+    pass
+
+
+class EpisodeDataStorage:
     """
     Class to save data e.g. vehicle related data during a simulation (e.g. one episode). Initialize and update after
     all other initialization and updates
@@ -53,4 +61,8 @@ class DataStorage:
         with open(self.filename, 'wb') as outp:  # Overwrites any existing file.
             pickle.dump(self.storage, outp, pickle.HIGHEST_PROTOCOL)
 
-
+    @staticmethod
+    def load(file_name: str):
+        with open(file_name, 'rb') as inp:
+            load_file = pickle.load(inp)
+            return load_file

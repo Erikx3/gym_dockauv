@@ -8,8 +8,15 @@ import numpy as np
 
 from ..objects.shape import Shape
 from .blitmanager import BlitManager
+from .datastorage import EpisodeDataStorage
 
 from .geomutils import Rzyx
+
+
+class EpisodeVisualization:
+    # TODO: Make plots
+    def __init__(self, episode_data_storage_file_path: str):
+        self.data_storage = EpisodeDataStorage.load(episode_data_storage_file_path)
 
 
 # TODO: Think about adding more plots like input, state variables etc
