@@ -125,7 +125,7 @@ class AUVSim(StateSpace, ABC):
 
         :param t: Dummy variable used for most ode solvers
         :param state: state vector 12x1 of vehicle
-        :param nu_c: current nu state vector
+        :param nu_c: water current nu state vector
         :return: array 12x1
         """
         eta = state[:6]
