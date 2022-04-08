@@ -7,7 +7,7 @@ from typing import List
 
 class Shape(ABC):
     """
-    This is a base class for any shape, should always contain coordinates of position.
+    This is a base class for any shape, should always contain center coordinates of position.
     """
 
     def __init__(self, position: np.ndarray):
@@ -16,7 +16,7 @@ class Shape(ABC):
     @abstractmethod
     def get_plot_variables(self) -> List[np.ndarray]:
         """
-        Function that returns the plot variables for the matplotlib axes.surface_plot function
+        Function that returns the plot variables for the matplotlib axes.surface_plot() function
 
         :return: return list of 1d arrays for plotting
         """
@@ -24,6 +24,9 @@ class Shape(ABC):
 
 
 class Sphere(Shape):
+    """
+    Represents a sphere
+    """
 
     def __init__(self, position: np.ndarray, radius: float):
         super().__init__(position)  # Call inherited init functions and then add to it
@@ -45,6 +48,9 @@ class Sphere(Shape):
 
 
 class Cylinder(Shape):
+    """
+    Represents a Cylinder, height is the total height, position is the center of the cylinder
+    """
 
     def __init__(self, position: np.ndarray, radius: float, height: float):
         super().__init__(position)  # Call inherited init functions and then add to it
