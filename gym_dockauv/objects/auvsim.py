@@ -35,6 +35,7 @@ class AUVSim(StateSpace, ABC):
         super().__init__()
         # These values should be overwritten by a config for a run scenario, default here
         self.state = np.hstack([np.zeros((6,)), np.zeros((6,))])
+        self._state_dot = np.hstack([np.zeros((6,)), np.zeros((6,))])
         self.lowpassfilter = LowPassFilter(T1=0.2, sample_time=1)
         self.step_size = 1  # This would also automatically update lowpassfilter due to setter
         self.safety_radius = 1
@@ -42,7 +43,6 @@ class AUVSim(StateSpace, ABC):
         # Standard initialization
         # Make B dependent implementation of input vector u:
         self._u = None
-        self.position_dot = np.zeros(3)
 
     def __setattr__(self, name, value):
         # Overwrite Setter, to automatically update low-pass filter too
@@ -91,7 +91,7 @@ class AUVSim(StateSpace, ABC):
 
         # Convert angle in applicable range
         self.state[3:5] = geom.ssa(self.state[3:5])
-        self.position_dot = self.state_dot(0, self.state, nu_c)[0:3]  # Save the speed here
+        self._state_dot = self.state_dot(0, self.state, nu_c)  # Save the speed here
 
     def state_dot(self, t, state, nu_c: np.ndarray) -> np.ndarray:
         r"""
@@ -202,6 +202,13 @@ class AUVSim(StateSpace, ABC):
             \end{bmatrix}^T
         """
         return self.state[9:12]
+
+    @property
+    def position_dot(self):
+        r"""
+        Returns :math:`\boldsymbol{\dot{p}}`
+        """
+        return self._state_dot[0:3]
 
     @property
     def chi(self):

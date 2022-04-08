@@ -9,7 +9,7 @@ XML_PATH = os.path.join('BlueROV2.xml')  # Use os.path.join for ensuring cross-p
 
 class BlueROV2(AUVSim):
     """
-    Some description about the BlueROV2 used here ...
+    TODO: Some description about the BlueROV2 used here ...
 
     The parameters for the BlueROV2 are loaded via a xml file, SI units are used.
     The system identification data of the BlueROV2 are publicly available from
