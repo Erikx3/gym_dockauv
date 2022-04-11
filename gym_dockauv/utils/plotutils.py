@@ -1,10 +1,10 @@
 import matplotlib.pyplot
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+import numpy as np
 
 # Used for typehints
 from typing import List
-import numpy as np
 
 from ..objects.shape import Shape
 from .blitmanager import BlitManager
@@ -13,10 +13,40 @@ from .datastorage import EpisodeDataStorage
 from .geomutils import Rzyx
 
 
+class FullVisualization:
+    """
+    TODO:
+    Offers functions with respect to the whole simulation run with multiple episodes.
+
+    Possible function ideas:
+    - Reward function, success and other statistics about the agent
+    - All available animations in the folder in chronological order
+    """
+    pass
+
+
 class EpisodeVisualization:
-    # TODO: Make plots
+    """
+    This class offers the possibility for a post simulation analysis for each Episode.
+    """
     def __init__(self, episode_data_storage_file_path: str):
         self.data_storage = EpisodeDataStorage.load(episode_data_storage_file_path)
+
+    def plot_episode_states_and_u(self):
+        """
+        Plot all the episode states and input u in one figure
+
+        :return:
+        """
+        pass
+
+    def plot_episode_interactive_animation(self):
+        """
+        Plot interactive animation of the episode animation
+
+        :return:
+        """
+        pass
 
 
 # TODO: Think about adding more plots like input, state variables etc
@@ -179,5 +209,6 @@ class EpisodeAnimation:
         print(f"\nSave video at {save_path}")
         # TODO: Animation so far can not be saved closed onced opened, workaround would be to initialize everything in
         #   a new figure again, but this is a current todo on matplotlib too, should not slow down simulation
-        #   significantly, since should not save too many videos anyway
+        #   significantly, since should not save too many videos anyway, since data is saved and can be replayed in
+        #   an animation.
         ani.save(save_path, writer=writer_video)

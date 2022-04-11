@@ -33,7 +33,7 @@ class TestPlotUtils(unittest.TestCase):
             plt.pause(0.01)
 
         # TODO: Test saving here real quick
-        save_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'test_plots', title+'.mp4'))
+        save_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'test_result_files', title+'.mp4'))
         epi_anim.save_animation(save_path=save_path, fps=20, frames=positions.shape[0],
                                 positions=positions, attitudes=attitudes)
 
@@ -56,14 +56,14 @@ class TestPlotUtils(unittest.TestCase):
         cylinder = Cylinder(position=np.array([1, 1, 0]), radius=0.15, height=1)
         surface_cylinder = ax.plot_surface(*cylinder.get_plot_variables(), color='r', alpha=0.7)
 
-        save_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'test_plots', title))
+        save_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'test_result_files', title))
         print(f"\nSave plot at {save_path}")
         plt.savefig(save_path)
         plt.close(fig)
         self.assertEqual(os.path.isfile(save_path), True)
 
 
-# Some functions used for the testing
+# Function used to simulate a random walk
 def random_walk(num_steps, max_step=0.05):
     """Return a 3D random walk as (num_steps, 3) array (Used here for plotting simple things)."""
     start_pos = np.random.random(3)
@@ -72,43 +72,45 @@ def random_walk(num_steps, max_step=0.05):
     return walk
 
 
-def update(num, walk, line, fr_number, dot):
-    # NOTE: there is no .set_data() for 3 dim data...
-    # Update line
-    line.set_data(walk[:num, :2].T)
-    line.set_3d_properties(walk[:num, 2])
-    # Update text
-    fr_number.set_text("frame: {j}".format(j=num))
+# Below here: deprecated first simple tests
 
-    # Update dot
-    dot.set_data(np.array(walk[num, :2].T)[:, None])
-    dot.set_3d_properties(np.array(walk[num, 2]))
-    return line, dot
+# def update(num, walk, line, fr_number, dot):
+#     # NOTE: there is no .set_data() for 3 dim data...
+#     # Update line
+#     line.set_data(walk[:num, :2].T)
+#     line.set_3d_properties(walk[:num, 2])
+#     # Update text
+#     fr_number.set_text("frame: {j}".format(j=num))
+#
+#     # Update dot
+#     dot.set_data(np.array(walk[num, :2].T)[:, None])
+#     dot.set_3d_properties(np.array(walk[num, 2]))
+#     return line, dot
 
 
-def create_example_artists(num_steps, ax):
-    # Add walk data
-    walk = random_walk(num_steps)
-
-    # Create lines initially without data
-    line = ax.plot([], [], [], 'r--', alpha=0.8, animated=True)[0]
-
-    # add a frame number
-    fr_number = ax.annotate(
-        "0",
-        (0, 1),
-        xycoords="axes fraction",
-        xytext=(10, -10),
-        textcoords="offset points",
-        ha="left",
-        va="top",
-        animated=True,
-    )
-
-    # Create dot instance
-    dot = ax.plot([], [], [], 'b.', alpha=0.8, markersize=10, animated=True)[0]
-
-    return walk, line, fr_number, dot
+# def create_example_artists(num_steps, ax):
+#     # Add walk data
+#     walk = random_walk(num_steps)
+#
+#     # Create lines initially without data
+#     line = ax.plot([], [], [], 'r--', alpha=0.8, animated=True)[0]
+#
+#     # add a frame number
+#     fr_number = ax.annotate(
+#         "0",
+#         (0, 1),
+#         xycoords="axes fraction",
+#         xytext=(10, -10),
+#         textcoords="offset points",
+#         ha="left",
+#         va="top",
+#         animated=True,
+#     )
+#
+#     # Create dot instance
+#     dot = ax.plot([], [], [], 'b.', alpha=0.8, markersize=10, animated=True)[0]
+#
+#     return walk, line, fr_number, dot
 
 
 # class Deprecated:
@@ -183,7 +185,7 @@ def create_example_artists(num_steps, ax):
 #             fig, func=update, frames=num_steps, fargs=(walk, line, fr_number, dot), interval=100)
 #
 #         writer_video = animation.FFMpegWriter(fps=fps)
-#         save_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'test_plots', title))
+#         save_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'test_result_files', title))
 #         print(f"\nSave video at {save_path}")
 #         ani.save(save_path, writer=writer_video)
 #         #self.assertEqual(os.path.isfile(save_path), True)

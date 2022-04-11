@@ -35,11 +35,11 @@ make github
 
 I provided some unittests, since I wanted to make sure in a structured manner, that my modules are working as expected. Since as many things in this world, I did not have unlimited time in my Master Thesis, I did not achieve a 100% test coverage and test driven development. However, it should function as an inspiration for further development and always make sure the basics of the program works.
 
+This is also good possibility to test, if all the packages and requirements are met in your environment.
 Here is the command to execute all tests. Make sure to be at the root of this repository.
 ```shell
 python -m unittest discover -v -s gym_dockauv/tests
 ```
-
 
 ### Other install
 

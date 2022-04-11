@@ -1,11 +1,15 @@
 import pickle
 from copy import deepcopy
+
+# Used for typehints
 from ..objects.auvsim import AUVSim
+from ..objects.shape import Shape
+from typing import List
 
 
 class FullDataStorage:
     """
-    TODO
+    TODO:
     Class to save general simulation over all the runs of simulation (e.g. length, success/collison, reward)
     """
     pass
@@ -18,20 +22,23 @@ class EpisodeDataStorage:
 
     This data is saved in dictionaries, the keys for retrieval are going to be defined here.
 
+    For the definition of the arrays, please refer to the vehicle documentation.
+
     Pickle Structure (will be one dict):
     {
         "vehicle":
         {
             "object": auvsim.instance (initial one),
             "states": auvsim.state nx12 array,
-            "states_dot": auvsim._state_dot nx12 array
-            "u": auvsim.u nxa array (a number of action)
+            "states_dot": auvsim._state_dot nx12 array,
+            "u": auvsim.u nxa array (a number of action),
+            "shapes": shape object as in shapes.py used here
         },
-        ... TODO (Agent, environment, further variables, settings etc)
+        ... TODO (Agent, environment, further variables, settings etc. or these go to FullDataStorge class)
     }
     """
 
-    def __init__(self, filename: str, vehicle: AUVSim):
+    def __init__(self, filename: str, vehicle: AUVSim, shapes: List[Shape]):
         # Some variables for saving the file
         self.filename = filename  # Should be formatted YYYY-MM-DD__HH-MM-SS__TEXT.pkl and match logger file name
         self.vehicle = vehicle  # Vehicle instance (not a copy, automatically a reference)
@@ -40,7 +47,8 @@ class EpisodeDataStorage:
                 "object": vehicle,
                 "states": [deepcopy(self.vehicle.state)],
                 "states_dot": [deepcopy(self.vehicle._state_dot)],
-                "u": [deepcopy(self.vehicle.u)]
+                "u": [deepcopy(self.vehicle.u)],
+                "shapes": [deepcopy(shape) for shape in shapes]
             }
         }
 
