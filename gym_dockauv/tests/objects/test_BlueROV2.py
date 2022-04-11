@@ -16,15 +16,7 @@ class TestBlueROV2(unittest.TestCase):
         self.BlueROV2 = BlueROV2(xml_path)
         # Use consistent test values
         self.nu_r = np.array([3, 2, 1, 0.3, 0.2, 0.1])
-        #self.BlueROV2.set_B(np.identity(6))
-        self.BlueROV2.set_B(np.array([
-            [1, 0, 0, 0, -0.01, 0],
-            [0, 1, 0, 0.01, 0, 0],
-            [0, 0, 1, 0, 0, 0],
-            [0, 0.01, 0, 1, 0, 0],
-            [-0.01, 0, 0, 0, 1, 0],
-            [0, 0, 0, 0, 0, 1],
-        ]))
+        self.BlueROV2.set_B(np.identity(6))
         self.BlueROV2.set_u_bound(np.array([
             [-5, 5],
             [-5, 5],
