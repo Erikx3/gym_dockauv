@@ -82,6 +82,9 @@ class EpisodeAnimation:
         self.ax_path.attitude_art = self.ax_path.quiver([], [], [], [], [], [], length=0.1, normalize=True)
 
         self.bm.add_artists([self.ax_path.path_art, self.ax_path.head_art])
+
+        # Try to fix deep camera angle issues
+        self.ax_path.set_proj_type('ortho')
         # Pause for any initialization to be done
         plt.pause(0.01)
         return self.ax_path
@@ -125,7 +128,7 @@ class EpisodeAnimation:
         """
         Update the path animation plot by updating the according elements
 
-        :param attitudes: array 3x1, including the euler angles (fixed to rigid body coord) so far available
+        :param attitudes: array nx3, including the euler angles (fixed to rigid body coord) so far available
         :param positions: array nx3, where n is the number of all available position data points so far in this episode
         :return: None
         """
@@ -143,7 +146,10 @@ class EpisodeAnimation:
             np.full((3,), positions[-1, 1]),
             np.full((3,), positions[-1, 2]),
             *self.get_quiver_coords_from_attitude(attitudes[-1, :].flatten()),
-            length=0.2, normalize=True, color='y')
+            length=0.2 * np.linalg.norm([self.ax_path.get_xlim(), self.ax_path.get_ylim(), self.ax_path.get_zlim()]),
+            normalize=True, color='y')
+        self.ax_path.set_box_aspect([ub - lb for lb, ub in (getattr(self.ax_path, f'get_{a}lim')() for a in 'xyz')])
+        plt.pause(0.001)
 
         # Alternative way of older Matplotlib API
         # self.ax_path.path_art.set_data(position[:, :2].T)

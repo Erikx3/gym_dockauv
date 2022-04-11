@@ -39,6 +39,8 @@ This is also good possibility to test, if all the packages and requirements are 
 Here is the command to execute all tests. Make sure to be at the root of this repository.
 ```shell
 python -m unittest discover -v -s gym_dockauv/tests
+# To run a individual test do e.g.:
+python -m unittest -v gym_dockauv.tests.test_integration
 ```
 
 ### Other install
