@@ -71,27 +71,33 @@ class EpisodeDataStorage:
 
     For the definition of the arrays, please refer to the vehicle documentation.
 
-    .. note:: This structure can also be used to load the data and make it more convenient to retrieve specific data
+    .. note::
+
+        This structure can also be used to load the data and make it more convenient to retrieve specific data
         again by the property functions. However one must keep in mind: during the simulation process, the data type of
         the arrays in the self.storage dictionary are custom defined arrays and do not offer all possibilities like the
         array
 
     Pickle Structure (will be one dict):
-    {
-        "vehicle":
-        {
-            "object": auvsim.instance (initial one),
-            "states": auvsim.state nx12 array,
-            "states_dot": auvsim._state_dot nx12 array,
-            "u": auvsim.u nxa array (a number of action)
-        },
-        "shapes": list of shape objects as in shapes.py used here
-        "episode": episode number
-        "step_size": step_size in simulation
-        "nu_c": water current
-        ... TODO (Agent, environment, further variables, settings etc. or these go to FullDataStorge class)
 
-    }
+    .. code-block:: json
+
+        {
+            "vehicle":
+            {
+                "object": "auvsim.instance (initial one)",
+                "states": "auvsim.state nx12 array",
+                "states_dot": "auvsim._state_dot nx12 array",
+                "u": "auvsim.u nxa array (a number of action)"
+            },
+            "shapes": "list of shape objects as in shapes.py used here",
+            "episode": "episode number",
+            "step_size": "step_size in simulation",
+            "nu_c": "water current"
+        }
+
+    TODO: (Agent, environment, further variables, settings etc. or these go to FullDataStorge class)
+
     """
 
     def __init__(self):

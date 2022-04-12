@@ -162,6 +162,12 @@ Simulation. Below you find the most important definitions:</p>
 </dd></dl>
 
 <dl class="py property">
+<dt class="sig sig-object py" id="gym_dockauv.objects.auvsim.AUVSim.position_dot">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">position_dot</span></span><a class="headerlink" href="#gym_dockauv.objects.auvsim.AUVSim.position_dot" title="Permalink to this definition"></a></dt>
+<dd><p>Returns <span class="math notranslate nohighlight">\(\boldsymbol{\dot{p}}\)</span></p>
+</dd></dl>
+
+<dl class="py property">
 <dt class="sig sig-object py" id="gym_dockauv.objects.auvsim.AUVSim.relative_speed">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">relative_speed</span></span><a class="headerlink" href="#gym_dockauv.objects.auvsim.AUVSim.relative_speed" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the total speed of the AUV.</p>
@@ -208,7 +214,7 @@ Simulation. Below you find the most important definitions:</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>t</strong> – Dummy variable used for most ode solvers</p></li>
 <li><p><strong>state</strong> – state vector 12x1 of vehicle</p></li>
-<li><p><strong>nu_c</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – current nu state vector</p></li>
+<li><p><strong>nu_c</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – water current nu state vector</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
@@ -281,7 +287,7 @@ Simulation. Below you find the most important definitions:</p>
 <span id="gym-dockauv-objects-current-module"></span><h2>gym_dockauv.objects.current module<a class="headerlink" href="#module-gym_dockauv.objects.current" title="Permalink to this headline"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="gym_dockauv.objects.current.Current">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gym_dockauv.objects.current.</span></span><span class="sig-name descname"><span class="pre">Current</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mu</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">V_min</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">V_max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Vc_init</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha_init</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta_init</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">white_noise_std</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.current.Current" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gym_dockauv.objects.current.</span></span><span class="sig-name descname"><span class="pre">Current</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mu</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">V_min</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">V_max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Vc_init</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha_init</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta_init</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">white_noise_std</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_size</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.current.Current" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Ocean current with constant alpha and beta and first order gauss markov process (linear state model) for simulation.</p>
 <p><a class="reference external" href="https://onlinelibrary.wiley.com/doi/book/10.1002/9781119994138">Fossen2011</a>, Chapter 8</p>
@@ -295,6 +301,7 @@ Simulation. Below you find the most important definitions:</p>
 <li><p><strong>alpha_init</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Initial <span class="math notranslate nohighlight">\(\alpha\)</span> angle in rad</p></li>
 <li><p><strong>beta_init</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Initial <span class="math notranslate nohighlight">\(\beta\)</span> angle in rad</p></li>
 <li><p><strong>white_noise_std</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Standard deviation <span class="math notranslate nohighlight">\(\sigma\)</span> of the white noise</p></li>
+<li><p><strong>step_size</strong> (<em>float</em>) – </p></li>
 </ul>
 </dd>
 </dl>
@@ -325,19 +332,16 @@ thus transformation from FLOW coordinate system to NED can be done here with var
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gym_dockauv.objects.current.Current.sim">
-<span class="sig-name descname"><span class="pre">sim</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">h</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.current.Current.sim" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">sim</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.current.Current.sim" title="Permalink to this definition"></a></dt>
 <dd><p>Simulate one time step of the current dynamics according to linear state model</p>
 <div class="math notranslate nohighlight">
 \[\dot{V}_c + \mu V_c = w\]</div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>h</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – time step</p>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
 </dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>None</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
 </dd>
 </dl>
 </dd></dl>
@@ -351,6 +355,7 @@ thus transformation from FLOW coordinate system to NED can be done here with var
 <dt class="sig sig-object py" id="gym_dockauv.objects.shape.Cylinder">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gym_dockauv.objects.shape.</span></span><span class="sig-name descname"><span class="pre">Cylinder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.shape.Cylinder" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#gym_dockauv.objects.shape.Shape" title="gym_dockauv.objects.shape.Shape"><code class="xref py py-class docutils literal notranslate"><span class="pre">gym_dockauv.objects.shape.Shape</span></code></a></p>
+<p>Represents a Cylinder, height is the total height, position is the center of the cylinder</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -368,7 +373,7 @@ thus transformation from FLOW coordinate system to NED can be done here with var
 <dl class="py method">
 <dt class="sig sig-object py" id="gym_dockauv.objects.shape.Cylinder.get_plot_variables">
 <span class="sig-name descname"><span class="pre">get_plot_variables</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.shape.Cylinder.get_plot_variables" title="Permalink to this definition"></a></dt>
-<dd><p>Function that returns the plot variables for the matplotlib axes.surface_plot function</p>
+<dd><p>Function that returns the plot variables for the matplotlib axes.surface_plot() function</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>return list of 1d arrays for plotting</p>
@@ -382,7 +387,7 @@ thus transformation from FLOW coordinate system to NED can be done here with var
 <dt class="sig sig-object py" id="gym_dockauv.objects.shape.Shape">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gym_dockauv.objects.shape.</span></span><span class="sig-name descname"><span class="pre">Shape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.shape.Shape" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
-<p>This is a base class for any shape, should always contain coordinates of position.</p>
+<p>This is a base class for any shape, should always contain center coordinates of position.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>position</strong> (<em>numpy.ndarray</em>) – </p>
@@ -391,7 +396,7 @@ thus transformation from FLOW coordinate system to NED can be done here with var
 <dl class="py method">
 <dt class="sig sig-object py" id="gym_dockauv.objects.shape.Shape.get_plot_variables">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_plot_variables</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.shape.Shape.get_plot_variables" title="Permalink to this definition"></a></dt>
-<dd><p>Function that returns the plot variables for the matplotlib axes.surface_plot function</p>
+<dd><p>Function that returns the plot variables for the matplotlib axes.surface_plot() function</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>]</p>
@@ -408,6 +413,7 @@ thus transformation from FLOW coordinate system to NED can be done here with var
 <dt class="sig sig-object py" id="gym_dockauv.objects.shape.Sphere">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gym_dockauv.objects.shape.</span></span><span class="sig-name descname"><span class="pre">Sphere</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.shape.Sphere" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#gym_dockauv.objects.shape.Shape" title="gym_dockauv.objects.shape.Shape"><code class="xref py py-class docutils literal notranslate"><span class="pre">gym_dockauv.objects.shape.Shape</span></code></a></p>
+<p>Represents a sphere</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -424,7 +430,7 @@ thus transformation from FLOW coordinate system to NED can be done here with var
 <dl class="py method">
 <dt class="sig sig-object py" id="gym_dockauv.objects.shape.Sphere.get_plot_variables">
 <span class="sig-name descname"><span class="pre">get_plot_variables</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.shape.Sphere.get_plot_variables" title="Permalink to this definition"></a></dt>
-<dd><p>Function that returns the plot variables for the matplotlib axes.surface_plot function</p>
+<dd><p>Function that returns the plot variables for the matplotlib axes.surface_plot() function</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>return list of 1d arrays for plotting</p>

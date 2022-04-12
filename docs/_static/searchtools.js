@@ -15,7 +15,7 @@ if (!Scorer) {
    */
   var Scorer = {
     // Implement the following function to further tweak the score for each result
-    // The function takes a result array [file_save_name, title, anchor, descr, score]
+    // The function takes a result array [filename, title, anchor, descr, score]
     // and returns the new score.
     /*
     score: function(result) {
@@ -200,7 +200,7 @@ var Search = {
     var terms = this._index.terms;
     var titleterms = this._index.titleterms;
 
-    // array of [file_save_name, title, anchor, descr, score]
+    // array of [filename, title, anchor, descr, score]
     var results = [];
     $('#search-progress').empty();
 

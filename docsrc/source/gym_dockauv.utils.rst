@@ -12,6 +12,14 @@ gym\_dockauv.utils.blitmanager module
    :undoc-members:
    :show-inheritance:
 
+gym\_dockauv.utils.datastorage module
+-------------------------------------
+
+.. automodule:: gym_dockauv.utils.datastorage
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 gym\_dockauv.utils.geomutils module
 -----------------------------------
 

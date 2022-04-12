@@ -140,6 +140,10 @@ class EpisodeVisualization:
 
 # TODO: Think about adding more plots like input, state variables etc
 class EpisodeAnimation:
+    """
+    This function deals with the live animation of an episode end offered live rendering. Example usage is given in
+    the test cases.
+    """
 
     def __init__(self):
         self.fig = plt.figure()
@@ -218,8 +222,10 @@ class EpisodeAnimation:
         """
         Update the path animation plot by updating the according elements
 
-        .. note:: As for matplotlib==3.5.1, plt.draw() needs to be called inside of this function to properly
-        show attitude arrows (with plt.pause() save animation does not work)
+        .. note::
+
+            As for matplotlib==3.5.1, plt.draw() needs to be called inside of this function to properly
+            show attitude arrows (with plt.pause() save animation does not work)
 
         :param attitudes: array nx3, including the euler angles (fixed to rigid body coord) so far available
         :param positions: array nx3, where n is the number of all available position data points so far in this episode
