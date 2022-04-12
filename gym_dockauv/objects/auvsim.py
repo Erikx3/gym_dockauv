@@ -91,7 +91,7 @@ class AUVSim(StateSpace, ABC):
         # self.state = res.y.flatten()
 
         # Convert angle in applicable range
-        self.state[3:5] = geom.ssa(self.state[3:5])
+        self.state[3:6] = geom.ssa(self.state[3:6])
         self._state_dot = self.state_dot(0, self.state, nu_c)  # Save the speed here
 
     def state_dot(self, t, state, nu_c: np.ndarray) -> np.ndarray:

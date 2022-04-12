@@ -13,7 +13,7 @@ class TestCurrent(unittest.TestCase):
 
     def setUp(self):
         self.current = Current(mu=0.01, V_min=0.5, V_max=1.0, Vc_init=0.5,
-                               alpha_init=np.pi/4, beta_init=np.pi/4, white_noise_std=0.1)  # Use consistent test values
+                               alpha_init=np.pi/4, beta_init=np.pi/4, white_noise_std=0.1, step_size=0.1)  # Use consistent test values
 
 
 class TestCurrentFunc(TestCurrent):
@@ -29,16 +29,15 @@ class TestCurrentFunc(TestCurrent):
         self.assertAlmostEqual(vel_current_NED[2], 1 / 4)
 
     def test_sim(self):
-        h = 0.1
         n_sim = 1000
         V_c_data = np.zeros(n_sim)
         for i in range(n_sim):
             V_c_data[i] = self.current.V_c
-            self.current.sim(h)
+            self.current.sim()
 
         # Plot this function test and save it for inspection
         title = 'test_current.test_current.TestCurrentFunc.test_sim.png'
-        plt.plot(np.arange(0, n_sim)*h, V_c_data, 'b.-', linewidth=0.5, markersize=1.0)
+        plt.plot(np.arange(0, n_sim)*0.1, V_c_data, 'b.-', linewidth=0.5, markersize=1.0)
         plt.title(title)
         plt.xlabel("t [s]")
         plt.ylabel("V_c [m/s]")

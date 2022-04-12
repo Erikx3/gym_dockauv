@@ -9,6 +9,7 @@ from gym_dockauv.tests.objects.test_BlueROV2 import TestBlueROV2
 from gym_dockauv.utils.plotutils import EpisodeAnimation, EpisodeVisualization
 from gym_dockauv.utils.datastorage import EpisodeDataStorage
 from gym_dockauv.objects.shape import Cylinder
+from gym_dockauv.objects.current import Current
 
 # Only here: Overwrite storage file name after init for making consitent tests.
 STORAGE_NAME = "YYYY_MM_DDTHH_MM_SS__episodeX__Integration_Test"
@@ -26,11 +27,14 @@ class TestIntegration(TestBlueROV2):
         """
 
         # Just moving forward (standard initialization has a skew in pitch, that why it is -0.5 here)
-        action = np.array([1, 0, 0, -0.5, 0, 0])
+        action = np.array([-1, 0, 0.0, -0.5, 0, 0.0])
         # Reset nu_r here
         self.BlueROV2.state = np.zeros(12)
-        # No current for now
-        nu_c = np.zeros(6)
+        # Water current
+        current = Current(mu=0.01, V_min=0.0, V_max=0.5, Vc_init=0.2,
+                          alpha_init=0.0, beta_init=0.0, white_noise_std=0.1, step_size=self.BlueROV2.step_size)
+        nu_c = current(self.BlueROV2.state)
+        #nu_c = np.array([0, 0, 0, 0, 0, 0])
         # Number of simulation steps
         n_sim = 100
         episode_nr = 1234
@@ -49,16 +53,19 @@ class TestIntegration(TestBlueROV2):
 
         epi_storage = EpisodeDataStorage()
         epi_storage.set_up_episode_storage(path_folder=PATH_FOL, vehicle=self.BlueROV2,
-                                           step_size=self.BlueROV2.step_size, shapes=[cylinder],
+                                           step_size=self.BlueROV2.step_size, nu_c_init=nu_c, shapes=[cylinder],
                                            title=title, episode=episode_nr)
         epi_storage.file_save_name = os.path.join(PATH_FOL, f"{STORAGE_NAME}.pkl")
 
         # Simulate and update animation and storage
         for i in range(n_sim):
+            # Simulate current
+            current.sim()
+            nu_c = current(self.BlueROV2.state)
             # Simulate
             self.BlueROV2.step(action, nu_c)
             # Update data storage
-            epi_storage.update()
+            epi_storage.update(nu_c=nu_c)
             # Update animation
             epi_anim.update_path_animation(positions=epi_storage.positions, attitudes=epi_storage.attitudes)
             #time.sleep(0.02)
@@ -78,7 +85,7 @@ class TestIntegration(TestBlueROV2):
         epi_vis = EpisodeVisualization(os.path.join(PATH_FOL, f"{STORAGE_NAME}.pkl"))
         epi_vis.plot_episode_states_and_u()
         plt.savefig(os.path.join(PATH_FOL, f"{STORAGE_NAME}_Plot.png"))
-        epi_vis.plot_episode_interactive_animation(t_per_step=self.BlueROV2.step_size)
+        epi_vis.plot_episode_animation(t_per_step=self.BlueROV2.step_size/10, title="Test Post Flight Visualization")
         plt.close('all')
 
 

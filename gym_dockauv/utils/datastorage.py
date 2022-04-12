@@ -88,6 +88,7 @@ class EpisodeDataStorage:
         "shapes": list of shape objects as in shapes.py used here
         "episode": episode number
         "step_size": step_size in simulation
+        "nu_c": water current
         ... TODO (Agent, environment, further variables, settings etc. or these go to FullDataStorge class)
 
     }
@@ -98,7 +99,7 @@ class EpisodeDataStorage:
         self.vehicle = None
         self.file_save_name = None
 
-    def set_up_episode_storage(self, path_folder: str, vehicle: AUVSim, step_size: float, shapes: List[Shape] = None,
+    def set_up_episode_storage(self, path_folder: str, vehicle: AUVSim, step_size: float, nu_c_init: np.ndarray, shapes: List[Shape] = None,
                                title: str = "", episode: int = -1) -> None:
         r"""
         Set up the storage to save and update incoming data
@@ -108,6 +109,7 @@ class EpisodeDataStorage:
         :param path_folder: Path to folder
         :param vehicle: Vehicle that is simulated
         :param step_size: Stepsize used in this simulation
+        :param nu_c_init: water current information in the simulation (body frame) array 6x1
         :param shapes: Shapes for 3d Animation that were used (static)
         :param title: Optional title for addendum
         :param episode: Episode number
@@ -126,20 +128,23 @@ class EpisodeDataStorage:
                 "states_dot": ArrayList(self.vehicle._state_dot),
                 "u": ArrayList(self.vehicle.u),
             },
+            "nu_c": ArrayList(nu_c_init),
             "shapes": [deepcopy(shape) for shape in shapes],
             "episode": episode,
             "step_size": step_size
         }
 
-    def update(self) -> None:
+    def update(self, nu_c: np.ndarray) -> None:
         """
         should be called in the end of each simulation step
 
+        :param nu_c: water current at that time array 6x1
         :return: None
         """
         self.storage["vehicle"]["states"].add_row(self.vehicle.state)
         self.storage["vehicle"]["states_dot"].add_row(self.vehicle._state_dot)
         self.storage["vehicle"]["u"].add_row(self.vehicle.u)
+        self.storage["nu_c"].add_row(nu_c)
 
     def save(self) -> str:
         """
@@ -196,3 +201,7 @@ class EpisodeDataStorage:
     @property
     def u(self) -> np.ndarray:
         return self.storage["vehicle"]["u"][:]
+
+    @property
+    def nu_c(self) -> np.ndarray:
+        return self.storage["nu_c"][:]

@@ -19,7 +19,7 @@ class Current:
     """
 
     def __init__(self, mu: float, V_min: float, V_max: float, Vc_init: float, alpha_init: float, beta_init: float,
-                 white_noise_std: float):
+                 white_noise_std: float, step_size: float):
 
         self.mu = mu
         self.V_min = V_min
@@ -28,6 +28,7 @@ class Current:
         self.alpha = alpha_init
         self.beta = beta_init
         self.white_noise_std = white_noise_std
+        self.step_size = step_size
 
     def __call__(self, Theta: np.ndarray) -> np.ndarray:
         r"""
@@ -74,7 +75,7 @@ class Current:
 
         return vel_current_NED
 
-    def sim(self, h: float) -> None:
+    def sim(self) -> None:
         r"""
         Simulate one time step of the current dynamics according to linear state model
 
@@ -82,12 +83,11 @@ class Current:
 
             \dot{V}_c + \mu V_c = w
 
-        :param h: time step
         :return: None
         """
         w = np.random.normal(0, self.white_noise_std)
         Vc_dot = -self.mu * self.V_c + w
-        self.V_c += Vc_dot * h
+        self.V_c += Vc_dot * self.step_size
 
         # From Simen
         # V_c = self.V_c+Vc_dot*h

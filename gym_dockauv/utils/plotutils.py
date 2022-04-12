@@ -43,14 +43,16 @@ class EpisodeVisualization:
 
         # Get states
         states = self.epi_stor.states
+        nu_c = self.epi_stor.nu_c
         time_arr = np.arange(len(states[:, 0])) * self.epi_stor.step_size
         fig = plt.figure(figsize=(12, 8))
         ax_posxy = fig.add_subplot(3, 2, 1)
         ax_posz = fig.add_subplot(3, 2, 3)
         ax_euler = fig.add_subplot(3, 2, 5)
-        ax_vel = fig.add_subplot(3, 2, 2)
-        ax_ang = fig.add_subplot(3, 2, 4)
-        ax_u = fig.add_subplot(3, 2, 6)
+        ax_nu_c = fig.add_subplot(4, 2, 2)
+        ax_vel = fig.add_subplot(4, 2, 4)
+        ax_ang = fig.add_subplot(4, 2, 6)
+        ax_u = fig.add_subplot(4, 2, 8)
 
         # Position xy plot
         ax_posxy.plot(states[:, 0], states[:, 1], 'g-')
@@ -76,6 +78,15 @@ class EpisodeVisualization:
         ax_euler.set_ylabel("deg [°]")
         ax_euler.legend()
 
+        # Water current nu_c
+        ax_nu_c.plot(time_arr, nu_c[:, 0], 'y-', label="$u_c$")
+        ax_nu_c.plot(time_arr, nu_c[:, 1], 'g-', label="$v_c$")
+        ax_nu_c.plot(time_arr, nu_c[:, 2], 'b-', label="$w_c$")
+        ax_nu_c.set_title("Vel. current $[u_c, v_c, w_c]^T$ in body frame")
+        ax_nu_c.set_xlabel("t [s]")
+        ax_nu_c.set_ylabel("vel [m/s]")
+        ax_nu_c.legend()
+
         # Linear Velocity
         ax_vel.plot(time_arr, states[:, 6], 'y-', label="$u$")
         ax_vel.plot(time_arr, states[:, 7], 'g-', label="$v$")
@@ -89,7 +100,7 @@ class EpisodeVisualization:
         ax_ang.plot(time_arr, np.rad2deg(states[:, 9]), 'y-', label=r"Roll $p$")
         ax_ang.plot(time_arr, np.rad2deg(states[:, 10]), 'g-', label=r"Pitch $q$")
         ax_ang.plot(time_arr, np.rad2deg(states[:, 11]), 'b-', label=r"Yaw $r$")
-        ax_ang.set_title(r"Angular Velocities $\omega=[p, q, r]^T$ in q")
+        ax_ang.set_title(r"Angular Velocities $\omega=[p, q, r]^T$")
         ax_ang.set_xlabel("t [s]")
         ax_ang.set_ylabel(r"$\omega$ [°/s]")
         ax_ang.legend()
@@ -103,9 +114,9 @@ class EpisodeVisualization:
         ax_u.set_ylabel(r"u [?]")
         ax_u.legend()
 
-        fig.subplots_adjust(left=0.125, bottom=0.07, right=0.9, top=0.93, wspace=0.2, hspace=0.4)
+        fig.subplots_adjust(left=0.125, bottom=0.07, right=0.9, top=0.93, wspace=0.2, hspace=0.6)
 
-    def plot_episode_interactive_animation(self, t_per_step=0.1):
+    def plot_episode_animation(self, t_per_step=0.1, title=None):
         """
         Plot interactive animation of the episode animation after it has been saved
 
@@ -115,8 +126,8 @@ class EpisodeVisualization:
         epi_anim = EpisodeAnimation()
         ax = epi_anim.init_path_animation()
         epi_anim.add_episode_text(ax, self.epi_stor.storage["episode"])
-        title = "Integration_Test_Episode_Simulation"
-        ax.set(title=title)
+        if title:
+            ax.set(title=title)
 
         epi_anim.add_shapes(ax, self.epi_stor.storage["shapes"])
 
