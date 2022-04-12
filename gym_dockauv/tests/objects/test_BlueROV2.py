@@ -14,6 +14,7 @@ class TestBlueROV2(unittest.TestCase):
     def setUp(self):
         xml_path = os.path.join(os.path.dirname(__file__), 'test_BlueROV2.xml')
         self.BlueROV2 = BlueROV2(xml_path)
+        self.BlueROV2.step_size = 0.1
         # Use consistent test values
         self.nu_r = np.array([3, 2, 1, 0.3, 0.2, 0.1])
         self.BlueROV2.set_B(np.identity(6))

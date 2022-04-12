@@ -29,6 +29,7 @@ class EpisodeVisualization:
     """
     This class offers the possibility for a post simulation analysis for each Episode.
     """
+
     def __init__(self, episode_data_storage_file_path: str):
         self.epi_stor = EpisodeDataStorage()
         self.epi_stor.load(episode_data_storage_file_path)
@@ -102,16 +103,28 @@ class EpisodeVisualization:
         ax_u.set_ylabel(r"u [?]")
         ax_u.legend()
 
-
         fig.subplots_adjust(left=0.125, bottom=0.07, right=0.9, top=0.93, wspace=0.2, hspace=0.4)
 
-    def plot_episode_interactive_animation(self):
+    def plot_episode_interactive_animation(self, t_per_step=0.1):
         """
         Plot interactive animation of the episode animation after it has been saved
 
+        :param t_per_step: time between each frame
         :return:
         """
-        pass
+        epi_anim = EpisodeAnimation()
+        ax = epi_anim.init_path_animation()
+        epi_anim.add_episode_text(ax, self.epi_stor.storage["episode"])
+        title = "Integration_Test_Episode_Simulation"
+        ax.set(title=title)
+
+        epi_anim.add_shapes(ax, self.epi_stor.storage["shapes"])
+
+        states = self.epi_stor.states
+
+        for i in range(states.shape[0]):
+            epi_anim.update_path_animation(positions=states[:i + 1, 0:3], attitudes=states[:i + 1, 3:6])
+            plt.pause(t_per_step)
 
 
 # TODO: Think about adding more plots like input, state variables etc

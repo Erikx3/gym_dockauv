@@ -85,7 +85,7 @@ class EpisodeDataStorage:
             "states_dot": auvsim._state_dot nx12 array,
             "u": auvsim.u nxa array (a number of action)
         },
-        "shapes": shape object as in shapes.py used here
+        "shapes": list of shape objects as in shapes.py used here
         "episode": episode number
         "step_size": step_size in simulation
         ... TODO (Agent, environment, further variables, settings etc. or these go to FullDataStorge class)

@@ -8,6 +8,7 @@ import time
 from gym_dockauv.tests.objects.test_BlueROV2 import TestBlueROV2
 from gym_dockauv.utils.plotutils import EpisodeAnimation, EpisodeVisualization
 from gym_dockauv.utils.datastorage import EpisodeDataStorage
+from gym_dockauv.objects.shape import Cylinder
 
 # Only here: Overwrite storage file name after init for making consitent tests.
 STORAGE_NAME = "YYYY_MM_DDTHH_MM_SS__episodeX__Integration_Test"
@@ -26,7 +27,6 @@ class TestIntegration(TestBlueROV2):
 
         # Just moving forward (standard initialization has a skew in pitch, that why it is -0.5 here)
         action = np.array([1, 0, 0, -0.5, 0, 0])
-        self.BlueROV2.step_size = 0.1
         # Reset nu_r here
         self.BlueROV2.state = np.zeros(12)
         # No current for now
@@ -38,6 +38,9 @@ class TestIntegration(TestBlueROV2):
         epi_anim = EpisodeAnimation()
         ax = epi_anim.init_path_animation()
         epi_anim.add_episode_text(ax, episode_nr)
+        # Add shape for testing
+        cylinder = Cylinder(position=np.array([0.5, 0.5, 0.5]), radius=0.15, height=0.5)
+        epi_anim.add_shapes(ax, [cylinder])
         # Some extra axes manipulation for testing
         title = "Integration_Test_Episode_Simulation"
         ax.set(title=title)
@@ -46,7 +49,8 @@ class TestIntegration(TestBlueROV2):
 
         epi_storage = EpisodeDataStorage()
         epi_storage.set_up_episode_storage(path_folder=PATH_FOL, vehicle=self.BlueROV2,
-                                           step_size=self.BlueROV2.step_size, title=title, episode=episode_nr)
+                                           step_size=self.BlueROV2.step_size, shapes=[cylinder],
+                                           title=title, episode=episode_nr)
         epi_storage.file_save_name = os.path.join(PATH_FOL, f"{STORAGE_NAME}.pkl")
 
         # Simulate and update animation and storage
@@ -74,6 +78,7 @@ class TestIntegration(TestBlueROV2):
         epi_vis = EpisodeVisualization(os.path.join(PATH_FOL, f"{STORAGE_NAME}.pkl"))
         epi_vis.plot_episode_states_and_u()
         plt.savefig(os.path.join(PATH_FOL, f"{STORAGE_NAME}_Plot.png"))
+        epi_vis.plot_episode_interactive_animation(t_per_step=self.BlueROV2.step_size)
         plt.close('all')
 
 
