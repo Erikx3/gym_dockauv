@@ -85,6 +85,7 @@ class EpisodeAnimation:
 
         # Try to fix deep camera angle issues
         self.ax_path.set_proj_type('ortho')
+
         # Pause for any initialization to be done
         plt.pause(0.01)
         return self.ax_path
@@ -148,7 +149,11 @@ class EpisodeAnimation:
             *self.get_quiver_coords_from_attitude(attitudes[-1, :].flatten()),
             length=0.2 * np.linalg.norm([self.ax_path.get_xlim(), self.ax_path.get_ylim(), self.ax_path.get_zlim()]),
             normalize=True, color='y')
-        self.ax_path.set_box_aspect([ub - lb for lb, ub in (getattr(self.ax_path, f'get_{a}lim')() for a in 'xyz')])
+        # Flip x and z for being NED conform and set axis to correct aspect ratio
+        self.ax_path.set_box_aspect([self.ax_path.get_xlim()[0] - self.ax_path.get_xlim()[1],
+                                     self.ax_path.get_ylim()[1] - self.ax_path.get_ylim()[0],
+                                     self.ax_path.get_zlim()[0] - self.ax_path.get_zlim()[1]])
+
         plt.pause(0.001)
 
         # Alternative way of older Matplotlib API
