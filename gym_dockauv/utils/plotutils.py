@@ -19,7 +19,7 @@ class FullVisualization:
     Offers functions with respect to the whole simulation run with multiple episodes.
 
     Possible function ideas:
-    - Reward function, success and other statistics about the agent
+    - Reward function, success and other statistics about the agent or its path/decision
     - All available animations in the folder in chronological order
     """
     pass
@@ -30,19 +30,84 @@ class EpisodeVisualization:
     This class offers the possibility for a post simulation analysis for each Episode.
     """
     def __init__(self, episode_data_storage_file_path: str):
-        self.data_storage = EpisodeDataStorage.load(episode_data_storage_file_path)
+        self.epi_stor = EpisodeDataStorage()
+        self.epi_stor.load(episode_data_storage_file_path)
 
     def plot_episode_states_and_u(self):
         """
         Plot all the episode states and input u in one figure
 
-        :return:
+        :return: None
         """
-        pass
+
+        # Get states
+        states = self.epi_stor.states
+        time_arr = np.arange(len(states[:, 0])) * self.epi_stor.step_size
+        fig = plt.figure(figsize=(12, 8))
+        ax_posxy = fig.add_subplot(3, 2, 1)
+        ax_posz = fig.add_subplot(3, 2, 3)
+        ax_euler = fig.add_subplot(3, 2, 5)
+        ax_vel = fig.add_subplot(3, 2, 2)
+        ax_ang = fig.add_subplot(3, 2, 4)
+        ax_u = fig.add_subplot(3, 2, 6)
+
+        # Position xy plot
+        ax_posxy.plot(states[:, 0], states[:, 1], 'g-')
+        ax_posxy.invert_xaxis()
+        ax_posxy.invert_yaxis()
+        ax_posxy.set_title("Position $x$ and $y$")
+        ax_posxy.set_xlabel("x [m]")
+        ax_posxy.set_ylabel("y [m]")
+
+        # Height plot
+        ax_posz.plot(time_arr, states[:, 2], 'g-')
+        ax_posz.invert_yaxis()  # Is here the z axis that we invert
+        ax_posz.set_title("Position $z$ in NED")
+        ax_posz.set_xlabel("t [s]")
+        ax_posz.set_ylabel("z [m]")
+
+        # Euler
+        ax_euler.plot(time_arr, np.rad2deg(states[:, 3]), 'y-', label=r"Roll $\phi$")
+        ax_euler.plot(time_arr, np.rad2deg(states[:, 4]), 'g-', label=r"Pitch $\theta$")
+        ax_euler.plot(time_arr, np.rad2deg(states[:, 5]), 'b-', label=r"Yaw $\psi$")
+        ax_euler.set_title(r"Euler angles $\Theta=[\phi, \theta, \psi]^T$")
+        ax_euler.set_xlabel("t [s]")
+        ax_euler.set_ylabel("deg [°]")
+        ax_euler.legend()
+
+        # Linear Velocity
+        ax_vel.plot(time_arr, states[:, 6], 'y-', label="$u$")
+        ax_vel.plot(time_arr, states[:, 7], 'g-', label="$v$")
+        ax_vel.plot(time_arr, states[:, 8], 'b-', label="$w$")
+        ax_vel.set_title("Linear velocities $[u, v, w]^T$ in body frame")
+        ax_vel.set_xlabel("t [s]")
+        ax_vel.set_ylabel("vel [m/s]")
+        ax_vel.legend()
+
+        # Angular Velocity
+        ax_ang.plot(time_arr, np.rad2deg(states[:, 9]), 'y-', label=r"Roll $p$")
+        ax_ang.plot(time_arr, np.rad2deg(states[:, 10]), 'g-', label=r"Pitch $q$")
+        ax_ang.plot(time_arr, np.rad2deg(states[:, 11]), 'b-', label=r"Yaw $r$")
+        ax_ang.set_title(r"Angular Velocities $\omega=[p, q, r]^T$ in q")
+        ax_ang.set_xlabel("t [s]")
+        ax_ang.set_ylabel(r"$\omega$ [°/s]")
+        ax_ang.legend()
+
+        # Input
+        u = self.epi_stor.u
+        for i in range(u.shape[1]):
+            ax_u.plot(time_arr, u[:, i], label=f"Input {i}")
+        ax_u.set_title(r"Input $u$")
+        ax_u.set_xlabel("t [s]")
+        ax_u.set_ylabel(r"u [?]")
+        ax_u.legend()
+
+
+        fig.subplots_adjust(left=0.125, bottom=0.07, right=0.9, top=0.93, wspace=0.2, hspace=0.4)
 
     def plot_episode_interactive_animation(self):
         """
-        Plot interactive animation of the episode animation
+        Plot interactive animation of the episode animation after it has been saved
 
         :return:
         """
@@ -129,6 +194,9 @@ class EpisodeAnimation:
         """
         Update the path animation plot by updating the according elements
 
+        .. note:: As for matplotlib==3.5.1, plt.draw() needs to be called inside of this function to properly
+        show attitude arrows (with plt.pause() save animation does not work)
+
         :param attitudes: array nx3, including the euler angles (fixed to rigid body coord) so far available
         :param positions: array nx3, where n is the number of all available position data points so far in this episode
         :return: None
@@ -154,7 +222,10 @@ class EpisodeAnimation:
                                      self.ax_path.get_ylim()[1] - self.ax_path.get_ylim()[0],
                                      self.ax_path.get_zlim()[0] - self.ax_path.get_zlim()[1]])
 
-        plt.pause(0.001)
+        plt.draw()
+
+        # This line below lead to failure in saving the animation, for now add it manually to out of scope code
+        # plt.pause(0.001)
 
         # Alternative way of older Matplotlib API
         # self.ax_path.path_art.set_data(position[:, :2].T)
@@ -164,7 +235,6 @@ class EpisodeAnimation:
         # self.ax_path.head_art.set_3d_properties(np.array(position[-1, 2]))  # Note: Always 1d array fine here
 
         # Update animation plot
-
         self.bm.update()
 
     @staticmethod

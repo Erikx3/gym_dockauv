@@ -1,3 +1,5 @@
+import time
+
 import matplotlib.pyplot as plt
 import numpy as np
 import unittest
@@ -29,8 +31,9 @@ class TestPlotUtils(unittest.TestCase):
             attitude = attitudes[:i + 1, :]
             epi_anim.update_path_animation(positions=position, attitudes=attitude)
             # Some pausing for seeing the plot:
-            plt.pause(0.01)
+            # plt.pause(0.01)
 
+        # Test saving the animation right after
         save_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'test_result_files', title+'.mp4'))
         epi_anim.save_animation(save_path=save_path, fps=20, frames=positions.shape[0],
                                 positions=positions, attitudes=attitudes)
