@@ -137,7 +137,7 @@ class AUVSim(StateSpace, ABC):
 
         # Kinetic Model
         nu_r_dot = self.M_inv.dot(
-            self.B.dot(self.u)
+            self.B(nu_r).dot(self.u)
             - self.D(nu_r).dot(nu_r)
             - self.C(nu_r).dot(nu_r)
             - self.G(eta))
@@ -229,9 +229,9 @@ class AUVSim(StateSpace, ABC):
 
     @property
     def u(self) -> np.ndarray:
-        # After B is known in child class, make sure it is initialized to the right size and as zero
+        # After u_bound is known in child class, make sure it is initialized to the right size and as zero
         if self._u is None:
-            self._u = np.zeros(self.B.shape[1])
+            self._u = np.zeros(self.u_bound.shape[0])
         return self._u
 
     @u.setter

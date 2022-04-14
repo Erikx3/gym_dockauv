@@ -395,9 +395,8 @@ class StateSpace(ABC):
                       ])
         return G
 
-    @property
     @abstractmethod
-    def B(self) -> np.ndarray:
+    def B(self, nu) -> np.ndarray:
         r"""
         this function returns the control matrix :math:`\boldsymbol{B}` and is individual for each AUV and thus an
         abstract method
@@ -445,4 +444,4 @@ class StateSpace(ABC):
                 setattr(obj, child.tag, type(getattr(obj, child.tag))(child.text))
             else:
                 raise AttributeError("Bad and not allowed practice: Trying to parse xml data tag without it being "
-                                     "initialized")
+                                     "initialized in init")

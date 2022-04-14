@@ -86,9 +86,9 @@ class TestIntegration(TestBlueROV2):
         epi_stor.load(os.path.join(PATH_FOL, f"{STORAGE_NAME}.pkl"))
         epi_stor.plot_epsiode_states_and_u()
         plt.savefig(os.path.join(PATH_FOL, f"{STORAGE_NAME}_Plot.png"))
-        epi_stor.plot_episode_animation(t_per_step=self.BlueROV2.step_size/100, title="Test Post Flight Visualization")
         plt.close('all')
-
+        epi_stor.plot_episode_animation(t_per_step=None, title="Test Post Flight Visualization")
+        plt.close('all')
 
 if __name__ == '__main__':
     unittest.main()

@@ -215,7 +215,7 @@ class EpisodeDataStorage:
     def nu_c(self) -> np.ndarray:
         return self.storage["nu_c"][:]
 
-    def plot_episode_animation(self, t_per_step: float, title: str = None) -> None:
+    def plot_episode_animation(self, t_per_step: float = None, title: str = None) -> None:
         """
         Individual wrapper for the animation plot function
         """

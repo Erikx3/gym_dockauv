@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- This xml file is the configuration of parameters for the LAUV -->
+
+<!-- Author: Erik Suer-->
+<!-- Date: 13.04.2022-->
+
+<Parameter>
+    <name>LAUV</name>
+    <version>1.0</version>
+    <m>18.0</m>
+    <BY>177.58</BY>
+    <I_x>0.0405</I_x>
+    <I_y>1.07</I_y>
+    <I_z>1.07</I_z>
+    <z_G>0.01</z_G>
+    <X_udot>-1.0291</X_udot>
+    <Y_vdot>-16.153</Y_vdot>
+    <Z_wdot>-16.153</Z_wdot>
+    <K_pdot>0.0</K_pdot>
+    <M_qdot>0.758</M_qdot>
+    <N_rdot>0.758</N_rdot>
+    <X_u>-2.4</X_u>
+    <Y_v>-23.0</Y_v>
+    <Z_w>-23.0</Z_w>
+    <K_p>-0.3</K_p>
+    <M_q>-9.7</M_q>
+    <N_r>-9.7</N_r>
+    <X_uu>-2.4</X_uu>
+    <Y_vv>-80.0</Y_vv>
+    <Z_ww>-80.0</Z_ww>
+    <K_pp>-0.0006</K_pp>
+    <M_qq>-9.1</M_qq>
+    <N_rr>-9.1</N_rr>
+    <N_urf>-3.072</N_urf>
+    <N_uvf>7.68</N_uvf>
+    <N_uvb>3.3088</N_uvb>
+    <M_uqf>-3.072</M_uqf>
+    <M_uwf>-7.68</M_uwf>
+    <M_uwb>-3.3088</M_uwb>
+    <Z_uqf>-7.68</Z_uqf>
+    <Z_uwf>-19.2</Z_uwf>
+    <Z_uwb>-10.956</Z_uwb>
+    <Y_urf>7.68</Y_urf>
+    <Y_uvf>-19.2</Y_uvf>
+    <Y_uvb>-10.956</Y_uvb>
+    <N_vv>-1.5</N_vv>
+    <M_ww>1.5</M_ww>
+    <Z_qq>-0.3</Z_qq>
+    <Y_rr>0.3</Y_rr>
+    <N_v>-3.1</N_v>
+    <M_w>3.1</M_w>
+    <Z_q>-11.5</Z_q>
+    <Y_r>11.5</Y_r>
+    <N_uudr>-7.68</N_uudr>
+    <M_uuds>-7.68</M_uuds>
+    <Z_uuds>-19.2</Z_uuds>
+    <Y_uudr>19.2</Y_uudr>
+</Parameter>

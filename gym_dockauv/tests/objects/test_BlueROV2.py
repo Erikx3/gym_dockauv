@@ -59,8 +59,9 @@ class TestStateSpace(TestBlueROV2):
     """
 
     def test_B_matrix_dimension(self):
-        self.assertEqual(self.BlueROV2.B.shape[0], 6)
-        self.assertGreaterEqual(self.BlueROV2.B.shape[1], 1)
+        # No nu needed for the BlueROv
+        self.assertEqual(self.BlueROV2.B(None).shape[0], 6)
+        self.assertGreaterEqual(self.BlueROV2.B(None).shape[1], 1)
 
     def test_C_A_matrix(self):
         # Some hand calculated checks first:

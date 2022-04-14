@@ -33,7 +33,7 @@ class EpisodeVisualization:
 
     @staticmethod
     def plot_episode_animation(states: np.ndarray, episode: int = None, shapes: List[Shape] = None,
-                               t_per_step: float = 0.1, title: str = None) -> None:
+                               t_per_step: float = None, title: str = None) -> None:
         """
         Wrapper to plot interactive animation of the episode animation after it has been saved
 
@@ -57,7 +57,8 @@ class EpisodeVisualization:
 
         for i in range(states.shape[0]):
             epi_anim.update_path_animation(positions=states[:i + 1, 0:3], attitudes=states[:i + 1, 3:6])
-            plt.pause(t_per_step)
+            if t_per_step:
+                plt.pause(t_per_step)
 
     @staticmethod
     def plot_episode_states_and_u(states: np.ndarray, nu_c: np.ndarray, u: np.ndarray, step_size: float):

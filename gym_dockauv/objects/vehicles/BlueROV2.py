@@ -4,8 +4,6 @@ from functools import cached_property
 from ..auvsim import AUVSim
 from ..statespace import StateSpace
 
-XML_PATH = os.path.join('BlueROV2.xml')  # Use os.path.join for ensuring cross-platform stability
-
 
 class BlueROV2(AUVSim):
     """
@@ -32,8 +30,7 @@ class BlueROV2(AUVSim):
             [-1, 1],
             [-1, 1]])
 
-    @cached_property
-    def B(self) -> np.ndarray:
+    def B(self, nu) -> np.ndarray:
         # TODO: Adapt input of BlueROV2 (for now it applies direct force uncoupled in each direction, maybe do
         #  feasibility study also about control of thrusters, make combination etc
         return self._B

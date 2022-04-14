@@ -55,6 +55,18 @@ sudo apt-get install python3-tk
 
 ... TBD!
 
+### Profiling
+TBD
+
+Other possibilities: https://stackoverflow.com/questions/582336/how-do-i-profile-a-python-script
+```shell
+pip install tuna
+
+python3 -m cProfile -o program.prof gym_dockauv\train.py
+
+tuna program.prof
+```
+
 
 Cheers, Erik :)
 
