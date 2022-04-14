@@ -34,6 +34,7 @@ class TestPlotUtils(unittest.TestCase):
             # plt.pause(0.01)
 
         # Test saving the animation right after
+        ax.set(title=f"{title}_Save_Video")
         save_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'test_result_files', title+'.mp4'))
         epi_anim.save_animation(save_path=save_path, fps=20, frames=positions.shape[0],
                                 positions=positions, attitudes=attitudes)

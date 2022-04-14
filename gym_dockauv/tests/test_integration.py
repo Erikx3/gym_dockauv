@@ -82,10 +82,11 @@ class TestIntegration(TestBlueROV2):
         del epi_anim
 
     def test_post_flight_visualization(self):
-        epi_vis = EpisodeVisualization(os.path.join(PATH_FOL, f"{STORAGE_NAME}.pkl"))
-        epi_vis.plot_episode_states_and_u()
+        epi_stor = EpisodeDataStorage()
+        epi_stor.load(os.path.join(PATH_FOL, f"{STORAGE_NAME}.pkl"))
+        epi_stor.plot_epsiode_states_and_u()
         plt.savefig(os.path.join(PATH_FOL, f"{STORAGE_NAME}_Plot.png"))
-        epi_vis.plot_episode_animation(t_per_step=self.BlueROV2.step_size/10, title="Test Post Flight Visualization")
+        epi_stor.plot_episode_animation(t_per_step=self.BlueROV2.step_size/100, title="Test Post Flight Visualization")
         plt.close('all')
 
 

@@ -9,6 +9,8 @@ from ..objects.auvsim import AUVSim
 from ..objects.shape import Shape
 from typing import List
 
+from .plotutils import EpisodeVisualization
+
 
 class FullDataStorage:
     """
@@ -67,16 +69,17 @@ class EpisodeDataStorage:
     Class to save data e.g. vehicle related data during a simulation (e.g. one episode). Initialize and update after
     all other initialization and updates
 
-    This data is saved in dictionaries, the keys for retrieval are going to be defined here.
+    This data is saved in dictionaries, the keys for retrieval are going to be defined here. This class is highly
+    individually written to save my data and use wrapper round other functions.
 
     For the definition of the arrays, please refer to the vehicle documentation.
 
     .. note::
 
-        This structure can also be used to load the data and make it more convenient to retrieve specific data
-        again by the property functions. However one must keep in mind: during the simulation process, the data type of
-        the arrays in the self.storage dictionary are custom defined arrays and do not offer all possibilities like the
-        array
+        This structure can also be used to load the data and make it more convenient to retrieve specific data again
+        by the property functions. However one must keep in mind: during the simulation process, the data type of the
+        arrays in the self.storage dictionary are custom defined ArrayList and do not offer all possibilities like
+        the numpy arrays.
 
     Pickle Structure (will be one dict):
 
@@ -105,8 +108,8 @@ class EpisodeDataStorage:
         self.vehicle = None
         self.file_save_name = None
 
-    def set_up_episode_storage(self, path_folder: str, vehicle: AUVSim, step_size: float, nu_c_init: np.ndarray, shapes: List[Shape] = None,
-                               title: str = "", episode: int = -1) -> None:
+    def set_up_episode_storage(self, path_folder: str, vehicle: AUVSim, step_size: float, nu_c_init: np.ndarray,
+                               shapes: List[Shape] = None, title: str = "", episode: int = -1) -> None:
         r"""
         Set up the storage to save and update incoming data
 
@@ -211,3 +214,27 @@ class EpisodeDataStorage:
     @property
     def nu_c(self) -> np.ndarray:
         return self.storage["nu_c"][:]
+
+    def plot_episode_animation(self, t_per_step: float, title: str = None) -> None:
+        """
+        Individual wrapper for the animation plot function
+        """
+        EpisodeVisualization.plot_episode_animation(
+            states=self.states,
+            episode=self.storage["episode"],
+            shapes=self.storage["shapes"],
+            t_per_step=t_per_step,
+            title=title
+        )
+
+    def plot_epsiode_states_and_u(self):
+        """
+        Individual wrapper for the static post simulation plot function
+        :return:
+        """
+        EpisodeVisualization.plot_episode_states_and_u(
+            states=self.states,
+            nu_c=self.nu_c,
+            u=self.u,
+            step_size=self.storage["step_size"]
+        )

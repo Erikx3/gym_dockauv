@@ -5,11 +5,9 @@ import numpy as np
 
 # Used for typehints
 from typing import List
-
 from ..objects.shape import Shape
-from .blitmanager import BlitManager
-from .datastorage import EpisodeDataStorage
 
+from .blitmanager import BlitManager
 from .geomutils import Rzyx
 
 
@@ -30,21 +28,53 @@ class EpisodeVisualization:
     This class offers the possibility for a post simulation analysis for each Episode.
     """
 
-    def __init__(self, episode_data_storage_file_path: str):
-        self.epi_stor = EpisodeDataStorage()
-        self.epi_stor.load(episode_data_storage_file_path)
+    def __init__(self):
+        pass
 
-    def plot_episode_states_and_u(self):
+    @staticmethod
+    def plot_episode_animation(states: np.ndarray, episode: int = None, shapes: List[Shape] = None,
+                               t_per_step: float = 0.1, title: str = None) -> None:
         """
-        Plot all the episode states and input u in one figure
+        Wrapper to plot interactive animation of the episode animation after it has been saved
 
+        :param states: nx12 array of states
+        :param episode: Episode number
+        :param shapes: static shapes in plot
+        :param title: title for subplot
+        :param t_per_step: time between each frame
         :return: None
         """
 
-        # Get states
-        states = self.epi_stor.states
-        nu_c = self.epi_stor.nu_c
-        time_arr = np.arange(len(states[:, 0])) * self.epi_stor.step_size
+        epi_anim = EpisodeAnimation()
+        ax = epi_anim.init_path_animation()
+        epi_anim.add_episode_text(ax, episode)
+        if title:
+            ax.set(title=title)
+        if shapes:
+            epi_anim.add_shapes(ax, shapes)
+
+        states = states
+
+        for i in range(states.shape[0]):
+            epi_anim.update_path_animation(positions=states[:i + 1, 0:3], attitudes=states[:i + 1, 3:6])
+            plt.pause(t_per_step)
+
+    @staticmethod
+    def plot_episode_states_and_u(states: np.ndarray, nu_c: np.ndarray, u: np.ndarray, step_size: float):
+        """
+        Plot all the episode states and input u in one figure
+
+        :param states: nx12 array
+        :param nu_c: nx6 array of current
+        :param u: nxa array of actions
+        :param step_size: fixed simulation step size
+        :return: None
+        """
+
+        # Get time array
+        time_arr = np.arange(len(states[:, 0])) * step_size
+
+        # Init figure
         fig = plt.figure(figsize=(12, 8))
         ax_posxy = fig.add_subplot(3, 2, 1)
         ax_posz = fig.add_subplot(3, 2, 3)
@@ -106,7 +136,6 @@ class EpisodeVisualization:
         ax_ang.legend()
 
         # Input
-        u = self.epi_stor.u
         for i in range(u.shape[1]):
             ax_u.plot(time_arr, u[:, i], label=f"Input {i}")
         ax_u.set_title(r"Input $u$")
@@ -115,27 +144,6 @@ class EpisodeVisualization:
         ax_u.legend()
 
         fig.subplots_adjust(left=0.125, bottom=0.07, right=0.9, top=0.93, wspace=0.2, hspace=0.6)
-
-    def plot_episode_animation(self, t_per_step=0.1, title=None):
-        """
-        Plot interactive animation of the episode animation after it has been saved
-
-        :param t_per_step: time between each frame
-        :return:
-        """
-        epi_anim = EpisodeAnimation()
-        ax = epi_anim.init_path_animation()
-        epi_anim.add_episode_text(ax, self.epi_stor.storage["episode"])
-        if title:
-            ax.set(title=title)
-
-        epi_anim.add_shapes(ax, self.epi_stor.storage["shapes"])
-
-        states = self.epi_stor.states
-
-        for i in range(states.shape[0]):
-            epi_anim.update_path_animation(positions=states[:i + 1, 0:3], attitudes=states[:i + 1, 3:6])
-            plt.pause(t_per_step)
 
 
 # TODO: Think about adding more plots like input, state variables etc
