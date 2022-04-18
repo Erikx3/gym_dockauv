@@ -64,6 +64,7 @@ pip install tuna
 
 python3 -m cProfile -o program.prof gym_dockauv\train.py
 
+# On linux
 tuna program.prof
 ```
 

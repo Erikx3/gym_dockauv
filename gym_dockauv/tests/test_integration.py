@@ -27,7 +27,7 @@ class TestIntegration(TestBlueROV2):
         """
 
         # Just moving forward (standard initialization has a skew in pitch, that why it is -0.5 here)
-        action = np.array([-1, 0, 0.0, -0.5, 0, 0.0])
+        action = np.array([1.0, 0.0, 0.0, 0.0, 0.0, 0.0])
         # Reset nu_r here
         self.BlueROV2.state = np.zeros(12)
         # Water current
@@ -36,7 +36,7 @@ class TestIntegration(TestBlueROV2):
         nu_c = current(self.BlueROV2.state)
         #nu_c = np.array([0, 0, 0, 0, 0, 0])
         # Number of simulation steps
-        n_sim = 100
+        n_sim = 1000
         episode_nr = 1234
         # Initialize animation
         epi_anim = EpisodeAnimation()
