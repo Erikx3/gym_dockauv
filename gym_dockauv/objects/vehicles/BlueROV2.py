@@ -7,7 +7,8 @@ from ..statespace import StateSpace
 
 class BlueROV2(AUVSim):
     """
-    TODO: Some description about the BlueROV2 used here ...
+    The BlueROV2 in Heavy configuration (8 T200 Thruster) by Blue Robotics, is capable of depths up to 100 metres.
+    More information on the BlueROV2 can be found here: https://bluerobotics.com/store/rov/bluerov2/
 
     The parameters for the BlueROV2 are loaded via a xml file, SI units are used.
     The system identification data of the BlueROV2 are publicly available from

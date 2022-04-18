@@ -20,6 +20,10 @@ class LAUV(AUVSim):
      J. E. D. Silva, B. Terra, R. Martins, and J. B. D. Sousa, “Modeling and Simulation of the LAUV Autonomous
      Underwater Vehicle"
 
+    With help of formulas from:
+
+    T. Fossen, Handbook of Marine Craft Hydrodynamics and Motion Control. 2011. doi: 10.1002/9781119994138.
+
     """
 
     def __init__(self, xml_path):
