@@ -23,7 +23,7 @@ class AUVSim(StateSpace, ABC):
             u & v & w & p & q & r
         \end{bmatrix}^T
 
-    .. note:: Assumtpions:
+    .. note:: Assumptions:
 
         - This implementation always assumes a low pass filter over the input for simplification
           (can always be overwritten, in case you have your own implementation from input to external forces)

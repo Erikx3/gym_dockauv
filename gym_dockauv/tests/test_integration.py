@@ -8,7 +8,7 @@ import time
 from gym_dockauv.tests.objects.test_BlueROV2 import TestBlueROV2
 from gym_dockauv.utils.plotutils import EpisodeAnimation, EpisodeVisualization
 from gym_dockauv.utils.datastorage import EpisodeDataStorage
-from gym_dockauv.objects.shape import Cylinder
+from gym_dockauv.objects.shape import Capsule
 from gym_dockauv.objects.current import Current
 
 # Only here: Overwrite storage file name after init for making consitent tests.
@@ -34,16 +34,16 @@ class TestIntegration(TestBlueROV2):
         current = Current(mu=0.01, V_min=0.0, V_max=0.5, Vc_init=0.2,
                           alpha_init=0.0, beta_init=0.0, white_noise_std=0.1, step_size=self.BlueROV2.step_size)
         nu_c = current(self.BlueROV2.state)
-        #nu_c = np.array([0, 0, 0, 0, 0, 0])
+        # nu_c = np.array([0, 0, 0, 0, 0, 0])
         # Number of simulation steps
-        n_sim = 1000
+        n_sim = 100
         episode_nr = 1234
         # Initialize animation
         epi_anim = EpisodeAnimation()
         ax = epi_anim.init_path_animation()
         epi_anim.add_episode_text(ax, episode_nr)
         # Add shape for testing
-        cylinder = Cylinder(position=np.array([0.5, 0.5, 0.5]), radius=0.15, height=0.5)
+        cylinder = Capsule(position=np.array([0.5, 0.5, 0.5]), radius=0.15, vec_top=np.array([1, 1, 1]))
         epi_anim.add_shapes(ax, [cylinder])
         # Some extra axes manipulation for testing
         title = "Integration_Test_Episode_Simulation"

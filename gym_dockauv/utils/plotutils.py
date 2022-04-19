@@ -219,13 +219,13 @@ class EpisodeAnimation:
         """
         Ass shape as static to existent axes
 
-        :param shapes: list of shapes objects (e.g. Cylinder)
+        :param shapes: list of shapes objects (e.g. Capsule)
         :param ax: existent axes (of this instance!)
         :return: None
         """
         # Static shapes (assumed for now, drawing these dynamically could slow down the system significantly):
         for shape in shapes:
-            ax.plot_surface(*shape.get_plot_variables(), color='r', alpha=1.00)
+            ax.plot_surface(*shape.get_plot_variables()[0], color='r', alpha=1.00)
 
     def update_path_animation(self, positions: np.ndarray, attitudes: np.ndarray) -> None:
         """

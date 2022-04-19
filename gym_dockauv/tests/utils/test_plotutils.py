@@ -4,14 +4,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 import unittest
 import os
-from gym_dockauv.objects.shape import Sphere, Cylinder
+from gym_dockauv.objects.shape import Sphere, Capsule
 from gym_dockauv.utils.plotutils import EpisodeAnimation
 
 
 class TestPlotUtils(unittest.TestCase):
 
     def test_episode_animation(self):
-        cylinder = Cylinder(position=np.array([0.5, 0.5, 0.5]), radius=0.15, height=0.5)
+        cylinder = Capsule(position=np.array([0.5, 0.5, 0.5]), radius=0.15, vec_top=np.array([1.0, 1.0, 1.0]))
         epi_anim = EpisodeAnimation()
         ax = epi_anim.init_path_animation()
         epi_anim.add_shapes(ax, [cylinder])
@@ -49,14 +49,16 @@ class TestPlotUtils(unittest.TestCase):
         ax.set_proj_type('ortho')
 
         # Sphere
-        sphere = Sphere(position=np.array([0, 0, 1]), radius=.1)
+        sphere = Sphere(position=np.array([0.2, 0.2, 0.7]), radius=.4)
         # Create Sphere instance Note: Hard to update Sphere position only for Blitmanager, rather need to update
         # whole axis (set_verts did not work out, there is a lot under the hood of plot_surface)
-        surface_sphere = ax.plot_surface(*sphere.get_plot_variables(), color='b', alpha=0.7)
+        surface_sphere = ax.plot_surface(*sphere.get_plot_variables()[0], color='b', alpha=0.7)
 
-        # Cylinder
-        cylinder = Cylinder(position=np.array([1, 1, 0]), radius=0.15, height=1)
-        surface_cylinder = ax.plot_surface(*cylinder.get_plot_variables(), color='r', alpha=0.7)
+        # Capsule
+        capsule = Capsule(position=np.array([1, 1, 0]), radius=0.25, vec_top=np.array([0.5, 0.5, 0.5]))
+        surface_cap = ax.plot_surface(*capsule.get_plot_variables()[0], color='r', alpha=1)
+        surface_cap_sph1 = ax.plot_surface(*capsule.get_plot_variables()[1], color='r', alpha=0.5)
+        surface_cap_sph2 = ax.plot_surface(*capsule.get_plot_variables()[2], color='r', alpha=0.5)
 
         save_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'test_result_files', title))
         print(f"\nSave plot at {save_path}")
