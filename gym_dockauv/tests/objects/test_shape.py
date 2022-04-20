@@ -1,0 +1,48 @@
+
+import numpy as np
+import unittest
+from gym_dockauv.objects import shape
+
+
+class TestShape(unittest.TestCase):
+
+    def setUp(self) -> None:
+        self.point = np.array([0.5, 0.5, 0.5])
+        self.l11 = np.array([1, 1, 1])
+        self.l12 = np.array([1, 1, 0])
+
+        self.point2 = np.array([-1, -1, -2.5])
+        self.l21 = np.array([0.0, 0.0, 0.0])
+        self.l22 = np.array([2.0, 2.0, 0.0])
+
+
+class TestShapeFunc(TestShape):
+
+    def test_dist_line_point(self):
+        self.assertAlmostEqual(0.5**0.5, shape.dist_line_point(self.point, self.l11, self.l12))
+        self.assertAlmostEqual(8.25**0.5, shape.dist_line_point(self.point2, self.l21, self.l22))
+
+    def test_collision_capsule_sphere(self):
+        cap_rad = 1
+        sph_rad = 0.5
+        self.assertEqual(True, shape.collision_capsule_sphere(self.l11, self.l12, cap_rad, self.point, sph_rad))
+        self.assertEqual(False, shape.collision_capsule_sphere(self.l21, self.l22, cap_rad, self.point2, sph_rad))
+
+    def test_intersec_line_capsule(self):
+        cap_rad = 1
+        dist = shape.intersec_line_capsule(l1=self.l21, l2=self.l22, cap1=self.l11, cap2=self.l12, cap_rad=cap_rad)
+        self.assertAlmostEqual(dist, 2**0.5-1)
+
+        # Test for expected behavior, when line points in on direction and capsule is behind, see comment on function
+        dist2 = shape.intersec_line_capsule(l1=self.l21, l2=np.array([-2.0, -2.0, 0.0]),
+                                            cap1=self.l11, cap2=self.l12, cap_rad=cap_rad)
+        self.assertAlmostEqual(dist2, -(2**0.5+1))
+
+        # Test for no intersection at all, should return -np.inf
+        dist3 = shape.intersec_line_capsule(l1=self.l21, l2=np.array([-2.0, 2.0, 0.0]),
+                                            cap1=self.l11, cap2=self.l12, cap_rad=cap_rad)
+        self.assertAlmostEqual(dist3, -np.inf)
+
+
+if __name__ == '__main__':
+    unittest.main()

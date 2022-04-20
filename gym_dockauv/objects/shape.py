@@ -32,11 +32,11 @@ class Sphere(Shape):
         super().__init__(position)  # Call inherited init functions and then add to it
         self.radius = radius
 
-    def get_plot_variables(self):
+    def get_plot_variables(self) -> List[List[np.ndarray]]:
         x_c, y_c, z_c = self.get_plot_shape(self.radius)
         return [[self.position[0] + x_c,
-                self.position[1] + y_c,
-                self.position[2] + z_c]]
+                 self.position[1] + y_c,
+                 self.position[2] + z_c]]
 
     @staticmethod
     def get_plot_shape(radius: float, scale: int = 1, sweep1: int = 20, sweep2: int = 20):
@@ -49,7 +49,7 @@ class Sphere(Shape):
         :param sweep2: second sweep of mesh
         :return: x, y, z coordinates for plotting function
         """
-        u, v = np.mgrid[0:scale * np.pi:sweep1*1j, 0:2*np.pi:sweep2*1j]
+        u, v = np.mgrid[0:scale * np.pi:sweep1 * 1j, 0:2 * np.pi:sweep2 * 1j]
         x_c = radius * np.cos(u) * np.sin(v)
         y_c = radius * np.sin(u) * np.sin(v)
         z_c = radius * np.cos(v)
@@ -79,7 +79,7 @@ class Capsule(Shape):
         self.vec_top = vec_top
         self.vec_bot = self.position - (self.vec_top - self.position)
 
-    def get_plot_variables(self):
+    def get_plot_variables(self) -> List[List[np.ndarray]]:
         x_c, y_c, z_c = self.get_plot_shape_cyl
         return [[x_c, y_c, z_c], *self.get_plot_shape_sph]
 
@@ -130,7 +130,9 @@ class Capsule(Shape):
 
         # generate coordinates for surface
         # "Tube"
-        x_c, y_c, z_c = [self.vec_bot[i] + v[i] * t + self.radius * np.sin(theta2) * n1[i] + self.radius * np.cos(theta2) * n2[i] for i in [0, 1, 2]]
+        x_c, y_c, z_c = [
+            self.vec_bot[i] + v[i] * t + self.radius * np.sin(theta2) * n1[i] + self.radius * np.cos(theta2) * n2[i] for
+            i in [0, 1, 2]]
 
         return x_c, y_c, z_c
 
@@ -148,15 +150,105 @@ def collision_sphere_sphere(pos1: np.ndarray, rad1: float, pos2: np.ndarray, rad
     return np.linalg.norm(pos1 - pos2) <= rad1 + rad2
 
 
-def collision_capsule_sphere(pos1: np.ndarray, h1: float, rad1: float, pos2: np.ndarray, rad2: float) -> bool:
+def collision_capsule_sphere(cap1: np.ndarray, cap2: np.ndarray, cap_rad: float,
+                             sph_pos: np.ndarray, sph_rad: float) -> bool:
     """
     Determining whether a cylinder collides with a sphere
 
-    :param pos1: (3,) array for position of cylinder
-    :param h1: height (total) of cylinder
-    :param rad1: radius of cylinder
-    :param pos2: (3,) array for position of sphere
-    :param rad2: radius of sphere
+    :param cap1: (3,) array for the position of one of the capsule ends
+    :param cap2: (3,) array for the position of the other capsule end
+    :param cap_rad: radius of cylinder
+    :param sph_pos: (3,) array for position of sphere
+    :param sph_rad: radius of sphere
     :return: returns true for collision
     """
+    # Closest distance between sphere center and capsule line
+    dist = dist_line_point(sph_pos, cap1, cap2)
+    # Check for collision
+    return dist <= cap_rad + sph_rad
 
+
+def intersec_line_capsule(l1: np.ndarray, l2: np.ndarray, cap1: np.ndarray, cap2: np.ndarray, cap_rad: float) -> float:
+    """
+    return closest distance from starting point to intersection of capsule, otherwise returns None if no intersection
+    is found. Intersection point can then be found by multiplying unit vector in direction of line by this distance.
+
+    .. note::
+
+        This solution ALWAYS finds the first intersection (if there is) from the starting in direction of the second
+        point. However, as soon as the intersection is in opposite direction of the line, it returns the intersection
+        further away, as if the ray came form behind in that direction to the capsule.
+
+    Solution found here:
+    https://iquilezles.org/articles/intersectors/
+
+    :param l1: array (3,) for line starting point
+    :param l2: array (3,) for any second point on line
+    :param cap1: array (3,) for capsule start
+    :param cap2: array (3,) for capsule end
+    :param cap_rad: capsule radius
+    :return: one, two intersection points or None if not found
+    """
+    ba = cap2 - cap1
+    oa = l1 - cap1
+    # direction of vector
+    rd = (l2-l1)/np.linalg.norm(l2-l1)
+
+    baba = np.dot(ba, ba)
+
+    bard = np.dot(ba, rd)
+
+    baoa = np.dot(ba, oa)
+
+    rdoa = np.dot(rd, oa)
+
+    oaoa = np.dot(oa, oa)
+
+    a = baba - bard * bard
+
+    b = baba * rdoa - baoa * bard
+
+    c = baba * oaoa - baoa * baoa - cap_rad * cap_rad * baba
+
+    h = b * b - a * c
+    if h >= 0.0:
+        t = (-b - np.sqrt(h)) / a
+        y = baoa + t * bard
+        # body
+        if 0.0 < y < baba:
+            return t
+        # caps
+        oc = oa if y <= 0.0 else l1 - cap2
+        b = np.dot(rd, oc)
+        c = np.dot(oc, oc) - cap_rad * cap_rad
+        h = b * b - c
+        if h > 0.0:
+            return -b - np.sqrt(h)
+    return -np.inf
+
+
+def dist_line_point(po: np.ndarray, l1: np.ndarray, l2: np.ndarray) -> float:
+    """
+    Function to calculate the closest distance between a line segment and a point
+
+    From: https://stackoverflow.com/questions/56463412/distance-from-a-point-to-a-line-segment-in-3d-python
+
+    :param po: array (3,) for the point position
+    :param l1: array (3,) for start of line
+    :param l2: array (3,) for end of line
+    :return: shortes distance between line and point
+    """
+    # normalized tangent vector
+    d = np.divide(l2 - l1, np.linalg.norm(l2 - l1))
+
+    # signed parallel distance components
+    s = np.dot(l1 - po, d)
+    t = np.dot(po - l2, d)
+
+    # clamped parallel distance
+    h = np.maximum.reduce([s, t, 0])
+
+    # perpendicular distance component
+    c = np.cross(po - l1, d)
+
+    return np.hypot(h, np.linalg.norm(c))
