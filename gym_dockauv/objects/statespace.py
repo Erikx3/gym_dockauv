@@ -244,6 +244,7 @@ class StateSpace(ABC):
             \end{bmatrix}
 
         In the case of a diagonal added mass matrix :math:`\boldsymbol{M}_{A}`, this leads to the following result
+        (Fossen 2011, p. 121)
 
         .. math::
 
@@ -264,7 +265,7 @@ class StateSpace(ABC):
         nu_2 = nu_r[3:6]
         M_A11 = self.M_A[0:3, 0:3]
         M_A12 = self.M_A[0:3, 3:6]
-        M_A21 = M_A12.T
+        M_A21 = self.M_A[3:6, 0:3]
         M_A22 = self.M_A[3:6, 3:6]
 
         C_A_CO = np.vstack([

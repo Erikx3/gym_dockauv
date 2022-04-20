@@ -59,6 +59,21 @@ class TestIntegration(TestBlueROV2):
 
         # Simulate and update animation and storage
         for i in range(n_sim):
+
+            # eta = self.BlueROV2.state[:6]
+            # nu_r = self.BlueROV2.state[6:]
+            # nu_r_dot = self.BlueROV2.M_inv.dot(
+            #     self.BlueROV2.B(nu_r).dot(self.BlueROV2.u)
+            #     - self.BlueROV2.D(nu_r).dot(nu_r)
+            #     - self.BlueROV2.C(nu_r).dot(nu_r)
+            #     - self.BlueROV2.G(eta))
+            # print("B: \n", self.BlueROV2.B(nu_r).dot(self.BlueROV2.u))
+            # print("D: \n", -self.BlueROV2.D(nu_r).dot(nu_r))
+            # print("C: \n", -self.BlueROV2.C(nu_r).dot(nu_r))
+            # print("G: \n", -self.BlueROV2.G(eta))
+            # print("nu_r_dot: \n", nu_r_dot)
+            # print("nu_r: \n", nu_r)
+
             # Simulate current
             current.sim()
             nu_c = current(self.BlueROV2.state)
@@ -68,13 +83,17 @@ class TestIntegration(TestBlueROV2):
             epi_storage.update(nu_c=nu_c)
             # Update animation
             epi_anim.update_path_animation(positions=epi_storage.positions, attitudes=epi_storage.attitudes)
-            #time.sleep(0.02)
+            # time.sleep(1)
+
 
         """Note on why the vehicle is slightly pitching in simulation: Even if we apply only force in x and z direction,
         the Mass Matrix M_A contains off diagonal elements, since the Center of Origin is placed at the center of
         Buoyancy. This means, we expect the vehicle to pitch, since we have a simplified control matrix B that does
         not account for this. Meaning, we apply a simple force in x at CO and not CG leads to a rotation about the y
-        axis """
+        axis 
+        
+        Note 2: Dynamic coupling of Restoring forces, CO at CB, Coriolis Forces and Damping forces lead to swing
+        """
 
         # Save this test file
         print(f"Save pickle file for episode data storge at {epi_storage.file_save_name}")
