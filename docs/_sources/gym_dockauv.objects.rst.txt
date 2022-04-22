@@ -28,6 +28,14 @@ gym\_dockauv.objects.current module
    :undoc-members:
    :show-inheritance:
 
+gym\_dockauv.objects.sensor module
+----------------------------------
+
+.. automodule:: gym_dockauv.objects.sensor
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 gym\_dockauv.objects.shape module
 ---------------------------------
 

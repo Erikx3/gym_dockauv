@@ -92,6 +92,7 @@
 <li class="toctree-l1"><a class="reference internal" href="gym_dockauv.objects.vehicles.html">gym_dockauv.objects.vehicles package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="gym_dockauv.objects.vehicles.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gym_dockauv.objects.vehicles.html#module-gym_dockauv.objects.vehicles.BlueROV2">gym_dockauv.objects.vehicles.BlueROV2 module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gym_dockauv.objects.vehicles.html#module-gym_dockauv.objects.vehicles.LAUV">gym_dockauv.objects.vehicles.LAUV module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gym_dockauv.objects.vehicles.html#module-gym_dockauv.objects.vehicles">Module contents</a></li>
 </ul>
 </li>
@@ -118,7 +119,7 @@ Simulation. Below you find the most important definitions:</p>
 \end{bmatrix}^T\end{aligned}\end{align} \]</div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Assumtpions:</p>
+<p>Assumptions:</p>
 <ul class="simple">
 <li><p>This implementation always assumes a low pass filter over the input for simplification
 (can always be overwritten, in case you have your own implementation from input to external forces)</p></li>
@@ -349,11 +350,89 @@ thus transformation from FLOW coordinate system to NED can be done here with var
 </dd></dl>
 
 </section>
+<section id="module-gym_dockauv.objects.sensor">
+<span id="gym-dockauv-objects-sensor-module"></span><h2>gym_dockauv.objects.sensor module<a class="headerlink" href="#module-gym_dockauv.objects.sensor" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="gym_dockauv.objects.sensor.Radar">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gym_dockauv.objects.sensor.</span></span><span class="sig-name descname"><span class="pre">Radar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6.283185307179586</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6.283185307179586</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ray_per_deg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.08726646259971647</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_dist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">25</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.sensor.Radar" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Represent a radar sensor suite. Initialize with the alpha, beta view angle and the amount of the rays per degree</p>
+<p>Make sure alpha and beta is dividable by that amount, for now I throw an error if not.</p>
+<p>The rays are always defined in {b}, but to calculate the rays direction in {n} it simply takes one
+transformation, as long as the actual transformation matrix can be applied through the euler angles where the
+sensor is mounted on (function is provided)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>eta</strong> (<em>numpy.ndarray</em>) – </p></li>
+<li><p><strong>freq</strong> (<em>float</em>) – </p></li>
+<li><p><strong>alpha</strong> (<em>float</em>) – </p></li>
+<li><p><strong>beta</strong> (<em>float</em>) – </p></li>
+<li><p><strong>ray_per_deg</strong> (<em>float</em>) – </p></li>
+<li><p><strong>max_dist</strong> (<em>float</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.objects.sensor.Radar.update_pos_and_att">
+<span class="sig-name descname"><span class="pre">update_pos_and_att</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eta</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.sensor.Radar.update_pos_and_att" title="Permalink to this definition"></a></dt>
+<dd><p>Updates all the rays direction in {n} and the actual position</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>eta</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – array (6,) of position and attitude</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gym_dockauv.objects.sensor.Ray">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gym_dockauv.objects.sensor.</span></span><span class="sig-name descname"><span class="pre">Ray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_dis</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.sensor.Ray" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Represents a Ray in 3d, can be initiated with a starting point, a vector for pointing its direction and maximum
+distance.</p>
+<p>DEPRECATED since other sensors are vectorized</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pos</strong> (<em>numpy.ndarray</em>) – </p></li>
+<li><p><strong>rd</strong> (<em>numpy.ndarray</em>) – </p></li>
+<li><p><strong>max_dis</strong> (<em>float</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.objects.sensor.Ray.get_point_from_dist">
+<span class="sig-name descname"><span class="pre">get_point_from_dist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dist</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.sensor.Ray.get_point_from_dist" title="Permalink to this definition"></a></dt>
+<dd><p>Function to retrieve a point on the line with giving it a distance in {n}</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dist</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – distance from starting point</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>array (3,) for the point on the line</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
 <section id="module-gym_dockauv.objects.shape">
 <span id="gym-dockauv-objects-shape-module"></span><h2>gym_dockauv.objects.shape module<a class="headerlink" href="#module-gym_dockauv.objects.shape" title="Permalink to this headline"></a></h2>
 <dl class="py class">
-<dt class="sig sig-object py" id="gym_dockauv.objects.shape.Cylinder">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gym_dockauv.objects.shape.</span></span><span class="sig-name descname"><span class="pre">Capsule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.shape.Cylinder" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="gym_dockauv.objects.shape.Capsule">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gym_dockauv.objects.shape.</span></span><span class="sig-name descname"><span class="pre">Capsule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vec_top</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.shape.Capsule" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#gym_dockauv.objects.shape.Shape" title="gym_dockauv.objects.shape.Shape"><code class="xref py py-class docutils literal notranslate"><span class="pre">gym_dockauv.objects.shape.Shape</span></code></a></p>
 <p>Represents a Capsule, height is the total height, position is the center of the cylinder</p>
 <dl class="field-list simple">
@@ -361,22 +440,32 @@ thus transformation from FLOW coordinate system to NED can be done here with var
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>position</strong> (<em>numpy.ndarray</em>) – </p></li>
 <li><p><strong>radius</strong> (<em>float</em>) – </p></li>
-<li><p><strong>height</strong> (<em>float</em>) – </p></li>
+<li><p><strong>vec_top</strong> (<em>numpy.ndarray</em>) – </p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py property">
-<dt class="sig sig-object py" id="gym_dockauv.objects.shape.Cylinder.get_plot_shape">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_plot_shape</span></span><a class="headerlink" href="#gym_dockauv.objects.shape.Cylinder.get_plot_shape" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="gym_dockauv.objects.shape.Capsule.get_plot_shape_cyl">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_plot_shape_cyl</span></span><a class="headerlink" href="#gym_dockauv.objects.shape.Capsule.get_plot_shape_cyl" title="Permalink to this definition"></a></dt>
+<dd><p>Adapted from:
+<a class="reference external" href="https://stackoverflow.com/questions/39822480/plotting-a-solid-cylinder-centered-on-a-plane-in-matplotlib">https://stackoverflow.com/questions/39822480/plotting-a-solid-cylinder-centered-on-a-plane-in-matplotlib</a></p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gym_dockauv.objects.shape.Capsule.get_plot_shape_sph">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_plot_shape_sph</span></span><a class="headerlink" href="#gym_dockauv.objects.shape.Capsule.get_plot_shape_sph" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="gym_dockauv.objects.shape.Cylinder.get_plot_variables">
-<span class="sig-name descname"><span class="pre">get_plot_variables</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.shape.Cylinder.get_plot_variables" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="gym_dockauv.objects.shape.Capsule.get_plot_variables">
+<span class="sig-name descname"><span class="pre">get_plot_variables</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.shape.Capsule.get_plot_variables" title="Permalink to this definition"></a></dt>
 <dd><p>Function that returns the plot variables for the matplotlib axes.surface_plot() function</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>return list of 1d arrays for plotting</p>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>]]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>return list of list of arrays for plotting (one inner list contains plotting arrays)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -399,10 +488,10 @@ thus transformation from FLOW coordinate system to NED can be done here with var
 <dd><p>Function that returns the plot variables for the matplotlib axes.surface_plot() function</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>]</p>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>]]</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>return list of 1d arrays for plotting</p>
+<dd class="field-even"><p>return list of list of arrays for plotting (one inner list contains plotting arrays)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -422,22 +511,162 @@ thus transformation from FLOW coordinate system to NED can be done here with var
 </ul>
 </dd>
 </dl>
-<dl class="py property">
+<dl class="py method">
 <dt class="sig sig-object py" id="gym_dockauv.objects.shape.Sphere.get_plot_shape">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_plot_shape</span></span><a class="headerlink" href="#gym_dockauv.objects.shape.Sphere.get_plot_shape" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_plot_shape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">radius</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sweep1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sweep2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.shape.Sphere.get_plot_shape" title="Permalink to this definition"></a></dt>
+<dd><p>Also used by capsule to create half spheres, therefor static method</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>radius</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – radius of sphere</p></li>
+<li><p><strong>scale</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – [0, 2] range for circle</p></li>
+<li><p><strong>sweep1</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – first sweep of mesh</p></li>
+<li><p><strong>sweep2</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – second sweep of mesh</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>x, y, z coordinates for plotting function</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gym_dockauv.objects.shape.Sphere.get_plot_variables">
 <span class="sig-name descname"><span class="pre">get_plot_variables</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.shape.Sphere.get_plot_variables" title="Permalink to this definition"></a></dt>
 <dd><p>Function that returns the plot variables for the matplotlib axes.surface_plot() function</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>return list of 1d arrays for plotting</p>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>]]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>return list of list of arrays for plotting (one inner list contains plotting arrays)</p>
 </dd>
 </dl>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gym_dockauv.objects.shape.collision_capsule_sphere">
+<span class="sig-prename descclassname"><span class="pre">gym_dockauv.objects.shape.</span></span><span class="sig-name descname"><span class="pre">collision_capsule_sphere</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cap1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cap2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cap_rad</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sph_pos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sph_rad</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.shape.collision_capsule_sphere" title="Permalink to this definition"></a></dt>
+<dd><p>Determining whether a cylinder collides with a sphere</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cap1</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – (3,) array for the position of one of the capsule ends</p></li>
+<li><p><strong>cap2</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – (3,) array for the position of the other capsule end</p></li>
+<li><p><strong>cap_rad</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – radius of cylinder</p></li>
+<li><p><strong>sph_pos</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – (3,) array for position of sphere</p></li>
+<li><p><strong>sph_rad</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – radius of sphere</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>returns true for collision</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gym_dockauv.objects.shape.collision_sphere_sphere">
+<span class="sig-prename descclassname"><span class="pre">gym_dockauv.objects.shape.</span></span><span class="sig-name descname"><span class="pre">collision_sphere_sphere</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rad1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rad2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.shape.collision_sphere_sphere" title="Permalink to this definition"></a></dt>
+<dd><p>Determining whether two sphere objects collide</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pos1</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – (3,) array for position of first object</p></li>
+<li><p><strong>rad1</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – radius of first object</p></li>
+<li><p><strong>pos2</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – (3,) array for position of second object</p></li>
+<li><p><strong>rad2</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – radius of second object</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>returns true for collision</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gym_dockauv.objects.shape.dist_line_point">
+<span class="sig-prename descclassname"><span class="pre">gym_dockauv.objects.shape.</span></span><span class="sig-name descname"><span class="pre">dist_line_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">po</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.shape.dist_line_point" title="Permalink to this definition"></a></dt>
+<dd><p>Function to calculate the closest distance between a line segment and a point</p>
+<p>From: <a class="reference external" href="https://stackoverflow.com/questions/56463412/distance-from-a-point-to-a-line-segment-in-3d-python">https://stackoverflow.com/questions/56463412/distance-from-a-point-to-a-line-segment-in-3d-python</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>po</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – array (3,) for the point position</p></li>
+<li><p><strong>l1</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – array (3,) for start of line</p></li>
+<li><p><strong>l2</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – array (3,) for end of line</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>shortes distance between line and point</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gym_dockauv.objects.shape.intersec_dist_line_capsule">
+<span class="sig-prename descclassname"><span class="pre">gym_dockauv.objects.shape.</span></span><span class="sig-name descname"><span class="pre">intersec_dist_line_capsule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">l1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ld</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cap1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cap2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cap_rad</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.shape.intersec_dist_line_capsule" title="Permalink to this definition"></a></dt>
+<dd><p>return closest distance from starting point to intersection of capsule, otherwise returns None if no intersection
+is found. Intersection point can then be found by multiplying unit vector in direction of line by this distance.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This solution ALWAYS finds the first intersection (if there is) from the starting in direction of the second
+point. However, as soon as the intersection is in opposite direction of the line, it returns the intersection
+further away, as if the ray came form behind in that direction to the capsule.</p>
+</div>
+<p>Solution found here:
+<a class="reference external" href="https://iquilezles.org/articles/intersectors/">https://iquilezles.org/articles/intersectors/</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>l1</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – array (3,) for line starting point</p></li>
+<li><p><strong>ld</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – array (3,) for the line direction from the starting point (does not need to be unit vector)</p></li>
+<li><p><strong>cap1</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – array (3,) for capsule start</p></li>
+<li><p><strong>cap2</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – array (3,) for capsule end</p></li>
+<li><p><strong>cap_rad</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – capsule radius</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>distance from line starting point to intersection, -np.inf if no intersection at all</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gym_dockauv.objects.shape.intersec_dist_line_capsule_vectorized">
+<span class="sig-prename descclassname"><span class="pre">gym_dockauv.objects.shape.</span></span><span class="sig-name descname"><span class="pre">intersec_dist_line_capsule_vectorized</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">l1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ld</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cap1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cap2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cap_rad</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.shape.intersec_dist_line_capsule_vectorized" title="Permalink to this definition"></a></dt>
+<dd><p>Return the closest distance for multiple lines defined as in l1 and ld and find the shortest distances for ONE
+capsule</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>l1</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – array (n,3) for lines starting point</p></li>
+<li><p><strong>ld</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – array (n,3) for the lines direction from the starting point (does not need to be unit vector)</p></li>
+<li><p><strong>cap1</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – array (3,) for capsule start</p></li>
+<li><p><strong>cap2</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – array (3,) for capsule end</p></li>
+<li><p><strong>cap_rad</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – capsule radius</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>array(n,) with the distances calculated</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
@@ -484,9 +713,9 @@ base class init, and then add further needed variables to your class (for exampl
 Further on make sure the initialized variables are in the correct type, e.g. do not write mass = None,
 since the xml parser inherit the variable type from the initialization</p>
 </div>
-<dl class="py property">
+<dl class="py method">
 <dt class="sig sig-object py" id="gym_dockauv.objects.statespace.StateSpace.B">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">B</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#gym_dockauv.objects.statespace.StateSpace.B" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">B</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nu</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.statespace.StateSpace.B" title="Permalink to this definition"></a></dt>
 <dd><p>this function returns the control matrix <span class="math notranslate nohighlight">\(\boldsymbol{B}\)</span> and is individual for each AUV and thus an
 abstract method</p>
 <p>When <span class="math notranslate nohighlight">\(\boldsymbol{\tau}\)</span> represents the external forces and <span class="math notranslate nohighlight">\(\boldsymbol{u}\)</span> the control input, then</p>
@@ -495,6 +724,11 @@ abstract method</p>
 <p>Where the dimension <span class="math notranslate nohighlight">\(\boldsymbol{a}\)</span> is the number of actions available for the system
 :rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>
 :return: array 6xa</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -527,7 +761,8 @@ changes someone made to <span class="math notranslate nohighlight">\(\boldsymbol
     -\boldsymbol{S}(\boldsymbol{M}_{A,11} \boldsymbol{\nu}_1 + \boldsymbol{M}_{A,12} \boldsymbol{\nu}_2) &amp;
     -\boldsymbol{S}(\boldsymbol{M}_{A,21} \boldsymbol{\nu}_1 + \boldsymbol{M}_{A,22} \boldsymbol{\nu}_2)
 \end{bmatrix}\end{split}\]</div>
-<p>In the case of a diagonal added mass matrix <span class="math notranslate nohighlight">\(\boldsymbol{M}_{A}\)</span>, this leads to the following result</p>
+<p>In the case of a diagonal added mass matrix <span class="math notranslate nohighlight">\(\boldsymbol{M}_{A}\)</span>, this leads to the following result
+(Fossen 2011, p. 121)</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\boldsymbol{C}_{A} = \begin{bmatrix}
     0 &amp; 0 &amp; 0 &amp; 0 &amp; -Z_{\dot{w}} w &amp; Y_{\dot{v}} v \\
