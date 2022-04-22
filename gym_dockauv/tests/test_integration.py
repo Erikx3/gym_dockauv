@@ -10,6 +10,7 @@ from gym_dockauv.utils.plotutils import EpisodeAnimation, EpisodeVisualization
 from gym_dockauv.utils.datastorage import EpisodeDataStorage
 from gym_dockauv.objects.shape import Capsule
 from gym_dockauv.objects.current import Current
+from gym_dockauv.objects.sensor import Radar
 
 # Only here: Overwrite storage file name after init for making consitent tests.
 STORAGE_NAME = "YYYY_MM_DDTHH_MM_SS__episodeX__Integration_Test"
@@ -30,14 +31,26 @@ class TestIntegration(TestBlueROV2):
         action = np.array([1.0, 0.0, 0.0, 0.0, 0.0, 0.0])
         # Reset nu_r here
         self.BlueROV2.state = np.zeros(12)
+
         # Water current
         current = Current(mu=0.01, V_min=0.0, V_max=0.5, Vc_init=0.2,
                           alpha_init=0.0, beta_init=0.0, white_noise_std=0.1, step_size=self.BlueROV2.step_size)
         nu_c = current(self.BlueROV2.state)
         # nu_c = np.array([0, 0, 0, 0, 0, 0])
+
+        # Add sensor suite for testing
+        eta = np.array([0, 0, 0, 0, 0, 0])
+        freq = 1
+        alpha = 30 * np.pi / 180
+        beta = 20 * np.pi / 180
+        ray_per_deg = 5 * np.pi / 180
+        radar = Radar(eta=eta, freq=freq, alpha=alpha,
+                      beta=beta, ray_per_deg=ray_per_deg, max_dist=2)
+
         # Number of simulation steps
-        n_sim = 100
+        n_sim = 200
         episode_nr = 1234
+
         # Initialize animation
         epi_anim = EpisodeAnimation()
         ax = epi_anim.init_path_animation()
@@ -48,9 +61,10 @@ class TestIntegration(TestBlueROV2):
         # Some extra axes manipulation for testing
         title = "Integration_Test_Episode_Simulation"
         ax.set(title=title)
+        # Initialize sensor animation
+        epi_anim.init_radar_animation(radar.n_rays)
 
         # Initialize Data Storage
-
         epi_storage = EpisodeDataStorage()
         epi_storage.set_up_episode_storage(path_folder=PATH_FOL, vehicle=self.BlueROV2,
                                            step_size=self.BlueROV2.step_size, nu_c_init=nu_c, shapes=[cylinder],
@@ -59,7 +73,6 @@ class TestIntegration(TestBlueROV2):
 
         # Simulate and update animation and storage
         for i in range(n_sim):
-
             # eta = self.BlueROV2.state[:6]
             # nu_r = self.BlueROV2.state[6:]
             # nu_r_dot = self.BlueROV2.M_inv.dot(
@@ -77,14 +90,17 @@ class TestIntegration(TestBlueROV2):
             # Simulate current
             current.sim()
             nu_c = current(self.BlueROV2.state)
-            # Simulate
+            # Simulate vehicle
             self.BlueROV2.step(action, nu_c)
+            # Update sensors
+            radar.update_pos_and_att(self.BlueROV2.eta)
             # Update data storage
             epi_storage.update(nu_c=nu_c)
-            # Update animation
+            # Update animation of vehicle
             epi_anim.update_path_animation(positions=epi_storage.positions, attitudes=epi_storage.attitudes)
-            # time.sleep(1)
-
+            # Update animation of sensors
+            epi_anim.update_radar_animation(radar.pos, radar.end_pos_n)
+            #time.sleep(0.5)
 
         """Note on why the vehicle is slightly pitching in simulation: Even if we apply only force in x and z direction,
         the Mass Matrix M_A contains off diagonal elements, since the Center of Origin is placed at the center of
@@ -101,6 +117,7 @@ class TestIntegration(TestBlueROV2):
         del epi_anim
 
     def test_post_flight_visualization(self):
+        # SO far without sensors, since it could be reanimated if needed, but not necessary for now
         epi_stor = EpisodeDataStorage()
         epi_stor.load(os.path.join(PATH_FOL, f"{STORAGE_NAME}.pkl"))
         epi_stor.plot_epsiode_states_and_u()

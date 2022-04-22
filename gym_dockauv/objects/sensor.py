@@ -28,19 +28,21 @@ class Radar:
         self.max_dist = max_dist
         tol = 10e-5
         # Check for valid input
-        if (alpha+tol) % ray_per_deg > 0.001 or (beta+tol) % ray_per_deg > 0.001:
+        if (alpha + tol) % ray_per_deg > 0.001 or (beta + tol) % ray_per_deg > 0.001:
             raise KeyError("Initialize the radar with valid ray_per_deg for alpha and beta.")
         # Create (n, 1) array for the alpha and beta angle of each array
-        self.alpha = np.arange(-alpha/2, alpha/2 + tol, ray_per_deg)
-        self.alpha = np.repeat(self.alpha, repeats=(beta+tol)//ray_per_deg+1, axis=0)
-        self.beta = np.arange(-beta/2, beta/2 + tol, ray_per_deg)
-        self.beta = np.tile(self.beta, (int((alpha+tol)//ray_per_deg+1),))
+        self.alpha = np.arange(-alpha / 2, alpha / 2 + tol, ray_per_deg)
+        self.alpha = np.repeat(self.alpha, repeats=(beta + tol) // ray_per_deg + 1, axis=0)
+        self.beta = np.arange(-beta / 2, beta / 2 + tol, ray_per_deg)
+        self.beta = np.tile(self.beta, (int((alpha + tol) // ray_per_deg + 1),))
+
+        self.n_rays = self.alpha.shape[0]
 
         # Array (n, 3) of rays, where n will be the total number of rays
-        self.rd_b = np.hstack([np.ones((self.alpha.shape[0]))[:, None],
-                              np.sin(self.beta)[:, None],
-                              np.sin(self.alpha)[:, None]
-                              ])
+        self.rd_b = np.hstack([np.ones(self.n_rays)[:, None],
+                               np.sin(self.beta)[:, None],
+                               np.sin(self.alpha)[:, None]
+                               ])
         # Normalize these vectors
         self.rd_b = self.rd_b / np.linalg.norm(self.rd_b, axis=1)[:, None]
 
@@ -48,10 +50,10 @@ class Radar:
         self.rd_n = (geom.Rzyx(*eta[3:6]).T.dot(self.rd_b.T)).T
 
         # Initialize intersection distance for each, if no interect, take max_dist
-        self.intersec_dist = np.full((self.alpha.shape[0],), max_dist)
+        self.intersec_dist = np.full((self.n_rays,), max_dist)
 
         # Get endpoint of all rays in {n} array(n, 3)
-        self.end_pos_n = self.pos + self.rd_n*self.intersec_dist[:, None]
+        self.end_pos_n = self.pos + self.rd_n * self.intersec_dist[:, None]
 
     def update_pos_and_att(self, eta: np.ndarray) -> None:
         """
@@ -63,7 +65,13 @@ class Radar:
         pos = eta[0:3]
         attitude = eta[3:6]
         self.pos = pos
-        self.rd_n = (geom.Rzyx(*attitude).T.dot(self.rd_b.T)).T
+        self.rd_n = (geom.Rzyx(*attitude).dot(self.rd_b.T)).T
+        # Normalize these vectors
+        self.rd_n = self.rd_n / np.linalg.norm(self.rd_n, axis=1)[:, None]
+
+        # TODO: Update end points somewhere else, depending on self.intersec_dist
+        # Get endpoint of all rays in {n} array(n, 3)
+        self.end_pos_n = self.pos + self.rd_n * self.intersec_dist[:, None]
 
 
 class Ray:

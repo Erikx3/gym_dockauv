@@ -172,6 +172,19 @@ class AUVSim(StateSpace, ABC):
         return self.state[3:6]
 
     @property
+    def eta(self):
+        r"""
+        Returns the eta, which includes the position and attitude
+
+        .. math::
+
+            \boldsymbol{\eta} = \begin{bmatrix}
+                x & y & z & \phi & \theta & \psi
+            \end{bmatrix}^T
+        """
+        return self.state[0:6]
+
+    @property
     def relative_velocity(self):
         r"""
         Returns the surge, sway and heave velocity of the AUV.

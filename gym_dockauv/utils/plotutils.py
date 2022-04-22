@@ -192,6 +192,22 @@ class EpisodeAnimation:
         plt.pause(0.01)
         return self.ax_path
 
+    def init_radar_animation(self, n_rays: int) -> None:
+        """
+        WIll be added to the path animation, can only be called after init_path_animation
+
+        :param n_ray: number of rays to initialize
+        :return:
+        """
+        self.ax_path.ray_arts = []
+        for i in range(n_rays):
+            self.ax_path.ray_arts.append(self.ax_path.plot([], [], [], 'r', alpha=1.0, animated=True)[0])
+
+        self.bm.add_artists(self.ax_path.ray_arts)
+
+        # Pause for any initialization to be done
+        plt.pause(0.01)
+
     def add_episode_text(self, ax: matplotlib.pyplot.axes, episode_nr: int) -> None:
         """
         Add episode number top right, needs to be in blit manager to display during live animation
@@ -227,6 +243,16 @@ class EpisodeAnimation:
         for shape in shapes:
             ax.plot_surface(*shape.get_plot_variables()[0], color='r', alpha=1.00)
 
+    def update_radar_animation(self, pos: np.ndarray, end_pos:np.ndarray) -> None:
+        """
+
+        :param pos: array(3,) starting position for rays
+        :param end_pos: array(n,3) end point for the rays
+        :return:
+        """
+        for i, ray_art in enumerate(self.ax_path.ray_arts):
+            ray_art.set_data_3d([pos[0], end_pos[i, 0]], [pos[1], end_pos[i, 1]], [pos[2], end_pos[i, 2]])
+
     def update_path_animation(self, positions: np.ndarray, attitudes: np.ndarray) -> None:
         """
         Update the path animation plot by updating the according elements
@@ -261,6 +287,7 @@ class EpisodeAnimation:
                                      self.ax_path.get_ylim()[1] - self.ax_path.get_ylim()[0],
                                      self.ax_path.get_zlim()[0] - self.ax_path.get_zlim()[1]])
 
+
         plt.draw()
 
         # This line below lead to failure in saving the animation, for now add it manually to out of scope code
@@ -279,7 +306,7 @@ class EpisodeAnimation:
     @staticmethod
     def get_quiver_coords_from_attitude(attitude: np.ndarray) -> List[np.ndarray]:
         """
-        Function to return the attitude
+        Function to return the quivers attitude in {n}
 
         :param attitude: array 3x1, including the euler angles (fixed to rigid body coord)
         :return: List of arrays for the coordinates of the quiver arrows direction uvw
