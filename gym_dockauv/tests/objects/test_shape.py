@@ -1,4 +1,3 @@
-
 import numpy as np
 import unittest
 from gym_dockauv.objects import shape
@@ -28,20 +27,29 @@ class TestShapeFunc(TestShape):
         self.assertEqual(True, shape.collision_capsule_sphere(self.l11, self.l12, cap_rad, self.point, sph_rad))
         self.assertEqual(False, shape.collision_capsule_sphere(self.l21, self.l22, cap_rad, self.point2, sph_rad))
 
-    def test_intersec_line_capsule(self):
+    def test_intersec_dist_line_capsule(self):
         cap_rad = 1
-        dist = shape.intersec_line_capsule(l1=self.l21, l2=self.l22, cap1=self.l11, cap2=self.l12, cap_rad=cap_rad)
+        dist = shape.intersec_dist_line_capsule(l1=self.l21, ld=(self.l22-self.l21), cap1=self.l11, cap2=self.l12,
+                                                cap_rad=cap_rad)
         self.assertAlmostEqual(dist, 2**0.5-1)
 
         # Test for expected behavior, when line points in on direction and capsule is behind, see comment on function
-        dist2 = shape.intersec_line_capsule(l1=self.l21, l2=np.array([-2.0, -2.0, 0.0]),
-                                            cap1=self.l11, cap2=self.l12, cap_rad=cap_rad)
+        dist2 = shape.intersec_dist_line_capsule(l1=self.l21, ld=np.array([-2.0, -2.0, 0.0]), cap1=self.l11,
+                                                 cap2=self.l12, cap_rad=cap_rad)
         self.assertAlmostEqual(dist2, -(2**0.5+1))
 
         # Test for no intersection at all, should return -np.inf
-        dist3 = shape.intersec_line_capsule(l1=self.l21, l2=np.array([-2.0, 2.0, 0.0]),
-                                            cap1=self.l11, cap2=self.l12, cap_rad=cap_rad)
+        dist3 = shape.intersec_dist_line_capsule(l1=self.l21, ld=np.array([-2.0, 2.0, 0.0]), cap1=self.l11,
+                                                 cap2=self.l12, cap_rad=cap_rad)
         self.assertAlmostEqual(dist3, -np.inf)
+
+    def test_intersec_dist_line_capsule_vectorized(self):
+        cap_rad = 1
+        l1 = np.vstack([self.l21, self.l21])
+        ld = np.vstack([(self.l22-self.l21), np.array([-2.0, -2.0, 0.0])])
+        dist = shape.intersec_dist_line_capsule_vectorized(l1=l1, ld=ld, cap1=self.l11, cap2=self.l12, cap_rad=cap_rad)
+        self.assertAlmostEqual(dist[0], 2**0.5-1)
+        self.assertAlmostEqual(dist[1], -(2**0.5+1))
 
 
 if __name__ == '__main__':
