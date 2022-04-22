@@ -14,11 +14,11 @@ class Shape(ABC):
         self.position = np.array(position)
 
     @abstractmethod
-    def get_plot_variables(self) -> List[np.ndarray]:
+    def get_plot_variables(self) -> List[List[np.ndarray]]:
         """
         Function that returns the plot variables for the matplotlib axes.surface_plot() function
 
-        :return: return list of 1d arrays for plotting
+        :return: return list of list of arrays for plotting (one inner list contains plotting arrays)
         """
         pass
 
@@ -168,7 +168,8 @@ def collision_capsule_sphere(cap1: np.ndarray, cap2: np.ndarray, cap_rad: float,
     return dist <= cap_rad + sph_rad
 
 
-def intersec_line_capsule(l1: np.ndarray, l2: np.ndarray, cap1: np.ndarray, cap2: np.ndarray, cap_rad: float) -> float:
+def intersec_dist_line_capsule(l1: np.ndarray, ld: np.ndarray, cap1: np.ndarray, cap2: np.ndarray,
+                               cap_rad: float) -> float:
     """
     return closest distance from starting point to intersection of capsule, otherwise returns None if no intersection
     is found. Intersection point can then be found by multiplying unit vector in direction of line by this distance.
@@ -183,16 +184,16 @@ def intersec_line_capsule(l1: np.ndarray, l2: np.ndarray, cap1: np.ndarray, cap2
     https://iquilezles.org/articles/intersectors/
 
     :param l1: array (3,) for line starting point
-    :param l2: array (3,) for any second point on line
+    :param ld: array (3,) for the line direction from the starting point (does not need to be unit vector)
     :param cap1: array (3,) for capsule start
     :param cap2: array (3,) for capsule end
     :param cap_rad: capsule radius
-    :return: one, two intersection points or None if not found
+    :return: distance from line starting point to intersection, -np.inf if no intersection at all
     """
     ba = cap2 - cap1
     oa = l1 - cap1
-    # direction of vector
-    rd = (l2-l1)/np.linalg.norm(l2-l1)
+    # direction of vector as unit vector
+    rd = ld / np.linalg.norm(ld)
 
     baba = np.dot(ba, ba)
 
@@ -221,10 +222,72 @@ def intersec_line_capsule(l1: np.ndarray, l2: np.ndarray, cap1: np.ndarray, cap2
         oc = oa if y <= 0.0 else l1 - cap2
         b = np.dot(rd, oc)
         c = np.dot(oc, oc) - cap_rad * cap_rad
-        h = b * b - c
-        if h > 0.0:
-            return -b - np.sqrt(h)
+        h2 = b * b - c
+        if h2 > 0.0:
+            return -b - np.sqrt(h2)
     return -np.inf
+
+
+def intersec_dist_line_capsule_vectorized(l1: np.ndarray, ld: np.ndarray, cap1: np.ndarray, cap2: np.ndarray,
+                                          cap_rad: float) -> np.ndarray:
+    """
+    Return the closest distance for multiple lines defined as in l1 and ld and find the shortest distances for ONE
+    capsule
+
+    :param l1: array (n,3) for lines starting point
+    :param ld: array (n,3) for the lines direction from the starting point (does not need to be unit vector)
+    :param cap1: array (3,) for capsule start
+    :param cap2: array (3,) for capsule end
+    :param cap_rad: capsule radius
+    :return: array(n,) with the distances calculated
+    """
+    ba = (cap2 - cap1)
+    oa = l1 - cap1
+    # direction of vector as unit vector
+    rd = ld / np.linalg.norm(ld, axis=1)[:, None]
+
+    baba = np.dot(ba, ba)
+
+    bard = np.dot(rd, ba)
+
+    baoa = np.dot(oa, ba)
+
+    rdoa = np.diag(np.dot(rd, oa.T))
+
+    oaoa = np.diag(np.dot(oa, oa.T))
+
+    a = baba - bard * bard
+
+    b = baba * rdoa - baoa * bard
+
+    c = baba * oaoa - baoa * baoa - cap_rad * cap_rad * baba
+
+    h = b * b - a * c
+
+    res = np.zeros(l1.shape[0])
+
+    # Vectorize conditional statements
+    t = (-b - np.sqrt(h)) / a
+    y = baoa + t * bard
+    # body
+    mask_body = (h >= 0) & (y > 0) & (y < baba)
+    res[mask_body] = t[mask_body]
+
+    # caps
+    oc = np.zeros(l1.shape)
+    oc[y <= 0.0] = oa[y <= 0.0]
+    oc[y >= 0.0] = (l1 - cap2)[y >= 0.0]
+    b = np.diag(np.dot(rd, oc.T))
+    c = np.diag(np.dot(oc, oc.T)) - cap_rad * cap_rad
+
+    h2 = b * b - c
+    mask_caps = mask_body = (h >= 0) & (h2 > 0.0)
+
+    res[mask_caps] = (-b - np.sqrt(h2))[mask_caps]
+
+    # No intersection:
+    res[h < 0] = -np.inf
+    return res
 
 
 def dist_line_point(po: np.ndarray, l1: np.ndarray, l2: np.ndarray) -> float:
