@@ -642,7 +642,7 @@ the test cases.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="gym_dockauv.utils.plotutils.EpisodeAnimation.get_quiver_coords_from_attitude">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_quiver_coords_from_attitude</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attitude</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.plotutils.EpisodeAnimation.get_quiver_coords_from_attitude" title="Permalink to this definition"></a></dt>
-<dd><p>Function to return the attitude</p>
+<dd><p>Function to return the quivers attitude in {n}</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>attitude</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – array 3x1, including the euler angles (fixed to rigid body coord)</p>
@@ -667,6 +667,26 @@ the test cases.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>axes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.utils.plotutils.EpisodeAnimation.init_radar_animation">
+<span class="sig-name descname"><span class="pre">init_radar_animation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_rays</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.plotutils.EpisodeAnimation.init_radar_animation" title="Permalink to this definition"></a></dt>
+<dd><p>WIll be added to the path animation, can only be called after init_path_animation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_ray</strong> – number of rays to initialize</p></li>
+<li><p><strong>n_rays</strong> (<em>int</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
 </dd>
 </dl>
 </dd></dl>
@@ -741,6 +761,25 @@ show attitude arrows (with plt.pause() save animation does not work)</p>
 </dd>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.utils.plotutils.EpisodeAnimation.update_radar_animation">
+<span class="sig-name descname"><span class="pre">update_radar_animation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_pos</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.plotutils.EpisodeAnimation.update_radar_animation" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pos</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – array(3,) starting position for rays</p></li>
+<li><p><strong>end_pos</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – array(n,3) end point for the rays</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
 </dd>
 </dl>
 </dd></dl>

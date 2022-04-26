@@ -153,6 +153,16 @@ Simulation. Below you find the most important definitions:</p>
 </dd></dl>
 
 <dl class="py property">
+<dt class="sig sig-object py" id="gym_dockauv.objects.auvsim.AUVSim.eta">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">eta</span></span><a class="headerlink" href="#gym_dockauv.objects.auvsim.AUVSim.eta" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the eta, which includes the position and attitude</p>
+<div class="math notranslate nohighlight">
+\[\boldsymbol{\eta} = \begin{bmatrix}
+    x &amp; y &amp; z &amp; \phi &amp; \theta &amp; \psi
+\end{bmatrix}^T\]</div>
+</dd></dl>
+
+<dl class="py property">
 <dt class="sig sig-object py" id="gym_dockauv.objects.auvsim.AUVSim.position">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">position</span></span><a class="headerlink" href="#gym_dockauv.objects.auvsim.AUVSim.position" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the position of the AUV in NED coordinates x, y, z.</p>
@@ -361,18 +371,47 @@ thus transformation from FLOW coordinate system to NED can be done here with var
 <p>The rays are always defined in {b}, but to calculate the rays direction in {n} it simply takes one
 transformation, as long as the actual transformation matrix can be applied through the euler angles where the
 sensor is mounted on (function is provided)</p>
+<p>This implementation is done to support vectorized calculations.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>eta</strong> (<em>numpy.ndarray</em>) – </p></li>
-<li><p><strong>freq</strong> (<em>float</em>) – </p></li>
-<li><p><strong>alpha</strong> (<em>float</em>) – </p></li>
-<li><p><strong>beta</strong> (<em>float</em>) – </p></li>
-<li><p><strong>ray_per_deg</strong> (<em>float</em>) – </p></li>
-<li><p><strong>max_dist</strong> (<em>float</em>) – </p></li>
+<li><p><strong>eta</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – position and euler angles</p></li>
+<li><p><strong>freq</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – frequency of sensor suite updates</p></li>
+<li><p><strong>alpha</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – range in vertical direction</p></li>
+<li><p><strong>beta</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – range in horizontal direction</p></li>
+<li><p><strong>ray_per_deg</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – number of rays per degree</p></li>
+<li><p><strong>max_dist</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – maximum distance for all rays</p></li>
+</ul>
+</dd>
+<dt class="field-even">Variables</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>pos</strong> (<em>np.ndarray</em>) – array (3,) for the starting position of all rays</p></li>
+<li><p><strong>rd_b</strong> (<em>np.ndarray</em>) – array (n,3) for the direction of the rays in body frame, where n will be the total number of rays
+(does not change normal over the course of a simulation)</p></li>
+<li><p><strong>rd_n</strong> (<em>np.ndarray</em>) – array (n,3) for the direction of the rays in {n}</p></li>
+<li><p><strong>intersec_dist</strong> (<em>np.ndarray</em>) – array (n,) for saving the intersection distance along rd_n, if no intersection the max distance
+should be set</p></li>
+<li><p><strong>end_pos_n</strong> (<em>np.ndarray</em>) – array (n,3) for saving the intersection point in {n}</p></li>
 </ul>
 </dd>
 </dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="gym_dockauv.objects.sensor.Radar.pos_arr">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pos_arr</span></span><a class="headerlink" href="#gym_dockauv.objects.sensor.Radar.pos_arr" title="Permalink to this definition"></a></dt>
+<dd><p>Helper property in case needed array (n,3) for starting position</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>array (n,3), where the starting position is copied n times to create artificial array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.objects.sensor.Radar.update_end_pos">
+<span class="sig-name descname"><span class="pre">update_end_pos</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.sensor.Radar.update_end_pos" title="Permalink to this definition"></a></dt>
+<dd><p>Update all end position points, should be called when intersec_dist is upated from the outside</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="gym_dockauv.objects.sensor.Radar.update_pos_and_att">
 <span class="sig-name descname"><span class="pre">update_pos_and_att</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eta</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.sensor.Radar.update_pos_and_att" title="Permalink to this definition"></a></dt>
@@ -647,7 +686,7 @@ further away, as if the ray came form behind in that direction to the capsule.</
 
 <dl class="py function">
 <dt class="sig sig-object py" id="gym_dockauv.objects.shape.intersec_dist_line_capsule_vectorized">
-<span class="sig-prename descclassname"><span class="pre">gym_dockauv.objects.shape.</span></span><span class="sig-name descname"><span class="pre">intersec_dist_line_capsule_vectorized</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">l1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ld</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cap1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cap2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cap_rad</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.shape.intersec_dist_line_capsule_vectorized" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">gym_dockauv.objects.shape.</span></span><span class="sig-name descname"><span class="pre">intersec_dist_line_capsule_vectorized</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">l1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ld</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cap1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cap2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cap_rad</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">inf</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.shape.intersec_dist_line_capsule_vectorized" title="Permalink to this definition"></a></dt>
 <dd><p>Return the closest distance for multiple lines defined as in l1 and ld and find the shortest distances for ONE
 capsule</p>
 <dl class="field-list simple">
@@ -658,6 +697,7 @@ capsule</p>
 <li><p><strong>cap1</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – array (3,) for capsule start</p></li>
 <li><p><strong>cap2</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – array (3,) for capsule end</p></li>
 <li><p><strong>cap_rad</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – capsule radius</p></li>
+<li><p><strong>default</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – default number if no intersection is found</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
