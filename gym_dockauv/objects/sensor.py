@@ -12,22 +12,38 @@ class Radar:
     transformation, as long as the actual transformation matrix can be applied through the euler angles where the
     sensor is mounted on (function is provided)
 
+    This implementation is done to support vectorized calculations.
+
+    :param eta: position and euler angles
+    :param freq: frequency of sensor suite updates
+    :param alpha: range in vertical direction
+    :param beta: range in horizontal direction
+    :param ray_per_deg: number of rays per degree
+    :param max_dist: maximum distance for all rays
+
+    :var pos: array (3,) for the starting position of all rays
+    :vartype pos: np.ndarray
+    :var rd_b: array (n,3) for the direction of the rays in body frame, where n will be the total number of rays
+        (does not change normal over the course of a simulation)
+    :vartype rd_b: np.ndarray
+    :var rd_n: array (n,3) for the direction of the rays in {n}
+    :vartype rd_n: np.ndarray
+    :var intersec_dist: array (n,) for saving the intersection distance along rd_n, if no intersection the max distance
+        should be set
+    :vartype intersec_dist: np.ndarray
+    :var end_pos_n: array (n,3) for saving the intersection point in {n}
+    :vartype end_pos_n: np.ndarray
+
     """
 
     def __init__(self, eta: np.ndarray, freq: float, alpha: float = 2 * np.pi, beta: float = 2 * np.pi,
                  ray_per_deg: float = 5.0 * np.pi / 180, max_dist: float = 25):
-        """
-        :param eta: position and euler angles
-        :param freq: frequency of sensor suite updates
-        :param alpha: range in vertical direction
-        :param beta: range in horizontal direction
-        :param ray_per_deg: number of rays per degree
-        """
+
         self.pos = eta[0:3]  # Initial starting position for all the rays, is always the same
         self.freq = freq
         self.max_dist = max_dist
-        tol = 10e-5
-        # Check for valid input
+        tol = 10e-8
+        # Check for valid input, little quirky solution due to float precision
         if (alpha + tol) % ray_per_deg > 0.001 or (beta + tol) % ray_per_deg > 0.001:
             raise KeyError("Initialize the radar with valid ray_per_deg for alpha and beta.")
         # Create (n, 1) array for the alpha and beta angle of each array
@@ -49,11 +65,12 @@ class Radar:
         # express direction of vectors in body frame in {n}
         self.rd_n = (geom.Rzyx(*eta[3:6]).T.dot(self.rd_b.T)).T
 
-        # Initialize intersection distance for each, if no interect, take max_dist
+        # Initialize intersection distance for each, if no intersect, take max_dist
         self.intersec_dist = np.full((self.n_rays,), max_dist)
 
         # Get endpoint of all rays in {n} array(n, 3)
-        self.end_pos_n = self.pos + self.rd_n * self.intersec_dist[:, None]
+        self.end_pos_n = None
+        self.update_end_pos()
 
     def update_pos_and_att(self, eta: np.ndarray) -> None:
         """
@@ -71,6 +88,12 @@ class Radar:
 
         # TODO: Update end points somewhere else, depending on self.intersec_dist
         # Get endpoint of all rays in {n} array(n, 3)
+        self.end_pos_n = self.pos + self.rd_n * self.intersec_dist[:, None]
+
+    def update_end_pos(self):
+        """
+        Update all end position points, should be called when intersec_dist is upated from the outside
+        """
         self.end_pos_n = self.pos + self.rd_n * self.intersec_dist[:, None]
 
 
