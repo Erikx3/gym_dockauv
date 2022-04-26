@@ -17,11 +17,11 @@ class TestSensor(unittest.TestCase):
 
 class TestSensorFunc(TestSensor):
     def test_init(self):
-        n_rays = self.alpha//self.ray_per_deg * self.beta//self.ray_per_deg
-        self.assertEqual(self.radar.alpha.shape[0], n_rays)
-        self.assertEqual(self.radar.alpha.beta[0], n_rays)
-        self.assertEqual(self.radar.rd_n.shape[0], n_rays)
-        self.assertEqual(self.radar.rd_n.shape[1], n_rays)
+        n_rays = self.radar.n_rays
+        self.assertEqual(n_rays, self.radar.alpha.shape[0])
+        self.assertEqual(n_rays, self.radar.beta.shape[0])
+        self.assertEqual(n_rays, self.radar.rd_n.shape[0])
+        self.assertEqual(3, self.radar.rd_n.shape[1])
 
         # TODO: Check more from Initialization of sensors (only done by hand so far)
 
