@@ -229,7 +229,7 @@ def intersec_dist_line_capsule(l1: np.ndarray, ld: np.ndarray, cap1: np.ndarray,
 
 
 def intersec_dist_line_capsule_vectorized(l1: np.ndarray, ld: np.ndarray, cap1: np.ndarray, cap2: np.ndarray,
-                                          cap_rad: float) -> np.ndarray:
+                                          cap_rad: float, default: float = -np.inf) -> np.ndarray:
     """
     Return the closest distance for multiple lines defined as in l1 and ld and find the shortest distances for ONE
     capsule
@@ -239,6 +239,7 @@ def intersec_dist_line_capsule_vectorized(l1: np.ndarray, ld: np.ndarray, cap1: 
     :param cap1: array (3,) for capsule start
     :param cap2: array (3,) for capsule end
     :param cap_rad: capsule radius
+    :param default: default number if no intersection is found
     :return: array(n,) with the distances calculated
     """
     ba = (cap2 - cap1)
@@ -266,8 +267,18 @@ def intersec_dist_line_capsule_vectorized(l1: np.ndarray, ld: np.ndarray, cap1: 
 
     res = np.zeros(l1.shape[0])
 
+    # # Vectorize conditional statements
+    # t = (-b - np.sqrt(h)) / a
+    # y = baoa + t * bard
+    # # body
+    # mask_body = (h >= 0) & (y > 0) & (y < baba)
+    # res[mask_body] = t[mask_body]
+
     # Vectorize conditional statements
-    t = (-b - np.sqrt(h)) / a
+    mask_h = h >= 0
+    t = np.zeros(h.shape[0])
+    t[~mask_h] = -np.inf
+    t[mask_h] = (-b[mask_h] - np.sqrt(h[mask_h])) / a[mask_h]
     y = baoa + t * bard
     # body
     mask_body = (h >= 0) & (y > 0) & (y < baba)
@@ -281,12 +292,12 @@ def intersec_dist_line_capsule_vectorized(l1: np.ndarray, ld: np.ndarray, cap1: 
     c = np.diag(np.dot(oc, oc.T)) - cap_rad * cap_rad
 
     h2 = b * b - c
-    mask_caps = mask_body = (h >= 0) & (h2 > 0.0)
+    mask_caps = (h >= 0) & (h2 > 0.0) & ~mask_body
 
-    res[mask_caps] = (-b - np.sqrt(h2))[mask_caps]
+    res[mask_caps] = (-b[mask_caps] - np.sqrt(h2[mask_caps]))  # Double indexing to avoid runtime warning with sqrt
 
-    # No intersection:
-    res[h < 0] = -np.inf
+    # No intersection or behind:
+    res[(h <= 0) | (res == 0)] = default
     return res
 
 
