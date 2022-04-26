@@ -1,4 +1,6 @@
 import numpy as np
+from functools import cached_property
+
 from ..utils import geomutils as geom
 
 
@@ -86,15 +88,20 @@ class Radar:
         # Normalize these vectors
         self.rd_n = self.rd_n / np.linalg.norm(self.rd_n, axis=1)[:, None]
 
-        # TODO: Update end points somewhere else, depending on self.intersec_dist
-        # Get endpoint of all rays in {n} array(n, 3)
-        self.end_pos_n = self.pos + self.rd_n * self.intersec_dist[:, None]
-
     def update_end_pos(self):
         """
         Update all end position points, should be called when intersec_dist is upated from the outside
         """
         self.end_pos_n = self.pos + self.rd_n * self.intersec_dist[:, None]
+
+    @property
+    def pos_arr(self):
+        """
+        Helper property in case needed array (n,3) for starting position
+
+        :return: array (n,3), where the starting position is copied n times to create artificial array
+        """
+        return np.tile(self.pos, (self.n_rays, 1))
 
 
 class Ray:

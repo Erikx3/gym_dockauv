@@ -8,7 +8,7 @@ import time
 from gym_dockauv.tests.objects.test_BlueROV2 import TestBlueROV2
 from gym_dockauv.utils.plotutils import EpisodeAnimation, EpisodeVisualization
 from gym_dockauv.utils.datastorage import EpisodeDataStorage
-from gym_dockauv.objects.shape import Capsule
+from gym_dockauv.objects.shape import Capsule, intersec_dist_line_capsule_vectorized
 from gym_dockauv.objects.current import Current
 from gym_dockauv.objects.sensor import Radar
 
@@ -28,7 +28,7 @@ class TestIntegration(TestBlueROV2):
         """
 
         # Just moving forward (standard initialization has a skew in pitch, that why it is -0.5 here)
-        action = np.array([1.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+        action = np.array([0.0001, 0.0, 0.0, -0.0, 0.0, 0.0])
         # Reset nu_r here
         self.BlueROV2.state = np.zeros(12)
 
@@ -56,8 +56,8 @@ class TestIntegration(TestBlueROV2):
         ax = epi_anim.init_path_animation()
         epi_anim.add_episode_text(ax, episode_nr)
         # Add shape for testing
-        cylinder = Capsule(position=np.array([0.5, 0.5, 0.5]), radius=0.15, vec_top=np.array([1, 1, 1]))
-        epi_anim.add_shapes(ax, [cylinder])
+        capsule = Capsule(position=np.array([1.5, 0.0, -0.0]), radius=0.25, vec_top=np.array([1.5, 0.0, -1.0]))
+        epi_anim.add_shapes(ax, [capsule])
         # Some extra axes manipulation for testing
         title = "Integration_Test_Episode_Simulation"
         ax.set(title=title)
@@ -67,7 +67,7 @@ class TestIntegration(TestBlueROV2):
         # Initialize Data Storage
         epi_storage = EpisodeDataStorage()
         epi_storage.set_up_episode_storage(path_folder=PATH_FOL, vehicle=self.BlueROV2,
-                                           step_size=self.BlueROV2.step_size, nu_c_init=nu_c, shapes=[cylinder],
+                                           step_size=self.BlueROV2.step_size, nu_c_init=nu_c, shapes=[capsule],
                                            title=title, episode=episode_nr)
         epi_storage.file_save_name = os.path.join(PATH_FOL, f"{STORAGE_NAME}.pkl")
 
@@ -94,13 +94,20 @@ class TestIntegration(TestBlueROV2):
             self.BlueROV2.step(action, nu_c)
             # Update sensors
             radar.update_pos_and_att(self.BlueROV2.eta)
+            i_dist = intersec_dist_line_capsule_vectorized(
+                l1=radar.pos_arr, ld=radar.rd_n, cap1=capsule.vec_bot, cap2=capsule.vec_top,
+                cap_rad=capsule.radius)
+            #print(i_dist)
+            i_dist[(i_dist < 0) | (i_dist > radar.max_dist)] = radar.max_dist  # Postedit result from intersec func
+            radar.intersec_dist = i_dist.copy()
+            radar.update_end_pos()
             # Update data storage
             epi_storage.update(nu_c=nu_c)
             # Update animation of vehicle
             epi_anim.update_path_animation(positions=epi_storage.positions, attitudes=epi_storage.attitudes)
             # Update animation of sensors
             epi_anim.update_radar_animation(radar.pos, radar.end_pos_n)
-            #time.sleep(0.5)
+            time.sleep(0.1)
 
         """Note on why the vehicle is slightly pitching in simulation: Even if we apply only force in x and z direction,
         the Mass Matrix M_A contains off diagonal elements, since the Center of Origin is placed at the center of

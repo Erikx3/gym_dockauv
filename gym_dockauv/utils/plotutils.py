@@ -241,7 +241,8 @@ class EpisodeAnimation:
         """
         # Static shapes (assumed for now, drawing these dynamically could slow down the system significantly):
         for shape in shapes:
-            ax.plot_surface(*shape.get_plot_variables()[0], color='r', alpha=1.00)
+            for plot_var in shape.get_plot_variables():
+                ax.plot_surface(*plot_var, color='b', alpha=1.00)
 
     def update_radar_animation(self, pos: np.ndarray, end_pos:np.ndarray) -> None:
         """
