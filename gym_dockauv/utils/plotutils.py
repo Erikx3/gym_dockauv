@@ -33,13 +33,14 @@ class EpisodeVisualization:
 
     @staticmethod
     def plot_episode_animation(states: np.ndarray, episode: int = None, shapes: List[Shape] = None,
-                               t_per_step: float = None, title: str = None) -> None:
+                               radar_end_pos: np.ndarray = None, t_per_step: float = None, title: str = None) -> None:
         """
         Wrapper to plot interactive animation of the episode animation after it has been saved
 
         :param states: nx12 array of states
         :param episode: Episode number
         :param shapes: static shapes in plot
+        :param radar_end_pos: array(n_data, n_rays, 3) for all radar end pos
         :param title: title for subplot
         :param t_per_step: time between each frame
         :return: None
@@ -52,11 +53,15 @@ class EpisodeVisualization:
             ax.set(title=title)
         if shapes:
             epi_anim.add_shapes(ax, shapes)
+        if radar_end_pos is not None:
+            epi_anim.init_radar_animation(n_rays=radar_end_pos.shape[1])
 
         states = states
 
         for i in range(states.shape[0]):
             epi_anim.update_path_animation(positions=states[:i + 1, 0:3], attitudes=states[:i + 1, 3:6])
+            if radar_end_pos is not None:
+                epi_anim.update_radar_animation(pos=states[i, 0:3], end_pos=radar_end_pos[i, :])
             if t_per_step:
                 plt.pause(t_per_step)
 
@@ -196,7 +201,7 @@ class EpisodeAnimation:
         """
         WIll be added to the path animation, can only be called after init_path_animation
 
-        :param n_ray: number of rays to initialize
+        :param n_rays: number of rays to initialize
         :return:
         """
         self.ax_path.ray_arts = []
@@ -244,7 +249,7 @@ class EpisodeAnimation:
             for plot_var in shape.get_plot_variables():
                 ax.plot_surface(*plot_var, color='b', alpha=1.00)
 
-    def update_radar_animation(self, pos: np.ndarray, end_pos:np.ndarray) -> None:
+    def update_radar_animation(self, pos: np.ndarray, end_pos: np.ndarray) -> None:
         """
 
         :param pos: array(3,) starting position for rays
@@ -288,7 +293,6 @@ class EpisodeAnimation:
                                      self.ax_path.get_ylim()[1] - self.ax_path.get_ylim()[0],
                                      self.ax_path.get_zlim()[0] - self.ax_path.get_zlim()[1]])
 
-
         plt.draw()
 
         # This line below lead to failure in saving the animation, for now add it manually to out of scope code
@@ -327,9 +331,13 @@ class EpisodeAnimation:
 
         :return: None
         """
-        if hasattr(self, 'ax_path') and "positions" in kwargs and "attitudes" in kwargs:
-            self.update_path_animation(positions=np.array(kwargs["positions"][:step_nr + 1, :]),
-                                       attitudes=np.array(kwargs["attitudes"][:step_nr + 1, :]))
+        if hasattr(self, 'ax_path'):
+            if "positions" in kwargs and "attitudes" in kwargs:
+                self.update_path_animation(positions=np.array(kwargs["positions"][:step_nr + 1, :]),
+                                           attitudes=np.array(kwargs["attitudes"][:step_nr + 1, :]))
+            if "positions" in kwargs and "end_pos" in kwargs:
+                self.update_radar_animation(pos=np.array(kwargs["positions"][step_nr, :]),
+                                            end_pos=np.array(kwargs["end_pos"][step_nr, :]))
 
     def save_animation(self, save_path: str, frames: int, fps: int = 10, **kwargs) -> None:
         """
@@ -351,7 +359,7 @@ class EpisodeAnimation:
         ani = animation.FuncAnimation(
             self.fig, func=self.save_wrap_update_animation, frames=frames, fargs=(kwargs,))
 
-        writer_video = animation.FFMpegWriter(fps=fps)
+        writer_video = animation.FFMpegWriter(fps=fps, bitrate=2000)
 
         # TODO: Make this a logger statement
         print(f"\nSave video at {save_path}")
