@@ -22,7 +22,7 @@ if __name__ == "__main__":
     nu_c = np.zeros(6)
     action = np.array([1, 1, 0])
     epi_stor = EpisodeDataStorage()
-    epi_stor.set_up_episode_storage("", lauv, lauv.step_size, nu_c, None, "Test_lauv", 123)
+    epi_stor.set_up_episode_storage("", lauv, lauv.step_size, nu_c, None, title="Test_lauv", episode=123)
     n_sim = 1000
     for i in range(1000):
         lauv.step(action, nu_c)

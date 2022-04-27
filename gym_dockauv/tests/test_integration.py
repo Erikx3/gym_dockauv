@@ -28,15 +28,15 @@ class TestIntegration(TestBlueROV2):
         """
 
         # Just moving forward (standard initialization has a skew in pitch, that why it is -0.5 here)
-        action = np.array([1.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+        action = np.array([0.00, -0.0, -0.0, 0.0, -0.0, 0.0])
         # Reset nu_r here
         self.BlueROV2.state = np.zeros(12)
 
         # Water current
-        current = Current(mu=0.01, V_min=0.0, V_max=0.5, Vc_init=0.2,
+        current = Current(mu=0.01, V_min=0.0, V_max=0.5, Vc_init=0.1,
                           alpha_init=0.0, beta_init=0.0, white_noise_std=0.1, step_size=self.BlueROV2.step_size)
         nu_c = current(self.BlueROV2.state)
-        # nu_c = np.array([0, 0, 0, 0, 0, 0])
+        #nu_c = np.array([0, 0, 0, 0, 0, 0])
 
         # Add sensor suite for testing
         eta = np.array([0, 0, 0, 0, 0, 0])
@@ -122,10 +122,11 @@ class TestIntegration(TestBlueROV2):
         epi_storage.save()
 
         # Uncomment if you want to save a video
-        # temp_title = "LOL"
-        # ax.set(title=f"{title}_Save_Video")
+        # temp_title = "temp_title"
+        # ax.set(title=f"{temp_title}")
         # save_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'test_result_files', temp_title+'.mp4'))
-        # epi_anim.save_animation(save_path=save_path, fps=20, frames=epi_storage.positions.shape[0],
+        # epi_anim.save_animation(save_path=save_path, fps=int(1/self.BlueROV2.step_size),
+        #                         frames=epi_storage.positions.shape[0],
         #                         positions=epi_storage.positions, attitudes=epi_storage.attitudes,
         #                         end_pos=epi_storage.storage["radar"])
         del epi_anim
