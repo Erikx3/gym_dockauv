@@ -6,8 +6,12 @@ View the doc at: https://erikx3.github.io/gym_dockauv/
 
 > :warning: **TBD - Work in Progress**: Documentation via Sphinx hosted on Github Pages aswell as README.md
 
+https://user-images.githubusercontent.com/53977667/165626628-fa5cec8c-2f81-4792-91b2-2784eb4a80e2.mp4
+
+
 ___
 ___
+
 
 ## Some Notes:
 1. Installation of Sphinx 4.4.0 over https://www.sphinx-doc.org/en/master/usage/installation.html
