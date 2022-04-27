@@ -7,6 +7,7 @@ import numpy as np
 # Used for typehints
 from ..objects.auvsim import AUVSim
 from ..objects.shape import Shape
+from ..objects.sensor import Radar
 from typing import List
 
 from .plotutils import EpisodeVisualization
@@ -33,14 +34,14 @@ class ArrayList:
 
     Arrays are saved based on dimension of first vector in nxc format, where c is the length of the initial vector
 
-    :param init_array: 1d array with length c
+    :param init_array: any initial array
     """
 
     def __init__(self, init_array):
         # Initialize data array
-        self.dim_col = len(init_array)
+        self.dim_col = init_array.shape
         self.capacity = 100
-        self.data = np.zeros((self.capacity, self.dim_col))
+        self.data = np.zeros((self.capacity, *self.dim_col))
         self.size = 1
         self.data[0, :] = init_array
 
@@ -53,7 +54,7 @@ class ArrayList:
     def add_row(self, row: np.ndarray) -> None:
         if self.size == self.capacity:
             self.capacity *= self.array_grow_factor
-            newdata = np.zeros((self.capacity, self.dim_col))
+            newdata = np.zeros((self.capacity, *self.dim_col))
             newdata[:self.size, :] = self.data
             self.data = newdata
 
@@ -106,10 +107,12 @@ class EpisodeDataStorage:
     def __init__(self):
         self.storage = None
         self.vehicle = None
+        self.radar = None
         self.file_save_name = None
 
-    def set_up_episode_storage(self, path_folder: str, vehicle: AUVSim, step_size: float, nu_c_init: np.ndarray,
-                               shapes: List[Shape] = None, title: str = "", episode: int = -1) -> None:
+    def set_up_episode_storage(self, path_folder: str, vehicle: AUVSim, step_size: float,
+                               nu_c_init: np.ndarray, shapes: List[Shape] = None,
+                               radar: Radar = None, title: str = "", episode: int = -1) -> None:
         r"""
         Set up the storage to save and update incoming data
 
@@ -120,6 +123,7 @@ class EpisodeDataStorage:
         :param step_size: Stepsize used in this simulation
         :param nu_c_init: water current information in the simulation (body frame) array 6x1
         :param shapes: Shapes for 3d Animation that were used (static)
+        :param radar: Radar sensor if used, save endpoints for post visualization
         :param title: Optional title for addendum
         :param episode: Episode number
         :return: None
@@ -130,6 +134,8 @@ class EpisodeDataStorage:
         self.vehicle = vehicle  # Vehicle instance (not a copy, automatically a reference which is updated in reference)
         if shapes is None:
             shapes = []
+        self.radar = radar  # Can still be none!
+        end_pos_n = ArrayList(radar.end_pos_n) if radar is not None else None
         self.storage = {
             "vehicle": {
                 "object": vehicle,
@@ -137,6 +143,7 @@ class EpisodeDataStorage:
                 "states_dot": ArrayList(self.vehicle._state_dot),
                 "u": ArrayList(self.vehicle.u),
             },
+            "radar": end_pos_n,
             "nu_c": ArrayList(nu_c_init),
             "shapes": [deepcopy(shape) for shape in shapes],
             "episode": episode,
@@ -154,6 +161,8 @@ class EpisodeDataStorage:
         self.storage["vehicle"]["states_dot"].add_row(self.vehicle._state_dot)
         self.storage["vehicle"]["u"].add_row(self.vehicle.u)
         self.storage["nu_c"].add_row(nu_c)
+        if self.radar is not None:
+            self.storage["radar"].add_row(self.radar.end_pos_n)
 
     def save(self) -> str:
         """
@@ -164,6 +173,8 @@ class EpisodeDataStorage:
         self.storage["vehicle"]["states"] = self.storage["vehicle"]["states"].get_nparray()
         self.storage["vehicle"]["states_dot"] = self.storage["vehicle"]["states_dot"].get_nparray()
         self.storage["vehicle"]["u"] = self.storage["vehicle"]["u"].get_nparray()
+        if self.radar is not None:
+            self.storage["radar"] = self.storage["radar"].get_nparray()
 
         with open(self.file_save_name, 'wb') as outp:  # Overwrites any existing file.
             pickle.dump(self.storage, outp, pickle.HIGHEST_PROTOCOL)
@@ -223,6 +234,7 @@ class EpisodeDataStorage:
             states=self.states,
             episode=self.storage["episode"],
             shapes=self.storage["shapes"],
+            radar_end_pos= self.storage["radar"],
             t_per_step=t_per_step,
             title=title
         )
