@@ -17,7 +17,7 @@ def train() -> None:
 
 if __name__ == "__main__":
 
-    lauv = LAUV("/home/erikx3/PycharmProjects/gym_dockauv/gym_dockauv/objects/vehicles/LAUV.xml")
+    lauv = LAUV()
     lauv.step_size = 0.01
     nu_c = np.zeros(6)
     action = np.array([1, 1, 0])
@@ -28,4 +28,4 @@ if __name__ == "__main__":
         lauv.step(action, nu_c)
         epi_stor.update(nu_c)
 
-    epi_stor.plot_episode_animation(None, "LOL")
+    epi_stor.plot_episode_animation(None, "LAUV Test")
