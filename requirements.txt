@@ -28,3 +28,4 @@ zipp==3.7.0
 numpy~=1.22.3
 scipy~=1.8.0
 matplotlib~=3.5.1
+gym~=0.23.1
