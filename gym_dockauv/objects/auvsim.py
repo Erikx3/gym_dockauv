@@ -1,4 +1,4 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 import numpy as np
 
 from .statespace import StateSpace
@@ -50,6 +50,19 @@ class AUVSim(StateSpace, ABC):
         if name == 'step_size':
             self.lowpassfilter.sample_time = value
         super().__setattr__(name, value)
+
+    @abstractmethod
+    def reset(self):
+        """
+        Function to reset the simulated vehicle entirely
+
+        .. note:: u can be set to None, since if it is called again without new initialization, it sets itself to
+            zero automatically
+        """
+
+        self.state = np.hstack([np.zeros((6,)), np.zeros((6,))])
+        self._state_dot = np.hstack([np.zeros((6,)), np.zeros((6,))])
+        self.u = None
 
     def unnormalize_input(self, norm_input: np.ndarray) -> np.ndarray:
         """

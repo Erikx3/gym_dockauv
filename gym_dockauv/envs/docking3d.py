@@ -1,6 +1,7 @@
 import numpy as np
 import gym
 import importlib
+from typing import Tuple
 
 from gym_dockauv.objects.vehicles.BlueROV2 import BlueROV2
 
@@ -17,7 +18,7 @@ class Docking3d(gym.Env):
                       self.config["vehicle"])
         # TODO: Comment out again
         self.auv = BlueROV2()
-        #self.auv = AUV()
+        # self.auv = AUV()
 
         # Set step size for vehicle
         self.auv.step_size = self.config["t_step_size"]
@@ -31,7 +32,6 @@ class Docking3d(gym.Env):
                                                 dtype=np.float32)
 
         # General simulation variables:
-        self.t_total_elapsed = 0  # Simulation time in total elapsed [s]
         self.t_total_steps = 0  # Number of steps in this simulation
         self.t_step_size = self.config["t_step_size"]
         self.episode = 0  # Current episode
@@ -43,3 +43,37 @@ class Docking3d(gym.Env):
         self.reached_goal = None  # Bool to check of goal is reached at the end of an episode
         self.collision = None  # Bool to indicate of vehicle has collided
 
+        # Initialize observation, reward, done, info
+        self.observation = None
+        self.reward = None
+        self.done = False
+        self.info = None  # TODO: Make this a dictionary I guess :)
+
+    def reset(self) -> np.ndarray:
+        """
+        Call this function to reset the environment
+        """
+        self.auv.reset()
+        self.t_total_steps = 0
+        self.t_step_size = self.config["t_step_size"]
+        self.episode = 0
+        self.cumulative_reward = 0
+        self.reached_goal = False
+        self.collision = False
+
+        # Initialize observation, reward, done, info
+        self.observation = self.auv.state
+        self.reward = 0
+        self.done = False
+        self.info = None
+
+        return self.observation
+
+    def step(self, action: np.ndarray) -> Tuple[np.ndarray, float, bool, dict]:
+        pass
+
+    def observe(self):
+        pass
+
+    def reward(self):
+        pass
