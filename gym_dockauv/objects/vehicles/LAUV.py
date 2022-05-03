@@ -26,7 +26,7 @@ class LAUV(AUVSim):
 
     """
 
-    def __init__(self, xml_path):
+    def __init__(self, xml_path: str = os.path.join(os.path.dirname(__file__), 'LAUV.xml')):
         super().__init__()
         # Additional introduced variables in this class!
         self.N_urf = 0.0

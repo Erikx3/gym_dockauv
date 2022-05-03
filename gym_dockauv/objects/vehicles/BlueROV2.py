@@ -24,7 +24,8 @@ class BlueROV2(AUVSim):
 
     """
 
-    def __init__(self, xml_path: str, control_mode: str = "joystick"):
+    def __init__(self, xml_path: str = os.path.join(os.path.dirname(__file__), 'BlueROV2.xml'),
+                 control_mode: str = "joystick"):
         super().__init__()  # Call inherited init functions and then add to it
         StateSpace.read_phys_para_from_xml(self, xml_path)  # Assign BlueROV2 parameters
 
