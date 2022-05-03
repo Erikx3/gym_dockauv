@@ -16,7 +16,7 @@ from .plotutils import EpisodeVisualization
 class FullDataStorage:
     """
     TODO:
-    Class to save general simulation over all the runs of simulation (e.g. length, success/collison, reward)
+    Class to save general simulation over all the runs of simulation (e.g. length, success/collison, cum_reward)
     """
     pass
 

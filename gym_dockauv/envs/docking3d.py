@@ -1,9 +1,14 @@
 import numpy as np
 import gym
+import matplotlib.pyplot as plt
 import importlib
 from typing import Tuple
 
 from gym_dockauv.objects.vehicles.BlueROV2 import BlueROV2
+from gym_dockauv.utils.datastorage import EpisodeDataStorage
+from gym_dockauv.utils.plotutils import EpisodeAnimation
+
+# TODO: Think about making this a base class for further environments with different observations, rewards, setup?
 
 
 class Docking3d(gym.Env):
@@ -35,45 +40,166 @@ class Docking3d(gym.Env):
         self.t_total_steps = 0  # Number of steps in this simulation
         self.t_step_size = self.config["t_step_size"]
         self.episode = 0  # Current episode
-        self.cumulative_reward = 0  # Current cumulative reward of agent
+        self.last_reward = 0
+        self.cumulative_reward = 0  # Current cumulative cum_reward of agent
+        self.interval_datastorage = self.config["interval_datastorage"]
+        self.interval_render = self.config["interval_render"]
+
+        # Goal
+        self.goal_location = self.config["goal_location"]
 
         # Declaring attributes
         self.obstacles = []
+        self.reached_goal = False  # Bool to check of goal is reached at the end of an episode
+        self.collision = False  # Bool to indicate of vehicle has collided
 
-        self.reached_goal = None  # Bool to check of goal is reached at the end of an episode
-        self.collision = None  # Bool to indicate of vehicle has collided
-
-        # Initialize observation, reward, done, info
-        self.observation = None
-        self.reward = None
+        # Initialize observation, cum_reward, done, info
+        self.n_observations = 12
+        self.observation = np.zeros(self.n_observations)
+        self.cum_reward = None
         self.done = False
-        self.info = None  # TODO: Make this a dictionary I guess :)
+        self.info = {}  # TODO: Make this a dictionary I guess :)
+
+        # Water current TODO Init with config
+        self.nu_c = np.zeros(6)
+
+        # TODO: Add time for beginning of init and add that to info?
+
+        # Data storage
+        self.episode_data_storage = None
+
+        # Animation
+        self.episode_animation = None
+
+        # Call reset before first episode
+        self.reset()
 
     def reset(self) -> np.ndarray:
         """
         Call this function to reset the environment
         """
+        # In case any windows were open from matplotlib or animation
+        plt.close('all')
+        self.episode_animation = None
+
+        # Check if we should save a datastorage item
+        if self.episode % self.interval_datastorage == 0 or self.episode == 1:
+            self.episode_data_storage.save()
+        self.episode_data_storage = None
+
         self.auv.reset()
         self.t_total_steps = 0
         self.t_step_size = self.config["t_step_size"]
         self.episode = 0
-        self.cumulative_reward = 0
         self.reached_goal = False
         self.collision = False
 
-        # Initialize observation, reward, done, info
+        # Initialize observation, cum_reward, done, info
         self.observation = self.auv.state
-        self.reward = 0
+        self.last_reward = 0
+        self.cumulative_reward = 0
         self.done = False
-        self.info = None
 
+        # Update episode number
+        self.episode += 1
+
+        # Save whole episode data if interval is met, or we need it for the renderer
+        if self.episode % self.interval_datastorage == 0 or self.episode == 1 or self.episode % self.interval_render:
+            self.episode_data_storage = EpisodeDataStorage()
+            self.episode_data_storage.set_up_episode_storage(path_folder="", vehicle=self.auv,
+                                                             step_size=self.t_step_size, nu_c_init=self.nu_c,
+                                                             shapes= self.obstacles, radar=None, title="",
+                                                             episode=self.episode)
+        else:
+            self.episode_data_storage = None
+
+        # Initialize plot if renderer is active:
+        if self.episode % self.interval_render:
+            self.episode_animation = EpisodeAnimation()
+            ax = self.episode_animation.init_path_animation()
+            self.episode_animation.add_episode_text(ax, self.episode)
         return self.observation
 
     def step(self, action: np.ndarray) -> Tuple[np.ndarray, float, bool, dict]:
-        pass
+        # Simulate current TODO
+
+        # Update AUV dynamics
+        self.auv.step(action, self.nu_c)
+
+        # Check collision TODO
+
+        # Update data storage if active
+        if self.episode_data_storage:
+            self.episode_data_storage.update(self.nu_c)
+
+        # Update visualization if active
+        if self.episode_animation:
+            self.render()
+
+        # Calculate cum_reward
+        self.last_reward = self.reward_step()
+        self.cumulative_reward += self.last_reward
+
+        # Determine if simulation is done
+        self.done = self.is_done()
+
+        # Make next observation TODO
+        self.observation = self.observe()
+
+        # Save sim time info
+        self.t_total_steps += 1
+
+        # Update info dict TODO
+        self.info = {}
+
+        # Check if rendering is active TODO
+
+        return self.observation, self.last_reward, self.done, self.info
 
     def observe(self):
-        pass
+        obs = np.zeros(self.n_observations)
+        obs[0] = np.clip(self.auv.position[0] / 50, -1, 1)  # Position, assuming we move withing 50 meters
+        obs[1] = np.clip(self.auv.position[1] / 50, -1, 1)
+        obs[2] = np.clip(self.auv.position[2] / 50, -1, 1)
+        obs[3] = np.clip(self.auv.relative_velocity[0] / 5, -1, 1)  # Forward speed, assuming 5m/s max
+        obs[4] = np.clip(self.auv.relative_velocity[1] / 2, -1, 1)  # Side speed, assuming 5m/s max
+        obs[5] = np.clip(self.auv.relative_velocity[2] / 2, -1, 1)  # Vertical speed, assuming 5m/s max
+        obs[6] = np.clip(self.auv.attitude[0] / np.pi/2, -1, 1)  # Roll, assuming +-90deg max
+        obs[7] = np.clip(self.auv.attitude[1] / np.pi/2, -1, 1)  # Pitch, assuming +-90deg max
+        obs[8] = np.clip(self.auv.attitude[2] / np.pi, -1, 1)  # Yaw, assuming +-180deg max
+        obs[9] = np.clip(self.auv.angular_velocity[0] / 1.0, -1, 1)  # Angular Velocities, assuming 1 rad/s
+        obs[10] = np.clip(self.auv.angular_velocity[1] / 1.0, -1, 1)
+        obs[11] = np.clip(self.auv.angular_velocity[2] / 1.0, -1, 1)
 
-    def reward(self):
-        pass
+        return obs
+
+    def reward_step(self):
+        # Reward for being closer to the goal location:
+        reward_dis = -np.linalg.norm(self.auv.position - self.goal_location)
+        # Reward for stable attitude
+        reward_att = -np.sum(self.auv.attitude[:2])
+        # Negative cum_reward per time step
+        reward_time = -1
+        # Reward if collision TODO
+
+        # Reward for action used (e.g. want to minimize action power usage) TODO
+
+        reward = reward_dis + reward_att + reward_time
+
+        return reward
+
+    def is_done(self):
+        # Check if close to the goal
+        cond1 = np.linalg.norm(self.auv.position - self.goal_location) < 0.1
+
+        # Check if out of bounds for position
+        cond2 = np.any(np.abs(self.auv.position) > 50)
+
+        # TODO: Collision
+
+        done = cond1 or cond2
+        return done
+
+    def render(self, mode="human"):
+        self.episode_animation.update_path_animation(positions=self.episode_data_storage.positions,
+                                                     attitudes=self.episode_data_storage.attitudes)
