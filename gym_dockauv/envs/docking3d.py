@@ -1,18 +1,28 @@
 import numpy as np
 import gym
+from gym.utils import seeding
 import matplotlib.pyplot as plt
-import importlib
-from typing import Tuple
+from timeit import default_timer as timer
+from datetime import timedelta
 
-from gym_dockauv.objects.vehicles.BlueROV2 import BlueROV2
+import importlib
+from typing import Tuple, Optional, Union
+
 from gym_dockauv.utils.datastorage import EpisodeDataStorage
 from gym_dockauv.utils.plotutils import EpisodeAnimation
 from gym_dockauv.config.env_default_config import BASE_CONFIG
 
 # TODO: Think about making this a base class for further environments with different observations, rewards, setup?
+# TODO: Save cumulative reward in episode data storage, other information in Simulation Storage
+# TODO: Make (simple) logger with env config, BlueROV2 config, when something is saved etc.
+# TODO: Save animation option
+# TODO: Water current, radar sensors, obstacles (so far only capsules are supported)
 
 
 class Docking3d(gym.Env):
+    """
+    Base Class for the docking environment
+    """
 
     def __init__(self, env_config: dict = BASE_CONFIG):
         super().__init__()
@@ -22,9 +32,7 @@ class Docking3d(gym.Env):
         # Dynamically load class of vehicle and instantiate it (available vehicles under gym_dockauv/objects/vehicles)
         AUV = getattr(importlib.import_module("gym_dockauv.objects.vehicles." + self.config["vehicle"]),
                       self.config["vehicle"])
-        # TODO: Comment out again
-        self.auv = BlueROV2()
-        # self.auv = AUV()
+        self.auv = AUV()
 
         # Set step size for vehicle
         self.auv.step_size = self.config["t_step_size"]
@@ -41,8 +49,7 @@ class Docking3d(gym.Env):
         self.t_total_steps = 0  # Number of steps in this simulation
         self.t_step_size = self.config["t_step_size"]
         self.episode = 0  # Current episode
-        self.last_reward = 0
-        self.cumulative_reward = 0  # Current cumulative cum_reward of agent
+        self.cumulative_reward = 0  # Current cumulative reward of agent
         self.max_timesteps = self.config["max_timesteps"]
         self.interval_datastorage = self.config["interval_datastorage"]
         self.interval_render = self.config["interval_render"]
@@ -57,17 +64,18 @@ class Docking3d(gym.Env):
         self.reached_goal = False  # Bool to check of goal is reached at the end of an episode
         self.collision = False  # Bool to indicate of vehicle has collided
 
-        # Initialize observation, cum_reward, done, info
+        # Initialize observation, reward, done, info
         self.n_observations = 12
         self.observation = np.zeros(self.n_observations)
-        self.cum_reward = None
         self.done = False
-        self.info = {}  # TODO: Make this a dictionary I guess :)
+        self.last_reward = 0
+        self.info = {}
 
-        # Water current TODO Init with config
+        # Water current TODO
         self.nu_c = np.zeros(6)
 
-        # TODO: Add time for beginning of init and add that to info?
+        # Save and display simulation time
+        self.start_time_sim = timer()
 
         # Data storage
         self.episode_data_storage = None
@@ -75,31 +83,54 @@ class Docking3d(gym.Env):
         # Animation
         self.episode_animation = None
 
-    def reset(self) -> np.ndarray:
+    def reset(self, seed: Optional[int] = None,
+              return_info: bool = False,
+              options: Optional[dict] = None,
+              ) -> Union[np.ndarray, Tuple[np.ndarray, dict]]:
         """
-        Call this function to reset the environment
+        From Base Class:
+
+        Resets the environment to an initial state and returns an initial
+        observation.
+
+        This method should also reset the environment's random number
+        generator(s) if `seed` is an integer or if the environment has not
+        yet initialized a random number generator. If the environment already
+        has a random number generator and `reset` is called with `seed=None`,
+        the RNG should not be reset.
+        Moreover, `reset` should (in the typical use case) be called with an
+        integer seed right after initialization and then never again.
+
+        .. note:: Options not used yet
         """
-        # TODO: Go concentrated through reset function to check what really needs a reset!
         # In case any windows were open from matplotlib or animation
         plt.close('all')
         self.episode_animation = None
+
+        # Save info to return in the end
+        return_info_dict = self.info
 
         # Check if we should save a datastorage item
         if self.episode_data_storage and (self.episode % self.interval_datastorage == 0 or self.episode == 1):
             self.episode_data_storage.save()
         self.episode_data_storage = None
 
+        # General reset
         self.auv.reset()
         self.t_total_steps = 0
-        self.t_step_size = self.config["t_step_size"]
         self.reached_goal = False
         self.collision = False
 
-        # Initialize observation, cum_reward, done, info
+        # Reset observation, cum_reward, done, info
         self.observation = self.auv.state
         self.last_reward = 0
         self.cumulative_reward = 0
         self.done = False
+
+        # Update the seed:
+        # TODO: Check if this makes all seeds same (e.g. for water current!!)
+        if seed is not None:
+            self._np_random, seed = seeding.np_random(seed)
 
         # Update episode number
         self.episode += 1
@@ -112,7 +143,7 @@ class Docking3d(gym.Env):
             self.episode_data_storage = EpisodeDataStorage()
             self.episode_data_storage.set_up_episode_storage(path_folder=self.save_path_folder, vehicle=self.auv,
                                                              step_size=self.t_step_size, nu_c_init=self.nu_c,
-                                                             shapes= self.obstacles, radar=None, title="",
+                                                             shapes=self.obstacles, radar=None, title="",
                                                              episode=self.episode)
         else:
             self.episode_data_storage = None
@@ -123,13 +154,16 @@ class Docking3d(gym.Env):
             ax = self.episode_animation.init_path_animation()
             self.episode_animation.add_episode_text(ax, self.episode)
 
+        # Return info if wanted
+        if return_info:
+            return self.observation, return_info_dict
         return self.observation
 
     def generate_environment(self):
         """
         Setup a environment after each reset
         """
-        # TODO
+        # TODO Think about how this should be done in future simulations
         self.auv.position = np.array([5, 5, 5])
 
     def step(self, action: np.ndarray) -> Tuple[np.ndarray, float, bool, dict]:
@@ -161,13 +195,19 @@ class Docking3d(gym.Env):
         # Save sim time info
         self.t_total_steps += 1
 
-        # Update info dict TODO
+        # Update info dict
         self.info = {"episode": self.episode,
-                     "t_step": self.t_total_steps}
+                     "t_step": self.t_total_steps,
+                     "cumulative_reward": self.cumulative_reward,
+                     "last_reward": self.last_reward,
+                     "done": self.done,
+                     "collision": self.collision,
+                     "reached_goal": self.reached_goal,
+                     "simulation_time": timer()-self.start_time_sim}
 
         return self.observation, self.last_reward, self.done, self.info
 
-    def observe(self):
+    def observe(self) -> np.ndarray:
         obs = np.zeros(self.n_observations)
         obs[0] = np.clip(self.auv.position[0] / 50, -1, 1)  # Position, assuming we move withing 50 meters
         obs[1] = np.clip(self.auv.position[1] / 50, -1, 1)
@@ -175,8 +215,8 @@ class Docking3d(gym.Env):
         obs[3] = np.clip(self.auv.relative_velocity[0] / 5, -1, 1)  # Forward speed, assuming 5m/s max
         obs[4] = np.clip(self.auv.relative_velocity[1] / 2, -1, 1)  # Side speed, assuming 5m/s max
         obs[5] = np.clip(self.auv.relative_velocity[2] / 2, -1, 1)  # Vertical speed, assuming 5m/s max
-        obs[6] = np.clip(self.auv.attitude[0] / np.pi/2, -1, 1)  # Roll, assuming +-90deg max
-        obs[7] = np.clip(self.auv.attitude[1] / np.pi/2, -1, 1)  # Pitch, assuming +-90deg max
+        obs[6] = np.clip(self.auv.attitude[0] / np.pi / 2, -1, 1)  # Roll, assuming +-90deg max
+        obs[7] = np.clip(self.auv.attitude[1] / np.pi / 2, -1, 1)  # Pitch, assuming +-90deg max
         obs[8] = np.clip(self.auv.attitude[2] / np.pi, -1, 1)  # Yaw, assuming +-180deg max
         obs[9] = np.clip(self.auv.angular_velocity[0] / 1.0, -1, 1)  # Angular Velocities, assuming 1 rad/s
         obs[10] = np.clip(self.auv.angular_velocity[1] / 1.0, -1, 1)
@@ -184,7 +224,7 @@ class Docking3d(gym.Env):
 
         return obs
 
-    def reward_step(self):
+    def reward_step(self) -> float:
         # Reward for being closer to the goal location:
         reward_dis = -np.linalg.norm(self.auv.position - self.goal_location)
         # Reward for stable attitude
@@ -199,23 +239,30 @@ class Docking3d(gym.Env):
 
         return reward
 
-    def is_done(self):
+    def is_done(self) -> bool:
         # Check if close to the goal
         cond1 = np.linalg.norm(self.auv.position - self.goal_location) < 0.1
 
         # Check if out of bounds for position
         cond2 = np.any(np.abs(self.auv.position) > 50)
 
+        # Check if attitude (pitch, roll) too high
+        cond3 = np.any(np.abs(self.auv.attitude[:2]) > 85 / 180 * np.pi)
+
         # Check if maximum time steps reached
-        cond3 = self.t_total_steps >= self.max_timesteps
+        cond4 = self.t_total_steps >= self.max_timesteps
 
         # TODO: Collision
 
-        done = cond1 or cond2 or cond3
+        done = cond1 or cond2 or cond3 or cond4
         return done
 
     def render(self, mode="human"):
         self.episode_animation.update_path_animation(positions=self.episode_data_storage.positions,
                                                      attitudes=self.episode_data_storage.attitudes)
         if self.real_time:
-            plt.pause(self.t_step_size*0.9)
+            plt.pause(self.t_step_size * 0.9)
+
+        # Possible implementation for rgb_array
+        # https://stackoverflow.com/questions/35355930/matplotlib-figure-to-image-as-a-numpy-array,
+        # but not really needed here since 3d.
