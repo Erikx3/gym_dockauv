@@ -42,6 +42,8 @@
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">gym_dockauv</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="gym_dockauv.html">gym_dockauv package</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="gym_dockauv.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="gym_dockauv.config.html">gym_dockauv.config package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gym_dockauv.envs.html">gym_dockauv.envs package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="gym_dockauv.objects.html">gym_dockauv.objects package</a></li>
 <li class="toctree-l4 current"><a class="current reference internal" href="#">gym_dockauv.utils package</a></li>
 </ul>
@@ -137,7 +139,7 @@ like or preallocation takes 0.5 seconds here. More on that here:
 <p>Arrays are saved based on dimension of first vector in nxc format, where c is the length of the initial vector</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>init_array</strong> – 1d array with length c</p>
+<dd class="field-odd"><p><strong>init_array</strong> – any initial array</p>
 </dd>
 </dl>
 <dl class="py method">
@@ -294,7 +296,7 @@ the numpy arrays.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gym_dockauv.utils.datastorage.EpisodeDataStorage.set_up_episode_storage">
-<span class="sig-name descname"><span class="pre">set_up_episode_storage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vehicle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nu_c_init</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shapes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">episode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.datastorage.EpisodeDataStorage.set_up_episode_storage" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">set_up_episode_storage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vehicle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nu_c_init</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shapes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">episode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.datastorage.EpisodeDataStorage.set_up_episode_storage" title="Permalink to this definition"></a></dt>
 <dd><p>Set up the storage to save and update incoming data</p>
 <p>file_save_name: will be formatted path_folderYYYY-MM-DDTHH-MM-SS__episode{episode}__{title}.pkl</p>
 <dl class="field-list simple">
@@ -305,6 +307,7 @@ the numpy arrays.</p>
 <li><p><strong>step_size</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Stepsize used in this simulation</p></li>
 <li><p><strong>nu_c_init</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – water current information in the simulation (body frame) array 6x1</p></li>
 <li><p><strong>shapes</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="gym_dockauv.objects.html#gym_dockauv.objects.shape.Shape" title="gym_dockauv.objects.shape.Shape"><code class="xref py py-class docutils literal notranslate"><span class="pre">Shape</span></code></a>]]) – Shapes for 3d Animation that were used (static)</p></li>
+<li><p><strong>radar</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference internal" href="gym_dockauv.objects.html#gym_dockauv.objects.sensor.Radar" title="gym_dockauv.objects.sensor.Radar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Radar</span></code></a>]) – Radar sensor if used, save endpoints for post visualization</p></li>
 <li><p><strong>title</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Optional title for addendum</p></li>
 <li><p><strong>episode</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Episode number</p></li>
 </ul>
@@ -369,7 +372,7 @@ the numpy arrays.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gym_dockauv.utils.datastorage.</span></span><span class="sig-name descname"><span class="pre">FullDataStorage</span></span><a class="headerlink" href="#gym_dockauv.utils.datastorage.FullDataStorage" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>TODO:
-Class to save general simulation over all the runs of simulation (e.g. length, success/collison, reward)</p>
+Class to save general simulation over all the runs of simulation (e.g. length, success/collison, cum_reward)</p>
 </dd></dl>
 
 </section>
@@ -677,10 +680,7 @@ the test cases.</p>
 <dd><p>WIll be added to the path animation, can only be called after init_path_animation</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>n_ray</strong> – number of rays to initialize</p></li>
-<li><p><strong>n_rays</strong> (<em>int</em>) – </p></li>
-</ul>
+<dd class="field-odd"><p><strong>n_rays</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – number of rays to initialize</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
@@ -793,7 +793,7 @@ show attitude arrows (with plt.pause() save animation does not work)</p>
 <p>This class offers the possibility for a post simulation analysis for each Episode.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="gym_dockauv.utils.plotutils.EpisodeVisualization.plot_episode_animation">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">plot_episode_animation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">states</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">episode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shapes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_per_step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.plotutils.EpisodeVisualization.plot_episode_animation" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">plot_episode_animation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">states</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">episode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shapes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radar_end_pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_per_step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.plotutils.EpisodeVisualization.plot_episode_animation" title="Permalink to this definition"></a></dt>
 <dd><p>Wrapper to plot interactive animation of the episode animation after it has been saved</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -801,6 +801,7 @@ show attitude arrows (with plt.pause() save animation does not work)</p>
 <li><p><strong>states</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – nx12 array of states</p></li>
 <li><p><strong>episode</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Episode number</p></li>
 <li><p><strong>shapes</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="gym_dockauv.objects.html#gym_dockauv.objects.shape.Shape" title="gym_dockauv.objects.shape.Shape"><code class="xref py py-class docutils literal notranslate"><span class="pre">Shape</span></code></a>]]) – static shapes in plot</p></li>
+<li><p><strong>radar_end_pos</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>]) – array(n_data, n_rays, 3) for all radar end pos</p></li>
 <li><p><strong>title</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – title for subplot</p></li>
 <li><p><strong>t_per_step</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – time between each frame</p></li>
 </ul>

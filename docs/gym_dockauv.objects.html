@@ -20,7 +20,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="gym_dockauv.objects.vehicles package" href="gym_dockauv.objects.vehicles.html" />
-    <link rel="prev" title="gym_dockauv package" href="gym_dockauv.html" /> 
+    <link rel="prev" title="gym_dockauv.envs package" href="gym_dockauv.envs.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -43,6 +43,8 @@
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">gym_dockauv</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="gym_dockauv.html">gym_dockauv package</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="gym_dockauv.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="gym_dockauv.config.html">gym_dockauv.config package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gym_dockauv.envs.html">gym_dockauv.envs package</a></li>
 <li class="toctree-l4 current"><a class="current reference internal" href="#">gym_dockauv.objects package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="gym_dockauv.utils.html">gym_dockauv.utils package</a></li>
 </ul>
@@ -192,6 +194,17 @@ Simulation. Below you find the most important definitions:</p>
 \[\boldsymbol{v} = \begin{bmatrix}
     u &amp; v &amp; w
 \end{bmatrix}^T\]</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.objects.auvsim.AUVSim.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.auvsim.AUVSim.reset" title="Permalink to this definition"></a></dt>
+<dd><p>Function to reset the simulated vehicle entirely</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>u can be set to None, since if it is called again without new initialization, it sets itself to
+zero automatically</p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -1098,7 +1111,7 @@ the lower boundary.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="gym_dockauv.html" class="btn btn-neutral float-left" title="gym_dockauv package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="gym_dockauv.envs.html" class="btn btn-neutral float-left" title="gym_dockauv.envs package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="gym_dockauv.objects.vehicles.html" class="btn btn-neutral float-right" title="gym_dockauv.objects.vehicles package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
