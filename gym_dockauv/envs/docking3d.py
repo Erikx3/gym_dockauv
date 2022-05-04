@@ -15,7 +15,6 @@ from gym_dockauv.config.env_default_config import BASE_CONFIG
 
 # TODO: Think about making this a base class for further environments with different observations, rewards, setup?
 # TODO: Save cumulative reward in episode data storage, other information in Simulation Storage
-# TODO: Make (simple) logger with env config, BlueROV2 config, when something is saved etc. and add verbose option
 # TODO: Save animation option
 # TODO: Water current, radar sensors, obstacles (so far only capsules are supported)
 
