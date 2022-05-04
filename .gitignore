@@ -156,3 +156,4 @@ fabric.properties
 # Own ignore files
 gym_dockauv/notes.py
 /gym_dockauv/tests/test_notes.py
+result_files/
