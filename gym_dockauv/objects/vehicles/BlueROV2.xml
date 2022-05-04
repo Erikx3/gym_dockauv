@@ -24,7 +24,7 @@
   <z_B>0.0</z_B>
   <X_udot>-5.5</X_udot>
   <Y_vdot>-12.7</Y_vdot>
-  <Z_wdot>-14.57</Z_wdot>
+  <Z_wdot>-7.57</Z_wdot>  <!-- Date: 03.05.2022 changed to -7.57 from -14.57-->
   <K_pdot>-0.12</K_pdot>
   <M_qdot>-0.12</M_qdot>
   <N_rdot>-0.12</N_rdot>

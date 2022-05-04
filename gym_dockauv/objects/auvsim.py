@@ -51,7 +51,6 @@ class AUVSim(StateSpace, ABC):
             self.lowpassfilter.sample_time = value
         super().__setattr__(name, value)
 
-    @abstractmethod
     def reset(self):
         """
         Function to reset the simulated vehicle entirely
@@ -170,6 +169,10 @@ class AUVSim(StateSpace, ABC):
 
         """
         return self.state[0:3]
+
+    @position.setter
+    def position(self, value):
+        self.state[0:3] = value.copy()
 
     @property
     def attitude(self):
