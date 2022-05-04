@@ -58,9 +58,10 @@ sudo apt-get install python3-tk
 ### OpenAI, stable baseline (..)
 TBD
 
-... for Gym:
+... for Gym and stable baseline3 Version 1.5.0:
 ```shell
 pip install -U gym
+pip install stable-baselines3
 ```
 
 ### Profiling
