@@ -2,6 +2,7 @@ import matplotlib.pyplot
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import numpy as np
+import logging
 
 # Used for typehints
 from typing import List
@@ -9,6 +10,10 @@ from ..objects.shape import Shape
 
 from .blitmanager import BlitManager
 from .geomutils import Rzyx
+
+
+# Set logger
+logger = logging.getLogger(__name__)
 
 
 class FullVisualization:
@@ -361,10 +366,10 @@ class EpisodeAnimation:
 
         writer_video = animation.FFMpegWriter(fps=fps, bitrate=2000)
 
-        # TODO: Make this a logger statement
-        print(f"\nSave video at {save_path}")
         # TODO: Animation so far can not be saved closed onced opened, workaround would be to initialize everything in
         #   a new figure again, but this is a current todo on matplotlib too, should not slow down simulation
         #   significantly, since should not save too many videos anyway, since data is saved and can be replayed in
         #   an animation.
         ani.save(save_path, writer=writer_video)
+        logger.info(f"Successfully saved EpisodeAnimation at {save_path}")
+

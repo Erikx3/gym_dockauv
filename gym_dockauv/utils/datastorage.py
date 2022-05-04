@@ -3,6 +3,7 @@ import pickle
 from copy import deepcopy
 import datetime
 import numpy as np
+import logging
 
 # Used for typehints
 from ..objects.auvsim import AUVSim
@@ -11,6 +12,9 @@ from ..objects.sensor import Radar
 from typing import List
 
 from .plotutils import EpisodeVisualization
+
+# Set logger
+logger = logging.getLogger(__name__)
 
 
 class FullDataStorage:
@@ -179,6 +183,8 @@ class EpisodeDataStorage:
 
         with open(self.file_save_name, 'wb') as outp:  # Overwrites any existing file.
             pickle.dump(self.storage, outp, pickle.HIGHEST_PROTOCOL)
+
+        logger.info(f"Successfully saved EpisodeDataStorage at {self.file_save_name}")
 
         return self.file_save_name
 

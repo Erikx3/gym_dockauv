@@ -3,8 +3,9 @@ import gym
 from gym.utils import seeding
 import matplotlib.pyplot as plt
 from timeit import default_timer as timer
-from datetime import timedelta
-
+import logging
+import os
+import datetime
 import importlib
 from typing import Tuple, Optional, Union
 
@@ -14,9 +15,12 @@ from gym_dockauv.config.env_default_config import BASE_CONFIG
 
 # TODO: Think about making this a base class for further environments with different observations, rewards, setup?
 # TODO: Save cumulative reward in episode data storage, other information in Simulation Storage
-# TODO: Make (simple) logger with env config, BlueROV2 config, when something is saved etc.
+# TODO: Make (simple) logger with env config, BlueROV2 config, when something is saved etc. and add verbose option
 # TODO: Save animation option
 # TODO: Water current, radar sensors, obstacles (so far only capsules are supported)
+
+# Set logger
+logger = logging.getLogger(__name__)
 
 
 class Docking3d(gym.Env):
@@ -26,8 +30,26 @@ class Docking3d(gym.Env):
 
     def __init__(self, env_config: dict = BASE_CONFIG):
         super().__init__()
-
+        # Basic config for logger
         self.config = env_config
+        self.title = self.config["title"]
+        self.save_path_folder = self.config["save_path_folder"]
+        self.log_level = self.config["log_level"]
+        os.makedirs(self.save_path_folder, exist_ok=True)
+
+        # Initialize logger
+        utc_str = datetime.datetime.utcnow().strftime('%Y_%m_%dT%H_%M_%S')
+        logging.basicConfig(level=self.log_level,
+                            handlers=[
+                                logging.FileHandler(os.path.join(self.save_path_folder,
+                                                                 f"{utc_str}__{self.title}.log")),
+                                logging.StreamHandler()
+                            ])
+
+        logger.info('---------- Docking3d Gym Logger ----------')
+        logger.info('---------- ' + utc_str + ' ----------')
+        logger.info('---------- Initialize environment ----------')
+        logger.info('Plot settings: \n ' + str(env_config))
 
         # Dynamically load class of vehicle and instantiate it (available vehicles under gym_dockauv/objects/vehicles)
         AUV = getattr(importlib.import_module("gym_dockauv.objects.vehicles." + self.config["vehicle"]),
@@ -52,9 +74,6 @@ class Docking3d(gym.Env):
         self.cumulative_reward = 0  # Current cumulative reward of agent
         self.max_timesteps = self.config["max_timesteps"]
         self.interval_datastorage = self.config["interval_datastorage"]
-        self.interval_render = self.config["interval_render"]
-        self.save_path_folder = self.config["save_path_folder"]
-        self.real_time = self.config["real_time"]
 
         # Goal
         self.goal_location = self.config["goal_location"]
@@ -83,6 +102,8 @@ class Docking3d(gym.Env):
         # Animation
         self.episode_animation = None
 
+        logger.info('---------- Initialization of environment complete ----------')
+
     def reset(self, seed: Optional[int] = None,
               return_info: bool = False,
               options: Optional[dict] = None,
@@ -104,8 +125,9 @@ class Docking3d(gym.Env):
         .. note:: Options not used yet
         """
         # In case any windows were open from matplotlib or animation
-        plt.close('all')
-        self.episode_animation = None
+        if self.episode_animation:
+            plt.close(self.episode_animation.fig)  # TODO: Window stays open, prob due to Gym
+            self.episode_animation = None
 
         # Save info to return in the end
         return_info_dict = self.info
@@ -128,7 +150,7 @@ class Docking3d(gym.Env):
         self.done = False
 
         # Update the seed:
-        # TODO: Check if this makes all seeds same (e.g. for water current!!)
+        # TODO: Check if this makes all seeds same (e.g. for water current!!) or works in general
         if seed is not None:
             self._np_random, seed = seeding.np_random(seed)
 
@@ -139,20 +161,13 @@ class Docking3d(gym.Env):
         self.generate_environment()
 
         # Save whole episode data if interval is met, or we need it for the renderer
-        if self.episode % self.interval_datastorage == 0 or self.episode == 1 or self.episode % self.interval_render == 0:
-            self.episode_data_storage = EpisodeDataStorage()
-            self.episode_data_storage.set_up_episode_storage(path_folder=self.save_path_folder, vehicle=self.auv,
-                                                             step_size=self.t_step_size, nu_c_init=self.nu_c,
-                                                             shapes=self.obstacles, radar=None, title="",
-                                                             episode=self.episode)
+        if self.episode % self.interval_datastorage == 0 or self.episode == 1:
+            self.init_episode_storage()
         else:
             self.episode_data_storage = None
 
-        # Initialize plot if renderer is active:
-        if self.episode % self.interval_render == 0:
-            self.episode_animation = EpisodeAnimation()
-            ax = self.episode_animation.init_path_animation()
-            self.episode_animation.add_episode_text(ax, self.episode)
+        # Log the episode
+        logger.info("Environment reset call: \n" + str(return_info_dict))
 
         # Return info if wanted
         if return_info:
@@ -259,12 +274,29 @@ class Docking3d(gym.Env):
         done = cond1 or cond2 or cond3 or cond4
         return done
 
-    def render(self, mode="human"):
+    def render(self, mode="human", real_time=False):
+        if self.episode_data_storage is None:
+            self.init_episode_storage()
+        if self.episode_animation is None:
+            self.episode_animation = EpisodeAnimation()
+            ax = self.episode_animation.init_path_animation()
+            self.episode_animation.add_episode_text(ax, self.episode)
+
         self.episode_animation.update_path_animation(positions=self.episode_data_storage.positions,
                                                      attitudes=self.episode_data_storage.attitudes)
-        if self.real_time:
+        if real_time:
             plt.pause(self.t_step_size * 0.9)
 
         # Possible implementation for rgb_array
         # https://stackoverflow.com/questions/35355930/matplotlib-figure-to-image-as-a-numpy-array,
         # but not really needed here since 3d.
+
+    def init_episode_storage(self):
+        """
+        Small helper function for setting up episode storage when needed
+        """
+        self.episode_data_storage = EpisodeDataStorage()
+        self.episode_data_storage.set_up_episode_storage(path_folder=self.save_path_folder, vehicle=self.auv,
+                                                         step_size=self.t_step_size, nu_c_init=self.nu_c,
+                                                         shapes=self.obstacles, radar=None, title=self.title,
+                                                         episode=self.episode)
