@@ -7,6 +7,8 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
+   gym_dockauv.config
+   gym_dockauv.envs
    gym_dockauv.objects
    gym_dockauv.utils
 
