@@ -61,7 +61,7 @@ class Docking3d(gym.Env):
 
         # Declaring attributes
         self.obstacles = []
-        self.reached_goal = False  # Bool to check of goal is reached at the end of an episode
+        self.goal_reached = False  # Bool to check of goal is reached at the end of an episode
         self.collision = False  # Bool to indicate of vehicle has collided
 
         # Initialize observation, reward, done, info
@@ -118,7 +118,7 @@ class Docking3d(gym.Env):
         # General reset
         self.auv.reset()
         self.t_total_steps = 0
-        self.reached_goal = False
+        self.goal_reached = False
         self.collision = False
 
         # Reset observation, cum_reward, done, info
@@ -196,13 +196,13 @@ class Docking3d(gym.Env):
         self.t_total_steps += 1
 
         # Update info dict
-        self.info = {"episode": self.episode,
+        self.info = {"episode_number": self.episode,  # Need to be episode number, because episode is used by sb3
                      "t_step": self.t_total_steps,
                      "cumulative_reward": self.cumulative_reward,
                      "last_reward": self.last_reward,
                      "done": self.done,
                      "collision": self.collision,
-                     "reached_goal": self.reached_goal,
+                     "goal_reached": self.goal_reached,
                      "simulation_time": timer()-self.start_time_sim}
 
         return self.observation, self.last_reward, self.done, self.info
@@ -242,6 +242,8 @@ class Docking3d(gym.Env):
     def is_done(self) -> bool:
         # Check if close to the goal
         cond1 = np.linalg.norm(self.auv.position - self.goal_location) < 0.1
+        if cond1:
+            self.goal_reached = True
 
         # Check if out of bounds for position
         cond2 = np.any(np.abs(self.auv.position) > 50)
