@@ -103,7 +103,7 @@ class StateSpace(ABC):
 
     @cached_property
     def I_b(self) -> np.ndarray:
-        """
+        r"""
         Inertia Moments matrix about an arbitrary origin
 
         .. math::
