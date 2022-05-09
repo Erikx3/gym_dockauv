@@ -129,7 +129,7 @@ class Docking3d(gym.Env):
             self.episode_animation = None
 
         # Save info to return in the end
-        return_info_dict = self.info
+        return_info_dict = self.info.copy()
 
         # Check if we should save a datastorage item
         if self.episode_data_storage and (self.episode % self.interval_datastorage == 0 or self.episode == 1):
@@ -198,10 +198,11 @@ class Docking3d(gym.Env):
 
         # Calculate cum_reward
         self.last_reward = self.reward_step()
+
+        # Determine if simulation is done, this also updates self.last_reward  # TODO: Make explicit
+        self.done = self.is_done()
         self.cumulative_reward += self.last_reward
 
-        # Determine if simulation is done
-        self.done = self.is_done()
 
         # Make next observation TODO
         self.observation = self.observe()
@@ -222,10 +223,11 @@ class Docking3d(gym.Env):
         return self.observation, self.last_reward, self.done, self.info
 
     def observe(self) -> np.ndarray:
+        diff = self.goal_location - self.auv.position
         obs = np.zeros(self.n_observations)
-        obs[0] = np.clip(self.auv.position[0] / 50, -1, 1)  # Position, assuming we move withing 50 meters
-        obs[1] = np.clip(self.auv.position[1] / 50, -1, 1)
-        obs[2] = np.clip(self.auv.position[2] / 50, -1, 1)
+        obs[0] = np.clip(diff[0] / 50, -1, 1)  # Position difference, assuming we move withing 50 meters
+        obs[1] = np.clip(diff[1] / 50, -1, 1)
+        obs[2] = np.clip(diff[2] / 50, -1, 1)
         obs[3] = np.clip(self.auv.relative_velocity[0] / 5, -1, 1)  # Forward speed, assuming 5m/s max
         obs[4] = np.clip(self.auv.relative_velocity[1] / 2, -1, 1)  # Side speed, assuming 5m/s max
         obs[5] = np.clip(self.auv.relative_velocity[2] / 2, -1, 1)  # Vertical speed, assuming 5m/s max
@@ -240,9 +242,9 @@ class Docking3d(gym.Env):
 
     def reward_step(self) -> float:
         # Reward for being closer to the goal location:
-        reward_dis = -np.linalg.norm(self.auv.position - self.goal_location)
+        reward_dis = -np.linalg.norm(self.auv.position - self.goal_location) ** 2
         # Reward for stable attitude
-        reward_att = -np.sum(self.auv.attitude[:2])
+        reward_att = -np.sum(np.abs(self.auv.attitude[:2])) * 10
         # Negative cum_reward per time step
         reward_time = -1
         # Reward if collision TODO
@@ -255,18 +257,27 @@ class Docking3d(gym.Env):
 
     def is_done(self) -> bool:
         # Check if close to the goal
-        cond1 = np.linalg.norm(self.auv.position - self.goal_location) < 0.1
+        conditions = [] # TODO: Add way of logging, which condition is active at the end of an episode, maybe list
+        cond1 = np.linalg.norm(self.auv.position - self.goal_location) < 1.0
         if cond1:
             self.goal_reached = True
+            self.last_reward += 5000
+            logger.info("*****************I am done cause of cond 1************!")
 
         # Check if out of bounds for position
         cond2 = np.any(np.abs(self.auv.position) > 50)
+        if cond2:
+            logger.info("*****************I am done cause of cond 2************!")
 
         # Check if attitude (pitch, roll) too high
-        cond3 = np.any(np.abs(self.auv.attitude[:2]) > 85 / 180 * np.pi)
+        cond3 = np.any(np.abs(self.auv.attitude[:2]) > 80 / 180 * np.pi)
+        if cond3:
+            logger.info("*****************I am done cause of cond 3************!")
 
         # Check if maximum time steps reached
         cond4 = self.t_total_steps >= self.max_timesteps
+        if cond4:
+            logger.info("*****************I am done cause of cond 4************!")
 
         # TODO: Collision
 
