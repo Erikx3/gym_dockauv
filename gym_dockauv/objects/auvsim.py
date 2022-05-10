@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 import numpy as np
+from scipy.integrate import solve_ivp
 
 from .statespace import StateSpace
 from ..utils import geomutils as geom
@@ -94,13 +95,13 @@ class AUVSim(StateSpace, ABC):
         :return: None
         """
         # Perform ODE simulation step
-        self.state, q = odesolver45(f=self.state_dot, t=0, y=self.state, h=self.step_size, **{"nu_c": nu_c})
+        # self.state, q = odesolver45(f=self.state_dot, t=0, y=self.state, h=self.step_size, **{"nu_c": nu_c})
 
         # Alternative with official python package - Note: There are a lot of ways to hack a constant step size,
         # none of them are beautiful
-        # res = solve_ivp(fun=self.state_dot, t_span=[0, self.step_size],
-        #                 y0=self.state, t_eval=[self.step_size], method='RK45', args=(nu_c,))
-        # self.state = res.y.flatten()
+        res = solve_ivp(fun=self.state_dot, t_span=[0, self.step_size],
+                        y0=self.state, t_eval=[self.step_size], method='RK45', args=(nu_c,))
+        self.state = res.y.flatten()
 
         # Convert angle in applicable range
         self.state[3:6] = geom.ssa(self.state[3:6])
