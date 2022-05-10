@@ -1,17 +1,19 @@
-import numpy as np
-import gym
-from gym.utils import seeding
-import matplotlib.pyplot as plt
-from timeit import default_timer as timer
-import logging
-import os
 import datetime
 import importlib
+import logging
+import os
+import time
+from timeit import default_timer as timer
 from typing import Tuple, Optional, Union
 
+import gym
+import matplotlib.pyplot as plt
+import numpy as np
+from gym.utils import seeding
+
+from gym_dockauv.config.env_default_config import BASE_CONFIG
 from gym_dockauv.utils.datastorage import EpisodeDataStorage
 from gym_dockauv.utils.plotutils import EpisodeAnimation
-from gym_dockauv.config.env_default_config import BASE_CONFIG
 
 # TODO: Think about making this a base class for further environments with different observations, rewards, setup?
 # TODO: Save cumulative reward in episode data storage, other information in Simulation Storage
@@ -34,16 +36,19 @@ class Docking3d(gym.Env):
         self.title = self.config["title"]
         self.save_path_folder = self.config["save_path_folder"]
         self.log_level = self.config["log_level"]
+        self.verbose = self.config["verbose"]
         os.makedirs(self.save_path_folder, exist_ok=True)
 
         # Initialize logger
         utc_str = datetime.datetime.utcnow().strftime('%Y_%m_%dT%H_%M_%S')
         logging.basicConfig(level=self.log_level,
-                            handlers=[
-                                logging.FileHandler(os.path.join(self.save_path_folder,
-                                                                 f"{utc_str}__{self.title}.log")),
-                                logging.StreamHandler()
-                            ])
+                            filename=os.path.join(self.save_path_folder, f"{utc_str}__{self.title}.log"),
+                            format='[%(asctime)s] [%(levelname)s] [%(module)s] - [%(funcName)s]: %(message)s',
+                            datefmt='%Y-%m-%d %H:%M:%S'
+                            )
+        if self.verbose:
+            logging.getLogger().addHandler(logging.StreamHandler())
+        logging.Formatter.converter = time.gmtime  # Make sure to use UTC time in logging timestamps
 
         logger.info('---------- Docking3d Gym Logger ----------')
         logger.info('---------- ' + utc_str + ' ----------')
@@ -178,7 +183,8 @@ class Docking3d(gym.Env):
         Setup a environment after each reset
         """
         # TODO Think about how this should be done in future simulations
-        self.auv.position = np.array([5, 5, 5])
+        rnd_arr = (np.random.random(3) - 0.5)
+        self.auv.position = rnd_arr * (8 / np.linalg.norm(rnd_arr))
 
     def step(self, action: np.ndarray) -> Tuple[np.ndarray, float, bool, dict]:
         # Simulate current TODO
@@ -199,10 +205,10 @@ class Docking3d(gym.Env):
         # Calculate cum_reward
         self.last_reward = self.reward_step()
 
-        # Determine if simulation is done, this also updates self.last_reward  # TODO: Make explicit
-        self.done = self.is_done()
+        # Determine if simulation is done, this also updates self.last_reward
+        self.done, reward_done, cond_idx = self.is_done()
+        self.last_reward += reward_done
         self.cumulative_reward += self.last_reward
-
 
         # Make next observation TODO
         self.observation = self.observe()
@@ -216,9 +222,10 @@ class Docking3d(gym.Env):
                      "cumulative_reward": self.cumulative_reward,
                      "last_reward": self.last_reward,
                      "done": self.done,
+                     "conditions_true": cond_idx,
                      "collision": self.collision,
                      "goal_reached": self.goal_reached,
-                     "simulation_time": timer()-self.start_time_sim}
+                     "simulation_time": timer() - self.start_time_sim}
 
         return self.observation, self.last_reward, self.done, self.info
 
@@ -242,11 +249,11 @@ class Docking3d(gym.Env):
 
     def reward_step(self) -> float:
         # Reward for being closer to the goal location:
-        reward_dis = -np.linalg.norm(self.auv.position - self.goal_location) ** 2
+        reward_dis = -np.linalg.norm(self.auv.position - self.goal_location) ** 2.0
         # Reward for stable attitude
-        reward_att = -np.sum(np.abs(self.auv.attitude[:2])) * 10
+        reward_att = -np.sum(np.abs(self.auv.attitude[:2])) * 5
         # Negative cum_reward per time step
-        reward_time = -1
+        reward_time = -5
         # Reward if collision TODO
 
         # Reward for action used (e.g. want to minimize action power usage) TODO
@@ -255,34 +262,40 @@ class Docking3d(gym.Env):
 
         return reward
 
-    def is_done(self) -> bool:
-        # Check if close to the goal
-        conditions = [] # TODO: Add way of logging, which condition is active at the end of an episode, maybe list
-        cond1 = np.linalg.norm(self.auv.position - self.goal_location) < 1.0
-        if cond1:
-            self.goal_reached = True
-            self.last_reward += 5000
-            logger.info("*****************I am done cause of cond 1************!")
+    def is_done(self) -> Tuple[bool, float, list]:
+        """
+        Condition 0: Check if close to the goal
+        Condition 1: Check if out of bounds for position
+        Condition 2: Check if attitude (pitch, roll) too high
+        Condition 3: # Check if maximum time steps reached
 
-        # Check if out of bounds for position
-        cond2 = np.any(np.abs(self.auv.position) > 50)
-        if cond2:
-            logger.info("*****************I am done cause of cond 2************!")
-
-        # Check if attitude (pitch, roll) too high
-        cond3 = np.any(np.abs(self.auv.attitude[:2]) > 80 / 180 * np.pi)
-        if cond3:
-            logger.info("*****************I am done cause of cond 3************!")
-
-        # Check if maximum time steps reached
-        cond4 = self.t_total_steps >= self.max_timesteps
-        if cond4:
-            logger.info("*****************I am done cause of cond 4************!")
-
+        :return: [if simulation is done, extra discrete reward, indexes of conditions that are true]
+        """
         # TODO: Collision
 
-        done = cond1 or cond2 or cond3 or cond4
-        return done
+        # All conditions in a list
+        conditions = [
+            np.linalg.norm(self.auv.position - self.goal_location) < 1.0,  # Condition 0: Check if close to the goal
+            np.any(np.abs(self.auv.position) > 50),  # Condition 1: Check if out of bounds for position
+            np.any(np.abs(self.auv.attitude[:2]) > 80 / 180 * np.pi),
+            # Condition 2: Check if attitude (pitch, roll) too high
+            self.t_total_steps >= self.max_timesteps  # Condition 3: # Check if maximum time steps reached
+        ]
+
+        # If goal reached
+        if conditions[0]:
+            self.goal_reached = True
+
+        # Add extra reward on checking if done
+        reward_done = float(np.dot(np.array([50000, 0, 0, 0]),
+                                   np.array(conditions)))
+
+        # Return also the indexes of which cond is activated
+        cond_idx = [i for i, x in enumerate(conditions) if x]
+
+        # Check if any condition is true
+        done = np.any(conditions)
+        return done, reward_done, cond_idx
 
     def render(self, mode="human", real_time=False):
         if self.episode_data_storage is None:
