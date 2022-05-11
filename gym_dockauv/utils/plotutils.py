@@ -5,7 +5,7 @@ import numpy as np
 import logging
 
 # Used for typehints
-from typing import List
+from typing import List, Union
 from ..objects.shape import Shape
 
 from .blitmanager import BlitManager
@@ -18,7 +18,6 @@ logger = logging.getLogger(__name__)
 
 class FullVisualization:
     """
-    TODO:
     Offers functions with respect to the whole simulation run with multiple episodes.
 
     Possible function ideas:
@@ -163,13 +162,15 @@ class EpisodeVisualization:
         fig.subplots_adjust(left=0.125, bottom=0.07, right=0.9, top=0.93, wspace=0.2, hspace=0.6)
 
     @staticmethod
-    def plot_rewards(cum_rewards: np.ndarray, rewards: np.ndarray, episode: int = None, title: str = None):
+    def plot_rewards(cum_rewards: np.ndarray, rewards: np.ndarray, episode: Union[int, str] = None, title: str = None,
+                     x_title: str = ""):
         """
 
         :param cum_rewards: array(n, r) with n data points and r rewards (cumulative)
         :param rewards: array(n, r) with n data points and r rewards
         :param episode: episode number
         :param title: title of figure
+        :param x_title: title of x axis (this function is used in two ways)
         :return: None
         """
         # Calculate sums
@@ -188,7 +189,7 @@ class EpisodeVisualization:
             ax_r.plot(rewards[:, i], label=f"Reward {i}")
         ax_r.plot(rewards_sum, label="Sum")
         ax_r.set_title("Rewards")
-        ax_r.set_xlabel("t [s]")
+        ax_r.set_xlabel(x_title)
         ax_r.set_ylabel("r")
         ax_r.legend()
 
@@ -197,7 +198,7 @@ class EpisodeVisualization:
             ax_cum.plot(cum_rewards[:, i], label=f"Cum reward {i}")
         ax_cum.plot(cum_rewards_sum, label="Sum")
         ax_cum.set_title("Cumulative Rewards")
-        ax_cum.set_xlabel("t [s]")
+        ax_cum.set_xlabel(x_title)
         ax_cum.set_ylabel("r")
         ax_cum.legend()
 

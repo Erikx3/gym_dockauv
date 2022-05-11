@@ -13,7 +13,7 @@ import numpy as np
 from gym.utils import seeding
 
 from gym_dockauv.config.env_default_config import BASE_CONFIG
-from gym_dockauv.utils.datastorage import EpisodeDataStorage
+from gym_dockauv.utils.datastorage import EpisodeDataStorage, FullDataStorage
 from gym_dockauv.utils.plotutils import EpisodeAnimation
 
 # TODO: Think about making this a base class for further environments with different observations, rewards, setup?
@@ -105,8 +105,12 @@ class Docking3d(gym.Env):
         # Save and display simulation time
         self.start_time_sim = timer()
 
-        # Data storage
+        # Episode Data storage
         self.episode_data_storage = None
+
+        # Full data storage:
+        self.full_data_storage = FullDataStorage()
+        self.full_data_storage.set_up_episode_storage(env=self, path_folder=self.save_path_folder, title=self.title)
 
         # Animation
         self.episode_animation = None
@@ -148,7 +152,11 @@ class Docking3d(gym.Env):
             self.episode_data_storage.save()
         self.episode_data_storage = None
 
-        # General reset
+        # Update Full data storage:
+        if self.episode != 0:
+            self.full_data_storage.update()
+
+        # ---------- General reset from here on -----------
         self.auv.reset()
         self.t_total_steps = 0
         self.goal_reached = False
@@ -172,6 +180,7 @@ class Docking3d(gym.Env):
         # Update episode number
         self.episode += 1
 
+        # ----------- Init for new environment from here on -----------
         # Generate environment
         self.generate_environment()
 
@@ -337,6 +346,12 @@ class Docking3d(gym.Env):
         # Possible implementation for rgb_array
         # https://stackoverflow.com/questions/35355930/matplotlib-figure-to-image-as-a-numpy-array,
         # but not really needed here since 3d.
+
+    def save(self):
+        """
+        Call this function to save the full data storage
+        """
+        self.full_data_storage.save()
 
     def init_episode_storage(self):
         """

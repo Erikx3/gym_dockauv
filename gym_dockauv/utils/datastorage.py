@@ -9,7 +9,7 @@ import logging
 from ..objects.auvsim import AUVSim
 from ..objects.shape import Shape
 from ..objects.sensor import Radar
-from typing import List
+from typing import List, Type
 
 from .plotutils import EpisodeVisualization
 
@@ -19,9 +19,98 @@ logger = logging.getLogger(__name__)
 
 class FullDataStorage:
     """
-    Class to save general simulation over all the runs/ episodes of simulation (e.g. length, success/collison, rewards)
+    Class to save general simulation data over all the runs/ episodes of simulation:
+    - the info dictionary
+    - cumulative rewards array
+
+    Pass the created environment by reference and update the Full Data Storage at the end of each episode
     """
-    pass
+
+    def __init__(self):
+        self.file_save_name = None
+        self.env = None
+        self.storage = None
+
+    def set_up_episode_storage(self, env, path_folder: str, title: str = "") -> None:
+        r"""
+        Set up the storage to save and update incoming data with passing a reference of the env
+
+        file_save_name: will be formatted path_folder\YYYY-MM-DDTHH-MM-SS__{title}__FULL.pkl
+
+        :param env: The gym environment
+        :param path_folder: Path to folder
+        :param title: Optional title for addendum
+        :return: None
+        """
+        # Reference the gym environment
+        self.env = env
+
+        # Some variables for saving the file
+        utc_str = datetime.datetime.utcnow().strftime('%Y_%m_%dT%H_%M_%S')
+        if len(path_folder) > 0:
+            os.makedirs(path_folder, exist_ok=True)  # Create folder if not exists yet
+        self.file_save_name = os.path.join(path_folder, f"{utc_str}__{title}__FULL.pkl")
+
+        cum_rewards_arr = ArrayList(env.cum_reward_arr)
+        rewards_arr = ArrayList(env.last_reward_arr)
+        self.storage = {
+            "title": title,
+            "cum_rewards": cum_rewards_arr,
+            "rewards": rewards_arr,
+            "infos": []
+        }
+
+    def update(self) -> None:
+        """
+        should be called in the end of each episode
+
+        :return: None
+        """
+
+        self.storage["cum_rewards"].add_row(self.env.cum_reward_arr)
+        self.storage["rewards"].add_row(self.env.last_reward_arr)
+        self.storage["infos"].append(self.env.info)
+
+    def save(self) -> str:
+        """
+        Function to save the pickle file, must be called from the outside, since the gym environment does not know when
+        its simulation ends
+
+        :return: path to where file is saved
+        """
+
+        self.storage["cum_rewards"] = self.storage["cum_rewards"].get_nparray()
+        self.storage["rewards"] = self.storage["rewards"].get_nparray()
+
+        with open(self.file_save_name, 'wb') as outp:  # Overwrites any existing file.
+            pickle.dump(self.storage, outp, pickle.HIGHEST_PROTOCOL)
+
+        logger.info(f"Successfully saved FullDataStorage at {self.file_save_name}")
+
+        return self.file_save_name
+
+    def load(self, file_name: str) -> dict:
+        """
+        Function to load an existing full data storage
+
+        :param file_name: path to file
+        :return: the loaded storage
+        """
+        with open(file_name, 'rb') as inp:
+            self.storage = pickle.load(inp)
+            return self.storage
+
+    def plot_rewards(self):
+        """
+        Individual wrapper for plotting rewards
+        :return:
+        """
+        EpisodeVisualization.plot_rewards(cum_rewards=self.storage["cum_rewards"],
+                                          rewards=self.storage["rewards"],
+                                          episode="all",
+                                          title=self.storage["title"],
+                                          x_title="episode no."
+                                          )
 
 
 class ArrayList:
@@ -97,13 +186,15 @@ class EpisodeDataStorage:
                 "states_dot": "auvsim._state_dot nx12 array",
                 "u": "auvsim.u nxa array (a number of action)"
             },
+            "radar": "Array with radar end points",
+            "nu_c": "water current",
             "shapes": "list of shape objects as in shapes.py used here",
+            "title": "title of run",
             "episode": "episode number",
             "step_size": "step_size in simulation",
-            "nu_c": "water current"
+            "cum_rewards": "cumulative reward array",
+            "rewards": "reward array per step"
         }
-
-    TODO: (Agent, environment, further variables, settings etc. or these go to FullDataStorge class)
 
     """
 
@@ -119,9 +210,11 @@ class EpisodeDataStorage:
                                radar: Radar = None, title: str = "", episode: int = -1,
                                cum_rewards: np.ndarray = None, rewards: np.ndarray = None) -> None:
         r"""
-        Set up the storage to save and update incoming data, including passing a reference to the vehicle and environment
+        Set up the storage to save and update incoming data, including passing a reference to the vehicle and
+        environment
 
         file_save_name: will be formatted path_folder\YYYY-MM-DDTHH-MM-SS__episode{episode}__{title}.pkl
+
 
         :param path_folder: Path to folder
         :param vehicle: Vehicle that is simulated
@@ -131,6 +224,8 @@ class EpisodeDataStorage:
         :param radar: Radar sensor if used, save endpoints for post visualization
         :param title: Optional title for addendum
         :param episode: Episode number
+        :param cum_rewards: 1d array with cumulative rewards
+        :param rewards: 1d array with rewards
         :return: None
         """
         # Some variables for saving the file
@@ -156,7 +251,7 @@ class EpisodeDataStorage:
             "radar": end_pos_n,
             "nu_c": ArrayList(nu_c_init),
             "shapes": [deepcopy(shape) for shape in shapes],
-            "title" : title,
+            "title": title,
             "episode": episode,
             "step_size": step_size,
             "cum_rewards": cum_rewards_arr,

@@ -1,31 +1,66 @@
-# TODO: Train agent
+import os
 
-import numpy as np
-from gym_dockauv.objects.vehicles.LAUV import LAUV
-from gym_dockauv.utils.datastorage import EpisodeDataStorage
+import gym
+from matplotlib import pyplot as plt
+from stable_baselines3 import A2C, PPO
 
-import gym_dockauv.utils.geomutils as geom
+from gym_dockauv.utils.datastorage import EpisodeDataStorage, FullDataStorage
 
 
-def train() -> None:
+def train(total_timesteps: int) -> None:
     """
     Function to train and save agent
     :return: None
     """
-    print(geom.Tzyx(1, 1, 1))
+    # Create environment
+    env = gym.make("docking3d-v0")
+
+    # Instantiate the agent
+    model = PPO('MlpPolicy', env, verbose=0)
+    model.learn(total_timesteps=total_timesteps)    # Train the agent
+    # Save the agent
+    model.save("PPO_docking")
+    env.save()
 
 
-if __name__ == "__main__":
+def predict():
+    env = gym.make("docking3d-v0")
+    # Load the trained agent
+    # NOTE: if you have loading issue, you can pass `print_system_info=True`
+    # to compare the system on which the model was trained vs the current one
+    # model = DQN.load("dqn_lunar", env=env, print_system_info=True)
+    model = PPO.load("PPO_docking", env=env)
 
-    lauv = LAUV()
-    lauv.step_size = 0.01
-    nu_c = np.zeros(6)
-    action = np.array([1, 1, 0])
-    epi_stor = EpisodeDataStorage()
-    epi_stor.set_up_episode_storage("", lauv, lauv.step_size, nu_c, None, title="Test_lauv", episode=123)
-    n_sim = 1000
+    # Evaluate the agent
+    # NOTE: If you use wrappers with your environment that modify rewards,
+    #       this will be reflected here. To evaluate with original rewards,
+    #       wrap environment in a "Monitor" wrapper before other wrappers.
+    # mean_reward, std_reward = evaluate_policy(model, model.get_env(), n_eval_episodes=10)
+
+    # Enjoy trained agent
+    obs = env.reset(seed=5)
     for i in range(1000):
-        lauv.step(action, nu_c)
-        epi_stor.update(nu_c)
+        action, _states = model.predict(obs, deterministic=True)
+        #print(action)
+        obs, rewards, dones, info = env.step(action)
+        env.render()
 
-    epi_stor.plot_episode_animation(None, "LAUV Test")
+
+def post_analysis_directory():
+    directory = "/home/erikx3/PycharmProjects/gym_dockauv/result_files"
+
+    for file in os.listdir(directory):
+        filename = os.fsdecode(file)
+        # Capture full data pkl file
+        full_path = os.path.join(directory, filename)
+        if filename.endswith("FULL.pkl"):
+            full_stor = FullDataStorage()
+            full_stor.load(full_path)
+            full_stor.plot_rewards()
+        elif filename.endswith(".pkl"):
+            epi_stor = EpisodeDataStorage()
+            epi_stor.load(full_path)
+            epi_stor.plot_epsiode_states_and_u()
+            epi_stor.plot_rewards()
+            plt.show()
+            #epi_stor.plot_episode_animation(t_per_step=None, title="Test Post Flight Visualization")
