@@ -16,8 +16,8 @@ BASE_CONFIG = {
     "max_timesteps": 500,                   # Maximum amount of timesteps before episode ends
 
     # ---------- SIMULATION --------------
-    "t_step_size": 0.1,                    # Length of each simulation timestep [s]
-    "interval_datastorage": 100,            # Interval of episodes on which extended data is saved through data class
+    "t_step_size": 0.10,                    # Length of each simulation timestep [s]
+    "interval_datastorage": 20,            # Interval of episodes on which extended data is saved through data class
     "save_path_folder": os.path.join(os.getcwd(), "result_files"),  # Folder name where all result files will be stored
 
     # ---------- GOAL ----------

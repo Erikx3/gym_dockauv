@@ -55,7 +55,7 @@ class Docking3d(gym.Env):
         logger.info('---------- Docking3d Gym Logger ----------')
         logger.info('---------- ' + utc_str + ' ----------')
         logger.info('---------- Initialize environment ----------')
-        logger.info('Plot settings: \n ' + pprint.pformat(env_config))
+        logger.info('Gym environment settings: \n ' + pprint.pformat(env_config))
 
         # Dynamically load class of vehicle and instantiate it (available vehicles under gym_dockauv/objects/vehicles)
         AUV = getattr(importlib.import_module("gym_dockauv.objects.vehicles." + self.config["vehicle"]),
@@ -159,6 +159,10 @@ class Docking3d(gym.Env):
         self.last_reward = 0
         self.cumulative_reward = 0
         self.done = False
+        self.last_reward_arr = np.zeros(7)
+        self.cum_reward_arr = np.zeros(7)
+        self.info = {}
+        self.conditions = None  # Boolean array to see which conditions are true
 
         # Update the seed:
         # TODO: Check if this makes all seeds same (e.g. for water current!!) or works in general
@@ -263,7 +267,7 @@ class Docking3d(gym.Env):
         Reward 4: Done - Goal reached
         Reward 5: Done - out of bounds position
         Reward 6: Done - out of bounds attitude
-        Reward 7: DOne - maximum episode steps
+        Reward 7: Done - maximum episode steps
 
         :return: The single reward at this step
         """

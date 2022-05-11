@@ -71,7 +71,8 @@ class EpisodeVisualization:
                 plt.pause(t_per_step)
 
     @staticmethod
-    def plot_episode_states_and_u(states: np.ndarray, nu_c: np.ndarray, u: np.ndarray, step_size: float):
+    def plot_episode_states_and_u(states: np.ndarray, nu_c: np.ndarray, u: np.ndarray, step_size: float,
+                                  episode: int = None, title: str = None):
         """
         Plot all the episode states and input u in one figure
 
@@ -79,6 +80,8 @@ class EpisodeVisualization:
         :param nu_c: nx6 array of current
         :param u: nxa array of actions
         :param step_size: fixed simulation step size
+        :param episode: episode number
+        :param title: title of figure
         :return: None
         """
 
@@ -94,6 +97,9 @@ class EpisodeVisualization:
         ax_vel = fig.add_subplot(4, 2, 4)
         ax_ang = fig.add_subplot(4, 2, 6)
         ax_u = fig.add_subplot(4, 2, 8)
+
+        if episode or title:
+            fig.suptitle(f'{title} - Episode {episode}')
 
         # Position xy plot
         ax_posxy.plot(states[:, 0], states[:, 1], 'g-')
@@ -148,7 +154,7 @@ class EpisodeVisualization:
 
         # Input
         for i in range(u.shape[1]):
-            ax_u.plot(time_arr, u[:, i], label=f"Input {i}")
+            ax_u.plot(time_arr, u[:, i], label=f"Input {i}", linewidth=0.5)
         ax_u.set_title(r"Input $u$")
         ax_u.set_xlabel("t [s]")
         ax_u.set_ylabel(r"u [?]")
@@ -157,11 +163,13 @@ class EpisodeVisualization:
         fig.subplots_adjust(left=0.125, bottom=0.07, right=0.9, top=0.93, wspace=0.2, hspace=0.6)
 
     @staticmethod
-    def plot_rewards(cum_rewards: np.ndarray, rewards: np.ndarray):
+    def plot_rewards(cum_rewards: np.ndarray, rewards: np.ndarray, episode: int = None, title: str = None):
         """
 
         :param cum_rewards: array(n, r) with n data points and r rewards (cumulative)
         :param rewards: array(n, r) with n data points and r rewards
+        :param episode: episode number
+        :param title: title of figure
         :return: None
         """
         # Calculate sums
@@ -172,6 +180,8 @@ class EpisodeVisualization:
         fig = plt.figure(figsize=(12, 8))
         ax_r = fig.add_subplot(2, 1, 1)
         ax_cum = fig.add_subplot(2, 1, 2)
+        if episode or title:
+            fig.suptitle(f'{title} - Episode {episode}')
 
         # rewards non cumulative
         for i in range(rewards.shape[1]):

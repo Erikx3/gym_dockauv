@@ -156,6 +156,7 @@ class EpisodeDataStorage:
             "radar": end_pos_n,
             "nu_c": ArrayList(nu_c_init),
             "shapes": [deepcopy(shape) for shape in shapes],
+            "title" : title,
             "episode": episode,
             "step_size": step_size,
             "cum_rewards": cum_rewards_arr,
@@ -250,6 +251,8 @@ class EpisodeDataStorage:
         """
         Individual wrapper for the animation plot function
         """
+        if title is None:
+            title = self.storage["title"]
         EpisodeVisualization.plot_episode_animation(
             states=self.states,
             episode=self.storage["episode"],
@@ -268,7 +271,9 @@ class EpisodeDataStorage:
             states=self.states,
             nu_c=self.nu_c,
             u=self.u,
-            step_size=self.storage["step_size"]
+            step_size=self.storage["step_size"],
+            episode=self.storage["episode"],
+            title=self.storage["title"]
         )
 
     def plot_rewards(self):
@@ -276,4 +281,8 @@ class EpisodeDataStorage:
         Individual wrapper for plotting rewards
         :return:
         """
-        EpisodeVisualization.plot_rewards(cum_rewards=self.storage["cum_rewards"], rewards=self.storage["rewards"])
+        EpisodeVisualization.plot_rewards(cum_rewards=self.storage["cum_rewards"],
+                                          rewards=self.storage["rewards"],
+                                          episode=self.storage["episode"],
+                                          title=self.storage["title"]
+                                          )
