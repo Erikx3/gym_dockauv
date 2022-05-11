@@ -176,9 +176,9 @@ def intersec_dist_line_capsule(l1: np.ndarray, ld: np.ndarray, cap1: np.ndarray,
 
     .. note::
 
-        This solution ALWAYS finds the first intersection (if there is) from the starting in direction of the second
-        point. However, as soon as the intersection is in opposite direction of the line, it returns the intersection
-        further away, as if the ray came form behind in that direction to the capsule.
+        This solution ALWAYS finds the first intersection (if there is) in the direction of the ray vector. This
+        means, it does not matter where the starting point is, it finds the first intersection in direction of the ray
+        vector and can thus also return negative values
 
     Solution found here:
     https://iquilezles.org/articles/intersectors/
