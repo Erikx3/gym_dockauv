@@ -156,8 +156,42 @@ class EpisodeVisualization:
 
         fig.subplots_adjust(left=0.125, bottom=0.07, right=0.9, top=0.93, wspace=0.2, hspace=0.6)
 
+    @staticmethod
+    def plot_rewards(cum_rewards: np.ndarray, rewards: np.ndarray):
+        """
 
-# TODO: Think about adding more plots like input, state variables etc
+        :param cum_rewards: array(n, r) with n data points and r rewards (cumulative)
+        :param rewards: array(n, r) with n data points and r rewards
+        :return: None
+        """
+        # Calculate sums
+        cum_rewards_sum = np.sum(cum_rewards, axis=1)
+        rewards_sum = np.sum(rewards, axis=1)
+
+        # Init figure
+        fig = plt.figure(figsize=(12, 8))
+        ax_r = fig.add_subplot(2, 1, 1)
+        ax_cum = fig.add_subplot(2, 1, 2)
+
+        # rewards non cumulative
+        for i in range(rewards.shape[1]):
+            ax_r.plot(rewards[:, i], label=f"Reward {i}")
+        ax_r.plot(rewards_sum, label="Sum")
+        ax_r.set_title("Rewards")
+        ax_r.set_xlabel("t [s]")
+        ax_r.set_ylabel("r")
+        ax_r.legend()
+
+        # rewards cumulative
+        for i in range(cum_rewards.shape[1]):
+            ax_cum.plot(cum_rewards[:, i], label=f"Cum reward {i}")
+        ax_cum.plot(cum_rewards_sum, label="Sum")
+        ax_cum.set_title("Cumulative Rewards")
+        ax_cum.set_xlabel("t [s]")
+        ax_cum.set_ylabel("r")
+        ax_cum.legend()
+
+
 class EpisodeAnimation:
     """
     This function deals with the live animation of an episode end offered live rendering. Example usage is given in

@@ -19,8 +19,7 @@ logger = logging.getLogger(__name__)
 
 class FullDataStorage:
     """
-    TODO:
-    Class to save general simulation over all the runs of simulation (e.g. length, success/collison, cum_reward)
+    Class to save general simulation over all the runs/ episodes of simulation (e.g. length, success/collison, rewards)
     """
     pass
 
@@ -113,12 +112,14 @@ class EpisodeDataStorage:
         self.vehicle = None
         self.radar = None
         self.file_save_name = None
+        self.env = None
 
     def set_up_episode_storage(self, path_folder: str, vehicle: AUVSim, step_size: float,
                                nu_c_init: np.ndarray, shapes: List[Shape] = None,
-                               radar: Radar = None, title: str = "", episode: int = -1) -> None:
+                               radar: Radar = None, title: str = "", episode: int = -1,
+                               cum_rewards: np.ndarray = None, rewards: np.ndarray = None) -> None:
         r"""
-        Set up the storage to save and update incoming data
+        Set up the storage to save and update incoming data, including passing a reference to the vehicle and environment
 
         file_save_name: will be formatted path_folder\YYYY-MM-DDTHH-MM-SS__episode{episode}__{title}.pkl
 
@@ -141,7 +142,10 @@ class EpisodeDataStorage:
         if shapes is None:
             shapes = []
         self.radar = radar  # Can still be none!
+        # Condition statements for saving data in one line
         end_pos_n = ArrayList(radar.end_pos_n) if radar is not None else None
+        cum_rewards_arr = ArrayList(cum_rewards) if cum_rewards is not None else ArrayList(np.zeros(1))
+        rewards_arr = ArrayList(rewards) if rewards is not None else ArrayList(np.zeros(1))
         self.storage = {
             "vehicle": {
                 "object": vehicle,
@@ -153,20 +157,26 @@ class EpisodeDataStorage:
             "nu_c": ArrayList(nu_c_init),
             "shapes": [deepcopy(shape) for shape in shapes],
             "episode": episode,
-            "step_size": step_size
+            "step_size": step_size,
+            "cum_rewards": cum_rewards_arr,
+            "rewards": rewards_arr
         }
 
-    def update(self, nu_c: np.ndarray) -> None:
+    def update(self, nu_c: np.ndarray, cum_rewards: np.ndarray = np.zeros(1), rewards: np.ndarray = np.zeros(1)) -> None:
         """
         should be called in the end of each simulation step
 
         :param nu_c: water current at that time array 6x1
+        :param cum_rewards: 1d array with cumulative rewards
+        :param rewards: 1d array with rewards
         :return: None
         """
         self.storage["vehicle"]["states"].add_row(self.vehicle.state)
         self.storage["vehicle"]["states_dot"].add_row(self.vehicle._state_dot)
         self.storage["vehicle"]["u"].add_row(self.vehicle.u)
         self.storage["nu_c"].add_row(nu_c)
+        self.storage["cum_rewards"].add_row(cum_rewards)
+        self.storage["rewards"].add_row(rewards)
         if self.radar is not None:
             self.storage["radar"].add_row(self.radar.end_pos_n)
 
@@ -179,6 +189,8 @@ class EpisodeDataStorage:
         self.storage["vehicle"]["states"] = self.storage["vehicle"]["states"].get_nparray()
         self.storage["vehicle"]["states_dot"] = self.storage["vehicle"]["states_dot"].get_nparray()
         self.storage["vehicle"]["u"] = self.storage["vehicle"]["u"].get_nparray()
+        self.storage["cum_rewards"] = self.storage["cum_rewards"].get_nparray()
+        self.storage["rewards"] = self.storage["rewards"].get_nparray()
         if self.radar is not None:
             self.storage["radar"] = self.storage["radar"].get_nparray()
 
@@ -258,3 +270,10 @@ class EpisodeDataStorage:
             u=self.u,
             step_size=self.storage["step_size"]
         )
+
+    def plot_rewards(self):
+        """
+        Individual wrapper for plotting rewards
+        :return:
+        """
+        EpisodeVisualization.plot_rewards(cum_rewards=self.storage["cum_rewards"], rewards=self.storage["rewards"])

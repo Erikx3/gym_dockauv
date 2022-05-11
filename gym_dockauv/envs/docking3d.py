@@ -40,7 +40,6 @@ class Docking3d(gym.Env):
         self.log_level = self.config["log_level"]
         self.verbose = self.config["verbose"]
         os.makedirs(self.save_path_folder, exist_ok=True)
-
         # Initialize logger
         utc_str = datetime.datetime.utcnow().strftime('%Y_%m_%dT%H_%M_%S')
         logging.basicConfig(level=self.log_level,
@@ -95,7 +94,10 @@ class Docking3d(gym.Env):
         self.observation = np.zeros(self.n_observations)
         self.done = False
         self.last_reward = 0
+        self.last_reward_arr = np.zeros(7)  # This should reflect the dimension of the rewards parts (for analysis)
+        self.cum_reward_arr = np.zeros(7)
         self.info = {}
+        self.conditions = None  # Boolean array to see which conditions are true
 
         # Water current TODO
         self.nu_c = np.zeros(6)
@@ -109,7 +111,9 @@ class Docking3d(gym.Env):
         # Animation
         self.episode_animation = None
 
-        logger.info('---------- Initialization of environment complete ----------')
+        logger.info('---------- Initialization of environment complete ---------- \n')
+        logger.info('---------- Rewards function description ----------')
+        logger.info(self.reward_step.__doc__)
 
     def reset(self, seed: Optional[int] = None,
               return_info: bool = False,
@@ -199,18 +203,17 @@ class Docking3d(gym.Env):
 
         # Update data storage if active
         if self.episode_data_storage:
-            self.episode_data_storage.update(self.nu_c)
+            self.episode_data_storage.update(self.nu_c, self.cum_reward_arr, self.last_reward_arr)
 
         # Update visualization if active
         if self.episode_animation:
             self.render()
 
-        # Calculate cum_reward
-        self.last_reward = self.reward_step()
-
         # Determine if simulation is done, this also updates self.last_reward
-        self.done, reward_done, cond_idx = self.is_done()
-        self.last_reward += reward_done
+        self.done, cond_idx = self.is_done()
+
+        # Calculate rewards
+        self.last_reward = self.reward_step()
         self.cumulative_reward += self.last_reward
 
         # Make next observation TODO
@@ -251,21 +254,39 @@ class Docking3d(gym.Env):
         return obs
 
     def reward_step(self) -> float:
+        """
+        Calculate the reward function, make sure to call self.is_done() before to update and check the done conditions
+
+        Reward 1: Close gto goal location
+        Reward 2: Stable attitude
+        Reward 3: time step penalty
+        Reward 4: Done - Goal reached
+        Reward 5: Done - out of bounds position
+        Reward 6: Done - out of bounds attitude
+        Reward 7: DOne - maximum episode steps
+
+        :return: The single reward at this step
+        """
         # Reward for being closer to the goal location:
-        reward_dis = -np.linalg.norm(self.auv.position - self.goal_location) ** 2.0
+        self.last_reward_arr[0] = -np.linalg.norm(self.auv.position - self.goal_location) ** 2.0
         # Reward for stable attitude
-        reward_att = -np.sum(np.abs(self.auv.attitude[:2])) * 5
+        self.last_reward_arr[1] = -np.sum(np.abs(self.auv.attitude[:2])) * 5
         # Negative cum_reward per time step
-        reward_time = -5
-        # Reward if collision TODO
+        self.last_reward_arr[2] = -5
 
         # Reward for action used (e.g. want to minimize action power usage) TODO
 
-        reward = reward_dis + reward_att + reward_time
+        # Add extra reward on checking which condition caused the episode to be done
+        self.last_reward_arr[3:] = np.array([50000, 0, 0, 0]) * np.array(self.conditions)
+
+        # Just for analyzing purpose:
+        self.cum_reward_arr = self.cum_reward_arr + self.last_reward_arr
+
+        reward = float(np.sum(self.last_reward_arr))
 
         return reward
 
-    def is_done(self) -> Tuple[bool, float, list]:
+    def is_done(self) -> Tuple[bool, list]:
         """
         Condition 0: Check if close to the goal
         Condition 1: Check if out of bounds for position
@@ -277,7 +298,7 @@ class Docking3d(gym.Env):
         # TODO: Collision
 
         # All conditions in a list
-        conditions = [
+        self.conditions = [
             np.linalg.norm(self.auv.position - self.goal_location) < 1.0,  # Condition 0: Check if close to the goal
             np.any(np.abs(self.auv.position) > 50),  # Condition 1: Check if out of bounds for position
             np.any(np.abs(self.auv.attitude[:2]) > 80 / 180 * np.pi),
@@ -286,23 +307,19 @@ class Docking3d(gym.Env):
         ]
 
         # If goal reached
-        if conditions[0]:
+        if self.conditions[0]:
             self.goal_reached = True
 
-        # Add extra reward on checking if done
-        reward_done = float(np.dot(np.array([50000, 0, 0, 0]),
-                                   np.array(conditions)))
-
         # Return also the indexes of which cond is activated
-        cond_idx = [i for i, x in enumerate(conditions) if x]
+        cond_idx = [i for i, x in enumerate(self.conditions) if x]
 
         # Check if any condition is true
-        done = np.any(conditions)
-        return done, reward_done, cond_idx
+        done = np.any(self.conditions)
+        return done, cond_idx
 
     def render(self, mode="human", real_time=False):
         if self.episode_data_storage is None:
-            self.init_episode_storage()
+            self.init_episode_storage()  # The data storage is needed for the plot
         if self.episode_animation is None:
             self.episode_animation = EpisodeAnimation()
             ax = self.episode_animation.init_path_animation()
@@ -325,4 +342,5 @@ class Docking3d(gym.Env):
         self.episode_data_storage.set_up_episode_storage(path_folder=self.save_path_folder, vehicle=self.auv,
                                                          step_size=self.t_step_size, nu_c_init=self.nu_c,
                                                          shapes=self.obstacles, radar=None, title=self.title,
-                                                         episode=self.episode)
+                                                         episode=self.episode, cum_rewards=self.cum_reward_arr,
+                                                         rewards=self.last_reward_arr)

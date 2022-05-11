@@ -171,7 +171,7 @@ def collision_capsule_sphere(cap1: np.ndarray, cap2: np.ndarray, cap_rad: float,
 def intersec_dist_line_capsule(l1: np.ndarray, ld: np.ndarray, cap1: np.ndarray, cap2: np.ndarray,
                                cap_rad: float) -> float:
     """
-    return closest distance from starting point to intersection of capsule, otherwise returns None if no intersection
+    return closest distance from starting point to intersection of capsule, otherwise returns -np.inf if no intersection
     is found. Intersection point can then be found by multiplying unit vector in direction of line by this distance.
 
     .. note::
@@ -266,13 +266,6 @@ def intersec_dist_line_capsule_vectorized(l1: np.ndarray, ld: np.ndarray, cap1: 
     h = b * b - a * c
 
     res = np.zeros(l1.shape[0])
-
-    # # Vectorize conditional statements
-    # t = (-b - np.sqrt(h)) / a
-    # y = baoa + t * bard
-    # # body
-    # mask_body = (h >= 0) & (y > 0) & (y < baba)
-    # res[mask_body] = t[mask_body]
 
     # Vectorize conditional statements
     mask_h = h >= 0
