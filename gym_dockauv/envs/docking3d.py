@@ -2,6 +2,7 @@ import datetime
 import importlib
 import logging
 import os
+import pprint
 import time
 from timeit import default_timer as timer
 from typing import Tuple, Optional, Union
@@ -19,6 +20,7 @@ from gym_dockauv.utils.plotutils import EpisodeAnimation
 # TODO: Save cumulative reward in episode data storage, other information in Simulation Storage
 # TODO: Save animation option
 # TODO: Water current, radar sensors, obstacles (so far only capsules are supported)
+# TODO: Log rewards and other also in pkl file, make it analyzeable
 
 # Set logger
 logger = logging.getLogger(__name__)
@@ -46,6 +48,7 @@ class Docking3d(gym.Env):
                             format='[%(asctime)s] [%(levelname)s] [%(module)s] - [%(funcName)s]: %(message)s',
                             datefmt='%Y-%m-%d %H:%M:%S'
                             )
+        # Check if logging statement are supposed to go to std output
         if self.verbose:
             logging.getLogger().addHandler(logging.StreamHandler())
         logging.Formatter.converter = time.gmtime  # Make sure to use UTC time in logging timestamps
@@ -53,7 +56,7 @@ class Docking3d(gym.Env):
         logger.info('---------- Docking3d Gym Logger ----------')
         logger.info('---------- ' + utc_str + ' ----------')
         logger.info('---------- Initialize environment ----------')
-        logger.info('Plot settings: \n ' + str(env_config))
+        logger.info('Plot settings: \n ' + pprint.pformat(env_config))
 
         # Dynamically load class of vehicle and instantiate it (available vehicles under gym_dockauv/objects/vehicles)
         AUV = getattr(importlib.import_module("gym_dockauv.objects.vehicles." + self.config["vehicle"]),
@@ -171,7 +174,7 @@ class Docking3d(gym.Env):
             self.episode_data_storage = None
 
         # Log the episode
-        logger.info("Environment reset call: \n" + str(return_info_dict))
+        logger.info("Environment reset call: \n" + pprint.pformat(return_info_dict))
 
         # Return info if wanted
         if return_info:
