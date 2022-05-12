@@ -19,7 +19,7 @@ def train(total_timesteps: int) -> None:
     model = PPO('MlpPolicy', env, verbose=0)
     model.learn(total_timesteps=total_timesteps)    # Train the agent
     # Save the agent
-    model.save("PPO_docking")
+    model.save("logs/PPO_docking")
     env.save()
 
 
@@ -29,7 +29,7 @@ def predict():
     # NOTE: if you have loading issue, you can pass `print_system_info=True`
     # to compare the system on which the model was trained vs the current one
     # model = DQN.load("dqn_lunar", env=env, print_system_info=True)
-    model = PPO.load("PPO_docking", env=env)
+    model = PPO.load("logs/PPO_docking", env=env)
 
     # Evaluate the agent
     # NOTE: If you use wrappers with your environment that modify rewards,
@@ -46,17 +46,17 @@ def predict():
         env.render()
 
 
-def post_analysis_directory():
-    directory = "/home/erikx3/PycharmProjects/gym_dockauv/result_files"
+def post_analysis_directory(directory: str = "/home/erikx3/PycharmProjects/gym_dockauv/logs"):
 
     for file in os.listdir(directory):
         filename = os.fsdecode(file)
         # Capture full data pkl file
         full_path = os.path.join(directory, filename)
-        if filename.endswith("FULL.pkl"):
+        if filename.endswith("FULL__DATA__STORAGE.pkl"):
             full_stor = FullDataStorage()
             full_stor.load(full_path)
             full_stor.plot_rewards()
+        # Episode Data Storage:
         elif filename.endswith(".pkl"):
             epi_stor = EpisodeDataStorage()
             epi_stor.load(full_path)

@@ -157,3 +157,4 @@ fabric.properties
 gym_dockauv/notes.py
 /gym_dockauv/tests/test_notes.py
 result_files/
+logs/

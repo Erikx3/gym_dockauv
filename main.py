@@ -1,3 +1,4 @@
+import matplotlib.pyplot as plt
 import numpy as np
 import gym
 import gym_dockauv
@@ -11,7 +12,7 @@ from gym_dockauv.utils.plotutils import EpisodeAnimation
 import gym_dockauv.train as train
 
 if __name__ == "__main__":
-    train.train(total_timesteps=20000)
+    train.train(total_timesteps=10000)
     train.predict()
     train.post_analysis_directory()
 
@@ -53,3 +54,53 @@ if __name__ == "__main__":
 #         env.reset()
 #         done = False
 
+
+# import gym_dockauv.objects.shape as shape
+# import time
+#
+#
+# def test_not_vec(l1, ld, cap1, cap2, cap_rad=0.1):
+#     for r1, rd in zip(l1, ld):
+#         dist = shape.intersec_dist_line_capsule(l1=r1, ld=rd, cap1=cap1, cap2=cap2, cap_rad=cap_rad)
+#
+#
+# def test_vectorized(l1, ld, cap1, cap2, cap_rad=0.1):
+#     dist = shape.intersec_dist_line_capsule_vectorized(l1=l1, ld=ld, cap1=cap1, cap2=cap2, cap_rad=cap_rad)
+
+
+# if __name__ == '__main__':
+#     # Init
+#     t_not_vec = []
+#     t_vec = []
+#     jj = 100 # Number of function executions in a run
+#     # # Loop over different amount of rays
+#     for i in range(1, 100):
+#         # Create arrays
+#         l1 = np.random.random((i, 3))
+#         ld = np.random.random((i, 3))
+#         cap1 = np.random.random(3)
+#         cap2 = np.random.random(3)
+#
+#         # Find the sum over xx calls
+#         loop = [[], []]  # Index 0, not vec, Index1, vec
+#         for j in range(0, jj):
+#             t = time.process_time()
+#             test_not_vec(l1, ld, cap1, cap2)
+#             elapsed_time = time.process_time() - t
+#             loop[0].append(elapsed_time)
+#
+#             t = time.process_time()
+#             test_vectorized(l1, ld, cap1, cap2)
+#             elapsed_time = time.process_time() - t
+#             loop[1].append(elapsed_time)
+#
+#         t_not_vec.append(sum(loop[0]))
+#         t_vec.append(sum(loop[1]))
+#
+#     plt.figure()
+#     plt.plot(t_not_vec, label="Not vectorized")
+#     plt.plot(t_vec, label="Vectorized")
+#     plt.legend()
+#     plt.xlabel("Number of rays")
+#     plt.ylabel(f"t [s] over {jj} runs")
+#     plt.show()

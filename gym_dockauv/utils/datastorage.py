@@ -35,7 +35,7 @@ class FullDataStorage:
         r"""
         Set up the storage to save and update incoming data with passing a reference of the env
 
-        file_save_name: will be formatted path_folder\YYYY-MM-DDTHH-MM-SS__{title}__FULL.pkl
+        file_save_name: will be formatted path_folder\YYYY-MM-DDTHH-MM-SS__{title}__FULL_DATA_STORAGE.pkl
 
         :param env: The gym environment
         :param path_folder: Path to folder
@@ -49,7 +49,7 @@ class FullDataStorage:
         utc_str = datetime.datetime.utcnow().strftime('%Y_%m_%dT%H_%M_%S')
         if len(path_folder) > 0:
             os.makedirs(path_folder, exist_ok=True)  # Create folder if not exists yet
-        self.file_save_name = os.path.join(path_folder, f"{utc_str}__{title}__FULL.pkl")
+        self.file_save_name = os.path.join(path_folder, f"{utc_str}__{title}__FULL_DATA_STORAGE.pkl")
 
         cum_rewards_arr = ArrayList(env.cum_reward_arr)
         rewards_arr = ArrayList(env.last_reward_arr)
@@ -213,7 +213,7 @@ class EpisodeDataStorage:
         Set up the storage to save and update incoming data, including passing a reference to the vehicle and
         environment
 
-        file_save_name: will be formatted path_folder\YYYY-MM-DDTHH-MM-SS__episode{episode}__{title}.pkl
+        file_save_name: will be formatted path_folder\YYYY-MM-DDTHH-MM-SS__{title}__EPISODE_{episode}_DATA_STORAGE.pkl
 
 
         :param path_folder: Path to folder
@@ -232,7 +232,7 @@ class EpisodeDataStorage:
         utc_str = datetime.datetime.utcnow().strftime('%Y_%m_%dT%H_%M_%S')
         if len(path_folder) > 0:
             os.makedirs(path_folder, exist_ok=True)  # Create folder if not exists yet
-        self.file_save_name = os.path.join(path_folder, f"{utc_str}__episode{episode}__{title}.pkl")
+        self.file_save_name = os.path.join(path_folder, f"{utc_str}__{title}__EPISODE_{episode}_DATA_STORAGE.pkl")
         self.vehicle = vehicle  # Vehicle instance (not a copy, automatically a reference which is updated in reference)
         if shapes is None:
             shapes = []

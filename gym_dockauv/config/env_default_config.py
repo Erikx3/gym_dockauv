@@ -18,7 +18,7 @@ BASE_CONFIG = {
     # ---------- SIMULATION --------------
     "t_step_size": 0.10,                    # Length of each simulation timestep [s]
     "interval_datastorage": 20,            # Interval of episodes on which extended data is saved through data class
-    "save_path_folder": os.path.join(os.getcwd(), "result_files"),  # Folder name where all result files will be stored
+    "save_path_folder": os.path.join(os.getcwd(), "logs"),  # Folder name where all result files will be stored
 
     # ---------- GOAL ----------
     "goal_location": np.array([0, 0, 0]),
