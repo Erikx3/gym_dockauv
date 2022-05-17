@@ -57,6 +57,7 @@ class FullDataStorage:
             "title": title,
             "cum_rewards": cum_rewards_arr,
             "rewards": rewards_arr,
+            "meta_data_reward": env.meta_data_reward,
             "infos": []
         }
 
@@ -109,7 +110,8 @@ class FullDataStorage:
                                           rewards=self.storage["rewards"],
                                           episode="all",
                                           title=self.storage["title"],
-                                          x_title="episode no."
+                                          x_title="episode no.",
+                                          meta_data_reward=self.storage["meta_data_reward"]
                                           )
 
 
@@ -194,6 +196,7 @@ class EpisodeDataStorage:
             "step_size": "step_size in simulation",
             "cum_rewards": "cumulative reward array",
             "rewards": "reward array per step"
+            "meta_data_reward": "List of string for reward description"
         }
 
     """
@@ -208,7 +211,10 @@ class EpisodeDataStorage:
     def set_up_episode_storage(self, path_folder: str, vehicle: AUVSim, step_size: float,
                                nu_c_init: np.ndarray, shapes: List[Shape] = None,
                                radar: Radar = None, title: str = "", episode: int = -1,
-                               cum_rewards: np.ndarray = None, rewards: np.ndarray = None) -> None:
+                               cum_rewards: np.ndarray = None,
+                               rewards: np.ndarray = None,
+                               meta_data_reward: List[str] = None
+                               ) -> None:
         r"""
         Set up the storage to save and update incoming data, including passing a reference to the vehicle and
         environment
@@ -226,6 +232,7 @@ class EpisodeDataStorage:
         :param episode: Episode number
         :param cum_rewards: 1d array with cumulative rewards
         :param rewards: 1d array with rewards
+        :param meta_data_reward: meta data of rewards
         :return: None
         """
         # Some variables for saving the file
@@ -241,6 +248,7 @@ class EpisodeDataStorage:
         end_pos_n = ArrayList(radar.end_pos_n) if radar is not None else None
         cum_rewards_arr = ArrayList(cum_rewards) if cum_rewards is not None else ArrayList(np.zeros(1))
         rewards_arr = ArrayList(rewards) if rewards is not None else ArrayList(np.zeros(1))
+
         self.storage = {
             "vehicle": {
                 "object": vehicle,
@@ -255,7 +263,8 @@ class EpisodeDataStorage:
             "episode": episode,
             "step_size": step_size,
             "cum_rewards": cum_rewards_arr,
-            "rewards": rewards_arr
+            "rewards": rewards_arr,
+            "meta_data_reward": meta_data_reward
         }
 
     def update(self, nu_c: np.ndarray, cum_rewards: np.ndarray = np.zeros(1), rewards: np.ndarray = np.zeros(1)) -> None:
@@ -379,5 +388,6 @@ class EpisodeDataStorage:
         EpisodeVisualization.plot_rewards(cum_rewards=self.storage["cum_rewards"],
                                           rewards=self.storage["rewards"],
                                           episode=self.storage["episode"],
-                                          title=self.storage["title"]
+                                          title=self.storage["title"],
+                                          meta_data_reward=self.storage["meta_data_reward"]
                                           )

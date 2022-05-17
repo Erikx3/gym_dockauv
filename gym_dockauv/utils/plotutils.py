@@ -163,7 +163,7 @@ class EpisodeVisualization:
 
     @staticmethod
     def plot_rewards(cum_rewards: np.ndarray, rewards: np.ndarray, episode: Union[int, str] = None, title: str = None,
-                     x_title: str = ""):
+                     x_title: str = "", meta_data_reward: List[str] = None):
         """
 
         :param cum_rewards: array(n, r) with n data points and r rewards (cumulative)
@@ -171,6 +171,7 @@ class EpisodeVisualization:
         :param episode: episode number
         :param title: title of figure
         :param x_title: title of x axis (this function is used in two ways)
+        :param meta_data_reward: list of strings with short description of each reward
         :return: None
         """
         # Calculate sums
@@ -186,7 +187,8 @@ class EpisodeVisualization:
 
         # rewards non cumulative
         for i in range(rewards.shape[1]):
-            ax_r.plot(rewards[:, i], label=f"Reward {i}")
+            ax_r.plot(rewards[:, i],
+                      label=meta_data_reward[i] if meta_data_reward else f"Reward {i}")
         ax_r.plot(rewards_sum, label="Sum")
         ax_r.set_title("Rewards")
         ax_r.set_xlabel(x_title)
@@ -195,11 +197,12 @@ class EpisodeVisualization:
 
         # rewards cumulative
         for i in range(cum_rewards.shape[1]):
-            ax_cum.plot(cum_rewards[:, i], label=f"Cum reward {i}")
+            ax_cum.plot(cum_rewards[:, i],
+                        label=meta_data_reward[i] if meta_data_reward else f"Cum reward {i}")
         ax_cum.plot(cum_rewards_sum, label="Sum")
         ax_cum.set_title("Cumulative Rewards")
         ax_cum.set_xlabel(x_title)
-        ax_cum.set_ylabel("r")
+        ax_cum.set_ylabel("cum r")
         ax_cum.legend()
 
 

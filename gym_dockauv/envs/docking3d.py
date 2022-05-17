@@ -98,6 +98,16 @@ class Docking3d(gym.Env):
         self.cum_reward_arr = np.zeros(7)
         self.info = {}
         self.conditions = None  # Boolean array to see which conditions are true
+        # Description for the meta data
+        self.meta_data_reward = [
+            "Distance_goal",
+            "Attitude",
+            "time_step",
+            "Done-Goal_reached",
+            "Done-out_pos",
+            "Done-out_att",
+            "Done-max_t"
+        ]
 
         # Water current TODO
         self.nu_c = np.zeros(6)
@@ -364,4 +374,5 @@ class Docking3d(gym.Env):
                                                          step_size=self.t_step_size, nu_c_init=self.nu_c,
                                                          shapes=self.obstacles, radar=None, title=self.title,
                                                          episode=self.episode, cum_rewards=self.cum_reward_arr,
-                                                         rewards=self.last_reward_arr)
+                                                         rewards=self.last_reward_arr,
+                                                         meta_data_reward=self.meta_data_reward)
