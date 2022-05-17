@@ -137,7 +137,7 @@ class Docking3d(gym.Env):
         Moreover, `reset` should (in the typical use case) be called with an
         integer seed right after initialization and then never again.
 
-        .. note:: Options not used yet
+        .. note:: Options parameter not used yet
         """
         # In case any windows were open from matplotlib or animation
         if self.episode_animation:
@@ -314,7 +314,7 @@ class Docking3d(gym.Env):
         # All conditions in a list
         self.conditions = [
             np.linalg.norm(self.auv.position - self.goal_location) < 1.0,  # Condition 0: Check if close to the goal
-            np.any(np.abs(self.auv.position) > 50),  # Condition 1: Check if out of bounds for position
+            np.any(np.abs(self.auv.position) > 20),  # Condition 1: Check if out of bounds for position
             np.any(np.abs(self.auv.attitude[:2]) > 80 / 180 * np.pi),
             # Condition 2: Check if attitude (pitch, roll) too high
             self.t_total_steps >= self.max_timesteps  # Condition 3: # Check if maximum time steps reached
@@ -332,6 +332,9 @@ class Docking3d(gym.Env):
         return done, cond_idx
 
     def render(self, mode="human", real_time=False):
+        if real_time:
+            plt.pause(self.t_step_size * 0.9)
+
         if self.episode_data_storage is None:
             self.init_episode_storage()  # The data storage is needed for the plot
         if self.episode_animation is None:
@@ -341,14 +344,12 @@ class Docking3d(gym.Env):
 
         self.episode_animation.update_path_animation(positions=self.episode_data_storage.positions,
                                                      attitudes=self.episode_data_storage.attitudes)
-        if real_time:
-            plt.pause(self.t_step_size * 0.9)
 
         # Possible implementation for rgb_array
         # https://stackoverflow.com/questions/35355930/matplotlib-figure-to-image-as-a-numpy-array,
         # but not really needed here since 3d.
 
-    def save(self):
+    def save_full_data_storage(self):
         """
         Call this function to save the full data storage
         """

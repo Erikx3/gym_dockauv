@@ -62,6 +62,13 @@ TBD
 ```shell
 pip install -U gym
 pip install stable-baselines3
+pip install tensorflow
+```
+
+For tensorboard analysis (https://pythonprogramming.net/saving-and-loading-reinforcement-learning-stable-baselines-3-tutorial/?completed=/introduction-reinforcement-learning-stable-baselines-3-tutorial/):
+
+```shell
+tensorboard --logdir /path/to/log/directory
 ```
 
 ### Profiling

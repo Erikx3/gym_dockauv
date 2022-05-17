@@ -1,38 +1,69 @@
 import os
+import logging
 
 import gym
 from matplotlib import pyplot as plt
 from stable_baselines3 import A2C, PPO
 
 from gym_dockauv.utils.datastorage import EpisodeDataStorage, FullDataStorage
+from gym_dockauv.config.PPO_hyperparams import PPO_HYPER_PARAMS_DEFAULT
+
+# Set logger
+logger = logging.getLogger(__name__)
 
 
-def train(total_timesteps: int, model_path: str = None) -> None:
-    """
+def train(total_timesteps: int,
+          model_save_path: str = "logs/PPO_docking",
+          agent_hyper_params: dict = PPO_HYPER_PARAMS_DEFAULT,
+          tb_log_name: str = "PPO",
+          timesteps_per_save: int = None,
+          model_load_path: str = None) -> None:
+    f"""
     Function to train and save model, own wrapper
+    
+    Model name that will be saved is "[model_save_path]_[elapsed_timesteps]", when timesteps_per_save is given model 
+    is captured and saved in between 
+    
+    .. note:: Interval of saving and number of total runtime might be inaccurate, if the StableBaseLine agent n_steps 
+        is not accordingly updated, for example total runtime is 3000 steps, however, update per n_steps of the agent is 
+        by default for PPO at 2048, thus the agents only checks if its own simulation time steps is bigger than 3000 
+        after every multiple of 2048 
 
-    :param total_timesteps: total timesteps for training
-    :param model_path: path of existing model, use to continue training with that model
+    :param total_timesteps: total timesteps for this training run
+    :param model_save_path: path where to save the model
+    :param agent_hyper_params: agent hyper parameter, default is always loaded
+    :param tb_log_name: log file name of this run for tensor board
+    :param timesteps_per_save: simulation timesteps before saving the model in that interval
+    :param model_load_path: path of existing model, use to continue training with that model
     :return: None
     """
     # Create environment
     env = gym.make("docking3d-v0")
+    # Init variables
+    elapsed_timesteps = 0
+    sim_timesteps = timesteps_per_save if timesteps_per_save else total_timesteps
 
     # Instantiate the agent
-    if model_path is None:
-        # Default:
-        model = PPO('MlpPolicy', env)
-        # Custom:
-        # model = PPO('MlpPolicy', env, learning_rate=0.003, n_steps=2048,
-        #             batch_size=64, n_epochs=10, gamma=0.99, gae_lambda=0.95,
-        #             clip_range=0.2, verbose=0)
+    if model_load_path is None:
+        model = PPO(policy='MlpPolicy', env=env, **agent_hyper_params)
     else:
-        model = PPO.load(model_path, env=env)
+        # Note that this does not load a replay buffer
+        model = PPO.load(model_load_path, env=env)
 
-    model.learn(total_timesteps=total_timesteps)  # Train the agent
-    # Save the agent
-    model.save("logs/PPO_docking")
-    env.save()
+    while elapsed_timesteps < total_timesteps:
+        # Train the agent
+        model.learn(total_timesteps=sim_timesteps, reset_num_timesteps=False, tb_log_name=tb_log_name)
+        # Taking the actual elapsed timesteps here, so the total simulation time at least will not be biased
+        elapsed_timesteps += model.num_timesteps
+        # Save the agent
+        tmp_model_save_path = f"{model_save_path}_{elapsed_timesteps}"
+        # This DOES NOT save the replay/rollout buffer, that is why we continue using the same model instead of
+        # reloading anything in the while loop
+        model.save(tmp_model_save_path)
+        logger.info(f'Successfully saved model: {os.path.join(os.path.join(os.getcwd(), tmp_model_save_path))}')
+
+    # TODO: Check if saving rollout buffer is worth it
+    env.save_full_data_storage()
 
 
 def predict():

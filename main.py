@@ -8,13 +8,17 @@ import os
 from gym_dockauv.objects.vehicles.LAUV import LAUV
 from gym_dockauv.utils.datastorage import EpisodeDataStorage
 from gym_dockauv.utils.plotutils import EpisodeAnimation
+from gym_dockauv.config.PPO_hyperparams import PPO_HYPER_PARAMS_TEST
 
 import gym_dockauv.train as train
 
+from stable_baselines3.common.env_checker import check_env
 if __name__ == "__main__":
-    train.train(total_timesteps=10000)
-    train.predict()
-    train.post_analysis_directory()
+    train.train(total_timesteps=20000, model_save_path="logs/PPO_docking", agent_hyper_params=PPO_HYPER_PARAMS_TEST,
+                timesteps_per_save=4000, model_load_path=None)
+    # train.train(total_timesteps=400000, model_path="logs/PPO_docking")
+    # train.predict()
+    train.post_analysis_directory(directory= "/home/erikx3/PycharmProjects/gym_dockauv/logs")
 
 # Testing Simen vehicle and make video
 # if __name__ == "__main__":
