@@ -95,13 +95,13 @@ class AUVSim(StateSpace, ABC):
         :return: None
         """
         # Perform ODE simulation step
-        # self.state, q = odesolver45(f=self.state_dot, t=0, y=self.state, h=self.step_size, **{"nu_c": nu_c})
+        self.state, q = odesolver45(f=self.state_dot, t=0, y=self.state, h=self.step_size, **{"nu_c": nu_c})
 
         # Alternative with official python package - Note: There are a lot of ways to hack a constant step size,
         # none of them are beautiful
-        res = solve_ivp(fun=self.state_dot, t_span=[0, self.step_size],
-                        y0=self.state, t_eval=[self.step_size], method='RK45', args=(nu_c,))
-        self.state = res.y.flatten()
+        # res = solve_ivp(fun=self.state_dot, t_span=[0, self.step_size],
+        #                 y0=self.state, t_eval=[self.step_size], method='RK45', args=(nu_c,))
+        # self.state = res.y.flatten()
 
         # Convert angle in applicable range
         self.state[3:6] = geom.ssa(self.state[3:6])
@@ -145,16 +145,18 @@ class AUVSim(StateSpace, ABC):
         eta = state[:6]
         nu_r = state[6:]
 
+        state_dot = np.zeros(12)
+
         # Kinematic Model
-        eta_dot = geom.J(eta).dot(nu_r + nu_c)
+        state_dot[:6] = geom.J(eta).dot(nu_r + nu_c)
 
         # Kinetic Model
-        nu_r_dot = self.M_inv.dot(
+        state_dot[6:] = self.M_inv.dot(
             self.B(nu_r).dot(self.u)
             - self.D(nu_r).dot(nu_r)
             - self.C(nu_r).dot(nu_r)
             - self.G(eta))
-        state_dot = np.hstack([eta_dot, nu_r_dot])
+
         return state_dot
 
     @property

@@ -66,11 +66,12 @@ class Docking3d(gym.Env):
         self.auv.step_size = self.config["t_step_size"]
 
         # Set the action and observation space
+        self.n_observations = 12
         self.action_space = gym.spaces.Box(low=self.auv.u_bound[:, 0],
                                            high=self.auv.u_bound[:, 1],
                                            dtype=np.float32)
-        self.observation_space = gym.spaces.Box(low=-np.ones(12),
-                                                high=np.ones(12),
+        self.observation_space = gym.spaces.Box(low=-np.ones(self.n_observations),
+                                                high=np.ones(self.n_observations),
                                                 dtype=np.float32)
 
         # General simulation variables:
@@ -90,7 +91,6 @@ class Docking3d(gym.Env):
         self.collision = False  # Bool to indicate of vehicle has collided
 
         # Initialize observation, reward, done, info
-        self.n_observations = 12
         self.observation = np.zeros(self.n_observations)
         self.done = False
         self.last_reward = 0
@@ -163,7 +163,7 @@ class Docking3d(gym.Env):
         self.collision = False
 
         # Reset observation, cum_reward, done, info
-        self.observation = self.auv.state
+        self.observation = np.zeros(self.n_observations, dtype=np.float32)
         self.last_reward = 0
         self.cumulative_reward = 0
         self.done = False
@@ -174,6 +174,7 @@ class Docking3d(gym.Env):
 
         # Update the seed:
         # TODO: Check if this makes all seeds same (e.g. for water current!!) or works in general
+        # Comment Thomas: maybe fix at 2-3 other places
         if seed is not None:
             self._np_random, seed = seeding.np_random(seed)
 
@@ -250,7 +251,7 @@ class Docking3d(gym.Env):
 
     def observe(self) -> np.ndarray:
         diff = self.goal_location - self.auv.position
-        obs = np.zeros(self.n_observations)
+        obs = np.zeros(self.n_observations, dtype=np.float32)
         obs[0] = np.clip(diff[0] / 50, -1, 1)  # Position difference, assuming we move withing 50 meters
         obs[1] = np.clip(diff[1] / 50, -1, 1)
         obs[2] = np.clip(diff[2] / 50, -1, 1)
@@ -283,14 +284,14 @@ class Docking3d(gym.Env):
         # Reward for being closer to the goal location:
         self.last_reward_arr[0] = -np.linalg.norm(self.auv.position - self.goal_location) ** 2.0
         # Reward for stable attitude
-        self.last_reward_arr[1] = -np.sum(np.abs(self.auv.attitude[:2])) * 5
+        self.last_reward_arr[1] = -np.sum(np.abs(self.auv.attitude[:2])) * 100
         # Negative cum_reward per time step
         self.last_reward_arr[2] = -5
 
         # Reward for action used (e.g. want to minimize action power usage) TODO
 
         # Add extra reward on checking which condition caused the episode to be done
-        self.last_reward_arr[3:] = np.array([50000, 0, 0, 0]) * np.array(self.conditions)
+        self.last_reward_arr[3:] = np.array([500000, 0, -300000, 0]) * np.array(self.conditions)
 
         # Just for analyzing purpose:
         self.cum_reward_arr = self.cum_reward_arr + self.last_reward_arr
@@ -327,7 +328,7 @@ class Docking3d(gym.Env):
         cond_idx = [i for i, x in enumerate(self.conditions) if x]
 
         # Check if any condition is true
-        done = np.any(self.conditions)
+        done = bool(np.any(self.conditions))  # To satisfy environment checker
         return done, cond_idx
 
     def render(self, mode="human", real_time=False):

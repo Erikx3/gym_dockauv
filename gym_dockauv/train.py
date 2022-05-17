@@ -7,17 +7,29 @@ from stable_baselines3 import A2C, PPO
 from gym_dockauv.utils.datastorage import EpisodeDataStorage, FullDataStorage
 
 
-def train(total_timesteps: int) -> None:
+def train(total_timesteps: int, model_path: str = None) -> None:
     """
-    Function to train and save agent
+    Function to train and save model, own wrapper
+
+    :param total_timesteps: total timesteps for training
+    :param model_path: path of existing model, use to continue training with that model
     :return: None
     """
     # Create environment
     env = gym.make("docking3d-v0")
 
     # Instantiate the agent
-    model = PPO('MlpPolicy', env, verbose=0)
-    model.learn(total_timesteps=total_timesteps)    # Train the agent
+    if model_path is None:
+        # Default:
+        model = PPO('MlpPolicy', env)
+        # Custom:
+        # model = PPO('MlpPolicy', env, learning_rate=0.003, n_steps=2048,
+        #             batch_size=64, n_epochs=10, gamma=0.99, gae_lambda=0.95,
+        #             clip_range=0.2, verbose=0)
+    else:
+        model = PPO.load(model_path, env=env)
+
+    model.learn(total_timesteps=total_timesteps)  # Train the agent
     # Save the agent
     model.save("logs/PPO_docking")
     env.save()
@@ -41,21 +53,21 @@ def predict():
     obs = env.reset(seed=5)
     for i in range(1000):
         action, _states = model.predict(obs, deterministic=True)
-        #print(action)
+        # print(action)
         obs, rewards, dones, info = env.step(action)
         env.render()
 
 
 def post_analysis_directory(directory: str = "/home/erikx3/PycharmProjects/gym_dockauv/logs"):
-
     for file in os.listdir(directory):
         filename = os.fsdecode(file)
         # Capture full data pkl file
         full_path = os.path.join(directory, filename)
-        if filename.endswith("FULL__DATA__STORAGE.pkl"):
+        if filename.endswith("FULL_DATA_STORAGE.pkl"):
             full_stor = FullDataStorage()
             full_stor.load(full_path)
             full_stor.plot_rewards()
+            plt.show()
         # Episode Data Storage:
         elif filename.endswith(".pkl"):
             epi_stor = EpisodeDataStorage()
@@ -63,4 +75,4 @@ def post_analysis_directory(directory: str = "/home/erikx3/PycharmProjects/gym_d
             epi_stor.plot_epsiode_states_and_u()
             epi_stor.plot_rewards()
             plt.show()
-            #epi_stor.plot_episode_animation(t_per_step=None, title="Test Post Flight Visualization")
+            # epi_stor.plot_episode_animation(t_per_step=None, title="Test Post Flight Visualization")
