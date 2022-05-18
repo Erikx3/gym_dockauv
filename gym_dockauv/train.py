@@ -87,7 +87,6 @@ def predict(model_path: str):
     obs = env.reset(seed=5)
     for i in range(1000):
         action, _states = model.predict(obs, deterministic=True)
-        print(action)
         obs, rewards, dones, info = env.step(action)
         env.render()
 
@@ -169,7 +168,7 @@ def manual_control():
                 if event.key == pygame.K_q:
                     # pygame.quit()
                     run = False
-        print(action)
+        # print(action)
 
         # Env related stuff
         obs, rewards, dones, info = env.step(valid_action)
