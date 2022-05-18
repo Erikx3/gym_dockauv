@@ -1,6 +1,9 @@
 import os
 import logging
 
+import numpy as np
+import pygame
+
 import gym
 from matplotlib import pyplot as plt
 from stable_baselines3 import A2C, PPO
@@ -84,7 +87,7 @@ def predict(model_path: str):
     obs = env.reset(seed=5)
     for i in range(1000):
         action, _states = model.predict(obs, deterministic=True)
-        # print(action)
+        print(action)
         obs, rewards, dones, info = env.step(action)
         env.render()
 
@@ -107,3 +110,66 @@ def post_analysis_directory(directory: str = "/home/erikx3/PycharmProjects/gym_d
             epi_stor.plot_rewards()
             plt.show()
             # epi_stor.plot_episode_animation(t_per_step=None, title="Test Post Flight Visualization")
+
+
+def manual_control():
+    """
+    Function with pygame workaround to manually fly and debug the vehicle
+
+    Great for debugging purposes, since post analysis can be called on the log that is created
+    """
+    # Settings:
+    WINDOW_X = 400
+    WINDOW_Y = 400
+    # Init environment
+    env = gym.make("docking3d-v0")
+    env.reset()
+    # Init pygame
+    pygame.init()
+    window = pygame.display.set_mode((WINDOW_X, WINDOW_Y))
+    run = True
+    # Init pygame text I want to use
+    pygame.font.init()
+    my_font = pygame.font.SysFont('Comic Sans MS', 30)
+    text_title = my_font.render('Click on this window to control vehicle', False, (255, 255, 255))
+    text_note = my_font.render('Note: Not real time!', False, (255, 255, 255))
+    text_instructions = [my_font.render('Linaer x: [w, s]', False, (255, 255, 255)),
+                         my_font.render('Linaer y: [a, d]', False, (255, 255, 255)),
+                         my_font.render('Linaer z: [r, f]', False, (255, 255, 255)),
+                         my_font.render('Angular x: [u, j]', False, (255, 255, 255)),
+                         my_font.render('Angular y: [h, k]', False, (255, 255, 255)),
+                         my_font.render('Angular z: [o, l]', False, (255, 255, 255))]
+
+    while run:
+        # Text on pygame window
+        window.blit(text_title, (0, 0))
+        window.blit(text_note, (0, 30))
+        pos = 60
+        for text in text_instructions:
+            window.blit(text, (0, pos))
+            pos += 30
+        pygame.display.update()
+        pygame.display.flip()
+
+        # Derive action from keyboard input
+        action = np.zeros(6)
+        keys = pygame.key.get_pressed()
+        action[0] = (keys[pygame.K_w] - keys[pygame.K_s]) * 1
+        action[1] = (keys[pygame.K_a] - keys[pygame.K_d]) * 1
+        action[2] = (keys[pygame.K_f] - keys[pygame.K_r]) * 1
+        action[3] = (keys[pygame.K_u] - keys[pygame.K_j]) * 1
+        action[4] = (keys[pygame.K_h] - keys[pygame.K_k]) * 1
+        action[5] = (keys[pygame.K_o] - keys[pygame.K_l]) * 1
+        # Need this part below to make everything work
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_q:
+                    # pygame.quit()
+                    run = False
+        print(action)
+
+        # Env related stuff
+        obs, rewards, dones, info = env.step(action)
+        env.render()
+
+    env.reset()
