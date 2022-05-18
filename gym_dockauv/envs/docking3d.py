@@ -17,10 +17,8 @@ from gym_dockauv.utils.datastorage import EpisodeDataStorage, FullDataStorage
 from gym_dockauv.utils.plotutils import EpisodeAnimation
 
 # TODO: Think about making this a base class for further environments with different observations, rewards, setup?
-# TODO: Save cumulative reward in episode data storage, other information in Simulation Storage
 # TODO: Save animation option
 # TODO: Water current, radar sensors, obstacles (so far only capsules are supported)
-# TODO: Log rewards and other also in pkl file, make it analyzeable
 
 # Set logger
 logger = logging.getLogger(__name__)

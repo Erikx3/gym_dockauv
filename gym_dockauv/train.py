@@ -133,12 +133,12 @@ def manual_control():
     my_font = pygame.font.SysFont('Comic Sans MS', 30)
     text_title = my_font.render('Click on this window to control vehicle', False, (255, 255, 255))
     text_note = my_font.render('Note: Not real time!', False, (255, 255, 255))
-    text_instructions = [my_font.render('Linaer x: [w, s]', False, (255, 255, 255)),
-                         my_font.render('Linaer y: [a, d]', False, (255, 255, 255)),
-                         my_font.render('Linaer z: [r, f]', False, (255, 255, 255)),
-                         my_font.render('Angular x: [u, j]', False, (255, 255, 255)),
-                         my_font.render('Angular y: [h, k]', False, (255, 255, 255)),
-                         my_font.render('Angular z: [o, l]', False, (255, 255, 255))]
+    text_instructions = [my_font.render('Input 1 / Linear x: [w, s]', False, (255, 255, 255)),
+                         my_font.render('Input 2 / Linear y: [a, d]', False, (255, 255, 255)),
+                         my_font.render('Input 3 / Linear z: [r, f]', False, (255, 255, 255)),
+                         my_font.render('Input 4 / Angular x: [u, j]', False, (255, 255, 255)),
+                         my_font.render('Input 5 / Angular y: [h, k]', False, (255, 255, 255)),
+                         my_font.render('Input 6 / Angular z: [o, l]', False, (255, 255, 255))]
 
     while run:
         # Text on pygame window
@@ -160,6 +160,9 @@ def manual_control():
         action[3] = (keys[pygame.K_u] - keys[pygame.K_j]) * 1
         action[4] = (keys[pygame.K_h] - keys[pygame.K_k]) * 1
         action[5] = (keys[pygame.K_o] - keys[pygame.K_l]) * 1
+
+        valid_input_no = env.auv.u_bound.shape[0]
+        valid_action = action[:valid_input_no]
         # Need this part below to make everything work
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
@@ -169,7 +172,7 @@ def manual_control():
         print(action)
 
         # Env related stuff
-        obs, rewards, dones, info = env.step(action)
+        obs, rewards, dones, info = env.step(valid_action)
         env.render()
 
     env.reset()
