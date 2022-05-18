@@ -108,6 +108,8 @@ class Docking3d(gym.Env):
             "Done-out_att",
             "Done-max_t"
         ]
+        # self.meta_data_done = self.meta_data_reward[3:]
+        self.max_dist_from_goal = self.config["max_dist_from_goal"]
 
         # Water current TODO
         self.nu_c = np.zeros(6)
@@ -215,7 +217,8 @@ class Docking3d(gym.Env):
         """
         # TODO Think about how this should be done in future simulations
         rnd_arr = (np.random.random(3) - 0.5)
-        self.auv.position = rnd_arr * (8 / np.linalg.norm(rnd_arr))
+        self.auv.position = rnd_arr * (3 / np.linalg.norm(rnd_arr))
+        # TODO: Add random attitude
 
     def step(self, action: np.ndarray) -> Tuple[np.ndarray, float, bool, dict]:
         # Simulate current TODO
@@ -262,9 +265,9 @@ class Docking3d(gym.Env):
     def observe(self) -> np.ndarray:
         diff = self.goal_location - self.auv.position
         obs = np.zeros(self.n_observations, dtype=np.float32)
-        obs[0] = np.clip(diff[0] / 50, -1, 1)  # Position difference, assuming we move withing 50 meters
-        obs[1] = np.clip(diff[1] / 50, -1, 1)
-        obs[2] = np.clip(diff[2] / 50, -1, 1)
+        obs[0] = np.clip(diff[0] / self.max_dist_from_goal, -1, 1)  # TODO: Position difference, with max_dist, incorrect
+        obs[1] = np.clip(diff[1] / self.max_dist_from_goal, -1, 1)
+        obs[2] = np.clip(diff[2] / self.max_dist_from_goal, -1, 1)
         obs[3] = np.clip(self.auv.relative_velocity[0] / 5, -1, 1)  # Forward speed, assuming 5m/s max
         obs[4] = np.clip(self.auv.relative_velocity[1] / 2, -1, 1)  # Side speed, assuming 5m/s max
         obs[5] = np.clip(self.auv.relative_velocity[2] / 2, -1, 1)  # Vertical speed, assuming 5m/s max
@@ -292,16 +295,16 @@ class Docking3d(gym.Env):
         :return: The single reward at this step
         """
         # Reward for being closer to the goal location:
-        self.last_reward_arr[0] = -np.linalg.norm(self.auv.position - self.goal_location) ** 2.0
+        self.last_reward_arr[0] = -((np.linalg.norm(self.auv.position - self.goal_location)) / self.max_dist_from_goal)**2 * 0.7
         # Reward for stable attitude
-        self.last_reward_arr[1] = -np.sum(np.abs(self.auv.attitude[:2])) * 100
+        self.last_reward_arr[1] = (-np.sum(np.abs(self.auv.attitude[:2]))) / np.pi * 0.6
         # Negative cum_reward per time step
-        self.last_reward_arr[2] = -5
+        self.last_reward_arr[2] = -0.05
 
         # Reward for action used (e.g. want to minimize action power usage) TODO
 
         # Add extra reward on checking which condition caused the episode to be done
-        self.last_reward_arr[3:] = np.array([500000, 0, -300000, 0]) * np.array(self.conditions)
+        self.last_reward_arr[3:] = np.array([500, -250, -250, -100]) * np.array(self.conditions)
 
         # Just for analyzing purpose:
         self.cum_reward_arr = self.cum_reward_arr + self.last_reward_arr
@@ -320,11 +323,12 @@ class Docking3d(gym.Env):
         :return: [if simulation is done, extra discrete reward, indexes of conditions that are true]
         """
         # TODO: Collision
-
+        # Calculate distance from goal
+        dist_from_goal = np.linalg.norm(self.auv.position - self.goal_location)
         # All conditions in a list
         self.conditions = [
-            np.linalg.norm(self.auv.position - self.goal_location) < 1.0,  # Condition 0: Check if close to the goal
-            np.any(np.abs(self.auv.position) > 20),  # Condition 1: Check if out of bounds for position
+            dist_from_goal < 1.0,  # Condition 0: Check if close to the goal
+            dist_from_goal > self.max_dist_from_goal,  # Condition 1: Check if out of bounds for position
             np.any(np.abs(self.auv.attitude[:2]) > 80 / 180 * np.pi),
             # Condition 2: Check if attitude (pitch, roll) too high
             self.t_total_steps >= self.max_timesteps  # Condition 3: # Check if maximum time steps reached

@@ -54,7 +54,7 @@ def train(total_timesteps: int,
         # Train the agent
         model.learn(total_timesteps=sim_timesteps, reset_num_timesteps=False, tb_log_name=tb_log_name)
         # Taking the actual elapsed timesteps here, so the total simulation time at least will not be biased
-        elapsed_timesteps += model.num_timesteps
+        elapsed_timesteps = model.num_timesteps
         # Save the agent
         tmp_model_save_path = f"{model_save_path}_{elapsed_timesteps}"
         # This DOES NOT save the replay/rollout buffer, that is why we continue using the same model instead of
@@ -66,13 +66,13 @@ def train(total_timesteps: int,
     env.save_full_data_storage()
 
 
-def predict():
+def predict(model_path: str):
     env = gym.make("docking3d-v0")
     # Load the trained agent
     # NOTE: if you have loading issue, you can pass `print_system_info=True`
     # to compare the system on which the model was trained vs the current one
     # model = DQN.load("dqn_lunar", env=env, print_system_info=True)
-    model = PPO.load("logs/PPO_docking", env=env)
+    model = PPO.load(model_path, env=env)
 
     # Evaluate the agent
     # NOTE: If you use wrappers with your environment that modify rewards,
