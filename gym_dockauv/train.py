@@ -118,7 +118,7 @@ def manual_control():
     Great for debugging purposes, since post analysis can be called on the log that is created
     """
     # Settings:
-    WINDOW_X = 400
+    WINDOW_X = 600
     WINDOW_Y = 400
     # Init environment
     env = gym.make("docking3d-v0")
@@ -131,22 +131,46 @@ def manual_control():
     pygame.font.init()
     my_font = pygame.font.SysFont('Comic Sans MS', 30)
     text_title = my_font.render('Click on this window to control vehicle', False, (255, 255, 255))
-    text_note = my_font.render('Note: Not real time!', False, (255, 255, 255))
-    text_instructions = [my_font.render('Input 1 / Linear x: [w, s]', False, (255, 255, 255)),
-                         my_font.render('Input 2 / Linear y: [a, d]', False, (255, 255, 255)),
-                         my_font.render('Input 3 / Linear z: [r, f]', False, (255, 255, 255)),
-                         my_font.render('Input 4 / Angular x: [u, j]', False, (255, 255, 255)),
-                         my_font.render('Input 5 / Angular y: [h, k]', False, (255, 255, 255)),
-                         my_font.render('Input 6 / Angular z: [o, l]', False, (255, 255, 255))]
-
+    text_note = my_font.render('Note: Not real time! Press keys below.', False, (255, 255, 255))
+    text_instructions1 = [
+        my_font.render('Input 1 / Linear x:', False, (255, 255, 255)),
+        my_font.render('Input 2 / Linear y:', False, (255, 255, 255)),
+        my_font.render('Input 3 / Linear z:', False, (255, 255, 255)),
+        my_font.render('Input 4 / Angular x:', False, (255, 255, 255)),
+        my_font.render('Input 5 / Angular y:', False, (255, 255, 255)),
+        my_font.render('Input 6 / Angular z:', False, (255, 255, 255))]
+    text_instructions2 = [my_font.render('w', False, (255, 255, 255)),
+                          my_font.render('a', False, (255, 255, 255)),
+                          my_font.render('r', False, (255, 255, 255)),
+                          my_font.render('u', False, (255, 255, 255)),
+                          my_font.render('h', False, (255, 255, 255)),
+                          my_font.render('o', False, (255, 255, 255))]
+    text_instructions3 = [my_font.render('s', False, (255, 255, 255)),
+                          my_font.render('d', False, (255, 255, 255)),
+                          my_font.render('f', False, (255, 255, 255)),
+                          my_font.render('j', False, (255, 255, 255)),
+                          my_font.render('k', False, (255, 255, 255)),
+                          my_font.render('l', False, (255, 255, 255))]
+    # Init valid action
+    action = np.zeros(6)
+    valid_input_no = env.auv.u_bound.shape[0]
     while run:
         # Text on pygame window
+        window.fill((0, 0, 0))
         window.blit(text_title, (0, 0))
         window.blit(text_note, (0, 30))
-        pos = 60
-        for text in text_instructions:
-            window.blit(text, (0, pos))
-            pos += 30
+        pos_y = 80
+        count = 0
+        for text1, text2, text3 in zip(text_instructions1, text_instructions2, text_instructions3):
+            window.blit(text1, (0, pos_y))
+            window.blit(text2, (250, pos_y))
+            window.blit(text3, (WINDOW_X - 50, pos_y))
+            circle_x = WINDOW_X-100 - (WINDOW_X-100-300)/2 * (action[count]+1)
+            pygame.draw.circle(window, (0, 255, 0), (circle_x, pos_y+10), 5)
+            pos_y += 45
+            count += 1
+        line_x = (250+WINDOW_X-50)/2
+        pygame.draw.line(window, 'green', (line_x, 80), (line_x, 80+5*45 + 30))
         pygame.display.update()
         pygame.display.flip()
 
@@ -160,12 +184,12 @@ def manual_control():
         action[4] = (keys[pygame.K_h] - keys[pygame.K_k]) * 1
         action[5] = (keys[pygame.K_o] - keys[pygame.K_l]) * 1
 
-        valid_input_no = env.auv.u_bound.shape[0]
+
         valid_action = action[:valid_input_no]
         # Need this part below to make everything work
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_q:
+                if event.key == pygame.K_q or event.type == pygame.QUIT:
                     # pygame.quit()
                     run = False
         # print(action)
