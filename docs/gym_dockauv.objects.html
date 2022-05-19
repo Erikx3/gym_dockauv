@@ -668,13 +668,13 @@ distance.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="gym_dockauv.objects.shape.intersec_dist_line_capsule">
 <span class="sig-prename descclassname"><span class="pre">gym_dockauv.objects.shape.</span></span><span class="sig-name descname"><span class="pre">intersec_dist_line_capsule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">l1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ld</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cap1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cap2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cap_rad</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.shape.intersec_dist_line_capsule" title="Permalink to this definition"></a></dt>
-<dd><p>return closest distance from starting point to intersection of capsule, otherwise returns None if no intersection
+<dd><p>return closest distance from starting point to intersection of capsule, otherwise returns -np.inf if no intersection
 is found. Intersection point can then be found by multiplying unit vector in direction of line by this distance.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>This solution ALWAYS finds the first intersection (if there is) from the starting in direction of the second
-point. However, as soon as the intersection is in opposite direction of the line, it returns the intersection
-further away, as if the ray came form behind in that direction to the capsule.</p>
+<p>This solution ALWAYS finds the first intersection (if there is) in the direction of the ray vector. This
+means, it does not matter where the starting point is, it finds the first intersection in direction of the ray
+vector and can thus also return negative values</p>
 </div>
 <p>Solution found here:
 <a class="reference external" href="https://iquilezles.org/articles/intersectors/">https://iquilezles.org/articles/intersectors/</a></p>
@@ -957,7 +957,7 @@ from zero, this equation simplifies further to:</p>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">I_b</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#gym_dockauv.objects.statespace.StateSpace.I_b" title="Permalink to this definition"></a></dt>
 <dd><p>Inertia Moments matrix about an arbitrary origin</p>
 <div class="math notranslate nohighlight">
-\[oldsymbol{I}_b = oldsymbol{I}_g - m oldsymbol{S}^2(oldsymbol{r}_g)\]</div>
+\[\boldsymbol{I}_b = \boldsymbol{I}_g - m \boldsymbol{S}^2(\boldsymbol{r}_g)\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>array 3x3</p>

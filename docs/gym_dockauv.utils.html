@@ -192,14 +192,18 @@ the numpy arrays.</p>
 <span class="w">        </span><span class="nt">&quot;states_dot&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;auvsim._state_dot nx12 array&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">        </span><span class="nt">&quot;u&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;auvsim.u nxa array (a number of action)&quot;</span><span class="w"></span>
 <span class="w">    </span><span class="p">},</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;radar&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Array with radar end points&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;nu_c&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;water current&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">    </span><span class="nt">&quot;shapes&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;list of shape objects as in shapes.py used here&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;title of run&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">    </span><span class="nt">&quot;episode&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;episode number&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">    </span><span class="nt">&quot;step_size&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;step_size in simulation&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;nu_c&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;water current&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;cum_rewards&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;cumulative reward array&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;rewards&quot;</span><span class="p">:</span><span class="w"> </span><span class="nt">&quot;reward array per step&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;meta_data_reward&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;List of string for reward description&quot;</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
-<p>TODO: (Agent, environment, further variables, settings etc. or these go to FullDataStorge class)</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="gym_dockauv.utils.datastorage.EpisodeDataStorage.attitudes">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">attitudes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#gym_dockauv.utils.datastorage.EpisodeDataStorage.attitudes" title="Permalink to this definition"></a></dt>
@@ -266,6 +270,13 @@ the numpy arrays.</p>
 :return:</p>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.utils.datastorage.EpisodeDataStorage.plot_rewards">
+<span class="sig-name descname"><span class="pre">plot_rewards</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.datastorage.EpisodeDataStorage.plot_rewards" title="Permalink to this definition"></a></dt>
+<dd><p>Individual wrapper for plotting rewards
+:return:</p>
+</dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="gym_dockauv.utils.datastorage.EpisodeDataStorage.positions">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">positions</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#gym_dockauv.utils.datastorage.EpisodeDataStorage.positions" title="Permalink to this definition"></a></dt>
@@ -296,9 +307,10 @@ the numpy arrays.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gym_dockauv.utils.datastorage.EpisodeDataStorage.set_up_episode_storage">
-<span class="sig-name descname"><span class="pre">set_up_episode_storage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vehicle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nu_c_init</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shapes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">episode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.datastorage.EpisodeDataStorage.set_up_episode_storage" title="Permalink to this definition"></a></dt>
-<dd><p>Set up the storage to save and update incoming data</p>
-<p>file_save_name: will be formatted path_folderYYYY-MM-DDTHH-MM-SS__episode{episode}__{title}.pkl</p>
+<span class="sig-name descname"><span class="pre">set_up_episode_storage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vehicle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nu_c_init</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shapes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">episode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cum_rewards</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rewards</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meta_data_reward</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.datastorage.EpisodeDataStorage.set_up_episode_storage" title="Permalink to this definition"></a></dt>
+<dd><p>Set up the storage to save and update incoming data, including passing a reference to the vehicle and
+environment</p>
+<p>file_save_name: will be formatted path_folderYYYY-MM-DDTHH-MM-SS__{title}__EPISODE_{episode}_DATA_STORAGE.pkl</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -310,6 +322,9 @@ the numpy arrays.</p>
 <li><p><strong>radar</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference internal" href="gym_dockauv.objects.html#gym_dockauv.objects.sensor.Radar" title="gym_dockauv.objects.sensor.Radar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Radar</span></code></a>]) – Radar sensor if used, save endpoints for post visualization</p></li>
 <li><p><strong>title</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Optional title for addendum</p></li>
 <li><p><strong>episode</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Episode number</p></li>
+<li><p><strong>cum_rewards</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>]) – 1d array with cumulative rewards</p></li>
+<li><p><strong>rewards</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>]) – 1d array with rewards</p></li>
+<li><p><strong>meta_data_reward</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]) – meta data of rewards</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
@@ -350,11 +365,15 @@ the numpy arrays.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gym_dockauv.utils.datastorage.EpisodeDataStorage.update">
-<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nu_c</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.datastorage.EpisodeDataStorage.update" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nu_c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cum_rewards</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">array([0.])</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rewards</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">array([0.])</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.datastorage.EpisodeDataStorage.update" title="Permalink to this definition"></a></dt>
 <dd><p>should be called in the end of each simulation step</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>nu_c</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – water current at that time array 6x1</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nu_c</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – water current at that time array 6x1</p></li>
+<li><p><strong>cum_rewards</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – 1d array with cumulative rewards</p></li>
+<li><p><strong>rewards</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – 1d array with rewards</p></li>
+</ul>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
@@ -371,8 +390,85 @@ the numpy arrays.</p>
 <dt class="sig sig-object py" id="gym_dockauv.utils.datastorage.FullDataStorage">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gym_dockauv.utils.datastorage.</span></span><span class="sig-name descname"><span class="pre">FullDataStorage</span></span><a class="headerlink" href="#gym_dockauv.utils.datastorage.FullDataStorage" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>TODO:
-Class to save general simulation over all the runs of simulation (e.g. length, success/collison, cum_reward)</p>
+<p>Class to save general simulation data over all the runs/ episodes of simulation:
+- the info dictionary
+- cumulative rewards array</p>
+<p>Pass the created environment by reference and update the Full Data Storage at the end of each episode</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.utils.datastorage.FullDataStorage.load">
+<span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.datastorage.FullDataStorage.load" title="Permalink to this definition"></a></dt>
+<dd><p>Function to load an existing full data storage</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>file_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – path to file</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the loaded storage</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.utils.datastorage.FullDataStorage.plot_rewards">
+<span class="sig-name descname"><span class="pre">plot_rewards</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.datastorage.FullDataStorage.plot_rewards" title="Permalink to this definition"></a></dt>
+<dd><p>Individual wrapper for plotting rewards
+:return:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.utils.datastorage.FullDataStorage.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.datastorage.FullDataStorage.save" title="Permalink to this definition"></a></dt>
+<dd><p>Function to save the pickle file, must be called from the outside, since the gym environment does not know when
+its simulation ends</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>path to where file is saved</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.utils.datastorage.FullDataStorage.set_up_episode_storage">
+<span class="sig-name descname"><span class="pre">set_up_episode_storage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.datastorage.FullDataStorage.set_up_episode_storage" title="Permalink to this definition"></a></dt>
+<dd><p>Set up the storage to save and update incoming data with passing a reference of the env</p>
+<p>file_save_name: will be formatted path_folderYYYY-MM-DDTHH-MM-SS__{title}__FULL_DATA_STORAGE.pkl</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>env</strong> – The gym environment</p></li>
+<li><p><strong>path_folder</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Path to folder</p></li>
+<li><p><strong>title</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Optional title for addendum</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.utils.datastorage.FullDataStorage.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.datastorage.FullDataStorage.update" title="Permalink to this definition"></a></dt>
+<dd><p>should be called in the end of each episode</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -624,13 +720,14 @@ the test cases.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gym_dockauv.utils.plotutils.EpisodeAnimation.add_shapes">
-<span class="sig-name descname"><span class="pre">add_shapes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shapes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.plotutils.EpisodeAnimation.add_shapes" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">add_shapes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shapes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'b'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.plotutils.EpisodeAnimation.add_shapes" title="Permalink to this definition"></a></dt>
 <dd><p>Ass shape as static to existent axes</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>shapes</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="gym_dockauv.objects.html#gym_dockauv.objects.shape.Shape" title="gym_dockauv.objects.shape.Shape"><code class="xref py py-class docutils literal notranslate"><span class="pre">Shape</span></code></a>]) – list of shapes objects (e.g. Capsule)</p></li>
 <li><p><strong>ax</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">axes</span></code>) – existent axes (of this instance!)</p></li>
+<li><p><strong>color</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – color of added shapes, string notation of matplotlib</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
@@ -817,7 +914,7 @@ show attitude arrows (with plt.pause() save animation does not work)</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gym_dockauv.utils.plotutils.EpisodeVisualization.plot_episode_states_and_u">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">plot_episode_states_and_u</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">states</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nu_c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_size</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.plotutils.EpisodeVisualization.plot_episode_states_and_u" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">plot_episode_states_and_u</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">states</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nu_c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">episode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.plotutils.EpisodeVisualization.plot_episode_states_and_u" title="Permalink to this definition"></a></dt>
 <dd><p>Plot all the episode states and input u in one figure</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -826,6 +923,28 @@ show attitude arrows (with plt.pause() save animation does not work)</p>
 <li><p><strong>nu_c</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – nx6 array of current</p></li>
 <li><p><strong>u</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – nxa array of actions</p></li>
 <li><p><strong>step_size</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – fixed simulation step size</p></li>
+<li><p><strong>episode</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – episode number</p></li>
+<li><p><strong>title</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – title of figure</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.utils.plotutils.EpisodeVisualization.plot_rewards">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">plot_rewards</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cum_rewards</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rewards</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">episode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meta_data_reward</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.plotutils.EpisodeVisualization.plot_rewards" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cum_rewards</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – array(n, r) with n data points and r rewards (cumulative)</p></li>
+<li><p><strong>rewards</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – array(n, r) with n data points and r rewards</p></li>
+<li><p><strong>episode</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – episode number</p></li>
+<li><p><strong>title</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – title of figure</p></li>
+<li><p><strong>x_title</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – title of x axis (this function is used in two ways)</p></li>
+<li><p><strong>meta_data_reward</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]) – list of strings with short description of each reward</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -840,8 +959,7 @@ show attitude arrows (with plt.pause() save animation does not work)</p>
 <dt class="sig sig-object py" id="gym_dockauv.utils.plotutils.FullVisualization">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gym_dockauv.utils.plotutils.</span></span><span class="sig-name descname"><span class="pre">FullVisualization</span></span><a class="headerlink" href="#gym_dockauv.utils.plotutils.FullVisualization" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>TODO:
-Offers functions with respect to the whole simulation run with multiple episodes.</p>
+<p>Offers functions with respect to the whole simulation run with multiple episodes.</p>
 <p>Possible function ideas:
 - Reward function, success and other statistics about the agent or its path/decision
 - All available animations in the folder in chronological order</p>

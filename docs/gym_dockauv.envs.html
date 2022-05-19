@@ -93,14 +93,21 @@
 <span id="gym-dockauv-envs-docking3d-module"></span><h2>gym_dockauv.envs.docking3d module<a class="headerlink" href="#module-gym_dockauv.envs.docking3d" title="Permalink to this headline"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.Docking3d">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gym_dockauv.envs.docking3d.</span></span><span class="sig-name descname"><span class="pre">Docking3d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'config_name':</span> <span class="pre">'DEFAULT_BASE_CONFIG',</span> <span class="pre">'goal_location':</span> <span class="pre">array([0,</span> <span class="pre">0,</span> <span class="pre">0]),</span> <span class="pre">'interval_datastorage':</span> <span class="pre">100,</span> <span class="pre">'interval_render':</span> <span class="pre">20,</span> <span class="pre">'max_timesteps':</span> <span class="pre">500,</span> <span class="pre">'radius':</span> <span class="pre">0.5,</span> <span class="pre">'real_time':</span> <span class="pre">False,</span> <span class="pre">'save_path_folder':</span> <span class="pre">'/home/erikx3/PycharmProjects/gym_dockauv/docsrc/result_files',</span> <span class="pre">'t_step_size':</span> <span class="pre">0.2,</span> <span class="pre">'title':</span> <span class="pre">'DEFAULT',</span> <span class="pre">'vehicle':</span> <span class="pre">'BlueROV2'}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.Docking3d" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gym_dockauv.envs.docking3d.</span></span><span class="sig-name descname"><span class="pre">Docking3d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'config_name':</span> <span class="pre">'DEFAULT_BASE_CONFIG',</span> <span class="pre">'goal_location':</span> <span class="pre">array([0,</span> <span class="pre">0,</span> <span class="pre">0]),</span> <span class="pre">'interval_datastorage':</span> <span class="pre">200,</span> <span class="pre">'log_level':</span> <span class="pre">20,</span> <span class="pre">'max_attitude':</span> <span class="pre">1.0471975511965976,</span> <span class="pre">'max_dist_from_goal':</span> <span class="pre">10,</span> <span class="pre">'max_timesteps':</span> <span class="pre">500,</span> <span class="pre">'radius':</span> <span class="pre">0.5,</span> <span class="pre">'save_path_folder':</span> <span class="pre">'/home/erikx3/PycharmProjects/gym_dockauv/docsrc/logs',</span> <span class="pre">'t_step_size':</span> <span class="pre">0.1,</span> <span class="pre">'title':</span> <span class="pre">'DEFAULT',</span> <span class="pre">'vehicle':</span> <span class="pre">'BlueROV2',</span> <span class="pre">'verbose':</span> <span class="pre">1}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.Docking3d" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">gym.core.Env</span></code></p>
 <p>Base Class for the docking environment</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.Docking3d.action_space">
-<span class="sig-name descname"><span class="pre">action_space</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">spaces.Space</span><span class="p"><span class="pre">[</span></span><span class="pre">ActType</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#gym_dockauv.envs.docking3d.Docking3d.action_space" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Adding a reward or a done condition with reward should take the following steps:
+- Add reward to the self.last_reward_arr
+- Update the list self.meta_data_reward
+- Update the doc for the reward_step() function (and of done())</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>env_config</strong> (<em>dict</em>) – </p>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.Docking3d.generate_environment">
 <span class="sig-name descname"><span class="pre">generate_environment</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.Docking3d.generate_environment" title="Permalink to this definition"></a></dt>
@@ -108,19 +115,27 @@
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.Docking3d.init_episode_storage">
+<span class="sig-name descname"><span class="pre">init_episode_storage</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.Docking3d.init_episode_storage" title="Permalink to this definition"></a></dt>
+<dd><p>Small helper function for setting up episode storage when needed</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.Docking3d.is_done">
 <span class="sig-name descname"><span class="pre">is_done</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.Docking3d.is_done" title="Permalink to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Condition 0: Check if close to the goal
+Condition 1: Check if out of bounds for position
+Condition 2: Check if attitude (pitch, roll) too high
+Condition 3: Check if maximum time steps reached</p>
+<dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
+<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[if simulation is done, extra discrete reward, indexes of conditions that are true]</p>
 </dd>
 </dl>
 </dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.Docking3d.observation_space">
-<span class="sig-name descname"><span class="pre">observation_space</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">spaces.Space</span><span class="p"><span class="pre">[</span></span><span class="pre">ObsType</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#gym_dockauv.envs.docking3d.Docking3d.observation_space" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.Docking3d.observe">
@@ -134,11 +149,11 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.Docking3d.render">
-<span class="sig-name descname"><span class="pre">render</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'human'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.Docking3d.render" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">render</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'human'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">real_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.Docking3d.render" title="Permalink to this definition"></a></dt>
 <dd><p>Renders the environment.</p>
 <p>The set of supported modes varies per environment. (And some
-third-party environments may not support rendering at all.)
-By convention, if mode is:</p>
+environments do not support rendering at all.) By convention,
+if mode is:</p>
 <ul class="simple">
 <li><p>human: render to the current display or terminal and
 return nothing. Usually for human consumption.</p></li>
@@ -152,7 +167,7 @@ and ANSI escape sequences (e.g. for colors).</p></li>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <dl class="simple">
-<dt>Make sure that your class’s metadata ‘render_modes’ key includes</dt><dd><p>the list of supported modes. It’s recommended to call super()
+<dt>Make sure that your class’s metadata ‘render.modes’ key includes</dt><dd><p>the list of supported modes. It’s recommended to call super()
 in implementations to use the functionality of this method.</p>
 </dd>
 </dl>
@@ -164,7 +179,7 @@ in implementations to use the functionality of this method.</p>
 </dl>
 <p>Example:</p>
 <dl>
-<dt>class MyEnv(Env):</dt><dd><p>metadata = {‘render_modes’: [‘human’, ‘rgb_array’]}</p>
+<dt>class MyEnv(Env):</dt><dd><p>metadata = {‘render.modes’: [‘human’, ‘rgb_array’]}</p>
 <dl class="simple">
 <dt>def render(self, mode=’human’):</dt><dd><dl class="simple">
 <dt>if mode == ‘rgb_array’:</dt><dd><p>return np.array(…) # return RGB frame suitable for video</p>
@@ -195,7 +210,7 @@ Moreover, <cite>reset</cite> should (in the typical use case) be called with an
 integer seed right after initialization and then never again.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Options not used yet</p>
+<p>Options parameter not used yet</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -213,12 +228,33 @@ integer seed right after initialization and then never again.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.Docking3d.reward_step">
-<span class="sig-name descname"><span class="pre">reward_step</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.Docking3d.reward_step" title="Permalink to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+<span class="sig-name descname"><span class="pre">reward_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.Docking3d.reward_step" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate the reward function, make sure to call self.is_done() before to update and check the done conditions</p>
+<p>Reward 1: Close gto goal location
+Reward 2: Stable attitude
+Reward 3: time step penalty
+Reward 4: action use penalty
+Reward 5: Done - Goal reached
+Reward 6: Done - out of bounds position
+Reward 7: Done - out of bounds attitude
+Reward 8: Done - maximum episode steps</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>action</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – array with actions between -1 and 1</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The single reward at this step</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.Docking3d.save_full_data_storage">
+<span class="sig-name descname"><span class="pre">save_full_data_storage</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.Docking3d.save_full_data_storage" title="Permalink to this definition"></a></dt>
+<dd><p>Call this function to save the full data storage</p>
 </dd></dl>
 
 <dl class="py method">
@@ -236,7 +272,7 @@ to reset this environment’s state.</p>
 <dd class="field-even"><p>agent’s observation of the current environment
 reward (float) : amount of reward returned after previous action
 done (bool): whether the episode has ended, in which case further step() calls will return undefined results
-info (dict): contains auxiliary diagnostic information (helpful for debugging, logging, and sometimes learning)</p>
+info (dict): contains auxiliary diagnostic information (helpful for debugging, and sometimes learning)</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>observation (object)</p>

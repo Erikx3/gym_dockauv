@@ -91,6 +91,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="gym_dockauv.config.html">gym_dockauv.config package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="gym_dockauv.config.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gym_dockauv.config.html#module-gym_dockauv.config.PPO_hyperparams">gym_dockauv.config.PPO_hyperparams module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gym_dockauv.config.html#module-gym_dockauv.config.env_default_config">gym_dockauv.config.env_default_config module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gym_dockauv.config.html#module-gym_dockauv.config">Module contents</a></li>
 </ul>
@@ -176,14 +177,60 @@
 <section id="module-gym_dockauv.train">
 <span id="gym-dockauv-train-module"></span><h2>gym_dockauv.train module<a class="headerlink" href="#module-gym_dockauv.train" title="Permalink to this headline"></a></h2>
 <dl class="py function">
-<dt class="sig sig-object py" id="gym_dockauv.train.train">
-<span class="sig-prename descclassname"><span class="pre">gym_dockauv.train.</span></span><span class="sig-name descname"><span class="pre">train</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.train.train" title="Permalink to this definition"></a></dt>
-<dd><p>Function to train and save agent
-:rtype: <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>
-:return: None</p>
+<dt class="sig sig-object py" id="gym_dockauv.train.manual_control">
+<span class="sig-prename descclassname"><span class="pre">gym_dockauv.train.</span></span><span class="sig-name descname"><span class="pre">manual_control</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.train.manual_control" title="Permalink to this definition"></a></dt>
+<dd><p>Function with pygame workaround to manually fly and debug the vehicle</p>
+<p>Great for debugging purposes, since post analysis can be called on the log that is created</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gym_dockauv.train.post_analysis_directory">
+<span class="sig-prename descclassname"><span class="pre">gym_dockauv.train.</span></span><span class="sig-name descname"><span class="pre">post_analysis_directory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'/home/erikx3/PycharmProjects/gym_dockauv/logs'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_full</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_episode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.train.post_analysis_directory" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>directory</strong> (<em>str</em>) – </p></li>
+<li><p><strong>show_full</strong> (<em>bool</em>) – </p></li>
+<li><p><strong>show_episode</strong> (<em>bool</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gym_dockauv.train.predict">
+<span class="sig-prename descclassname"><span class="pre">gym_dockauv.train.</span></span><span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_episodes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.train.predict" title="Permalink to this definition"></a></dt>
+<dd><p>Function to visualize and evaluate the actual model on the environment</p>
 <dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model_path</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – full path of trained agent</p></li>
+<li><p><strong>n_episodes</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – number of episodes to run</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gym_dockauv.train.train">
+<span class="sig-prename descclassname"><span class="pre">gym_dockauv.train.</span></span><span class="sig-name descname"><span class="pre">train</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">total_timesteps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_save_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'logs/PPO_docking'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_hyper_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'_init_setup_model':</span> <span class="pre">True,</span> <span class="pre">'batch_size':</span> <span class="pre">64,</span> <span class="pre">'clip_range':</span> <span class="pre">0.2,</span> <span class="pre">'clip_range_vf':</span> <span class="pre">None,</span> <span class="pre">'create_eval_env':</span> <span class="pre">False,</span> <span class="pre">'device':</span> <span class="pre">'auto',</span> <span class="pre">'ent_coef':</span> <span class="pre">0.0,</span> <span class="pre">'gae_lambda':</span> <span class="pre">0.95,</span> <span class="pre">'gamma':</span> <span class="pre">0.99,</span> <span class="pre">'learning_rate':</span> <span class="pre">0.0003,</span> <span class="pre">'max_grad_norm':</span> <span class="pre">0.5,</span> <span class="pre">'n_epochs':</span> <span class="pre">10,</span> <span class="pre">'n_steps':</span> <span class="pre">2048,</span> <span class="pre">'normalize_advantage':</span> <span class="pre">True,</span> <span class="pre">'policy_kwargs':</span> <span class="pre">None,</span> <span class="pre">'sde_sample_freq':</span> <span class="pre">-</span> <span class="pre">1,</span> <span class="pre">'seed':</span> <span class="pre">None,</span> <span class="pre">'target_kl':</span> <span class="pre">None,</span> <span class="pre">'tensorboard_log':</span> <span class="pre">None,</span> <span class="pre">'use_sde':</span> <span class="pre">False,</span> <span class="pre">'verbose':</span> <span class="pre">0,</span> <span class="pre">'vf_coef':</span> <span class="pre">0.5}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'config_name':</span> <span class="pre">'DEFAULT_BASE_CONFIG',</span> <span class="pre">'goal_location':</span> <span class="pre">array([0,</span> <span class="pre">0,</span> <span class="pre">0]),</span> <span class="pre">'interval_datastorage':</span> <span class="pre">200,</span> <span class="pre">'log_level':</span> <span class="pre">20,</span> <span class="pre">'max_attitude':</span> <span class="pre">1.0471975511965976,</span> <span class="pre">'max_dist_from_goal':</span> <span class="pre">10,</span> <span class="pre">'max_timesteps':</span> <span class="pre">500,</span> <span class="pre">'radius':</span> <span class="pre">0.5,</span> <span class="pre">'save_path_folder':</span> <span class="pre">'/home/erikx3/PycharmProjects/gym_dockauv/docsrc/logs',</span> <span class="pre">'t_step_size':</span> <span class="pre">0.1,</span> <span class="pre">'title':</span> <span class="pre">'Training</span> <span class="pre">Run',</span> <span class="pre">'vehicle':</span> <span class="pre">'BlueROV2',</span> <span class="pre">'verbose':</span> <span class="pre">1}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tb_log_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'PPO'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timesteps_per_save</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_load_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.train.train" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>None</p>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>total_timesteps</strong> (<em>int</em>) – </p></li>
+<li><p><strong>model_save_path</strong> (<em>str</em>) – </p></li>
+<li><p><strong>agent_hyper_params</strong> (<em>dict</em>) – </p></li>
+<li><p><strong>env_config</strong> (<em>dict</em>) – </p></li>
+<li><p><strong>tb_log_name</strong> (<em>str</em>) – </p></li>
+<li><p><strong>timesteps_per_save</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em>) – </p></li>
+<li><p><strong>model_load_path</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em>) – </p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
