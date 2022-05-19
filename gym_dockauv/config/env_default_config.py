@@ -29,3 +29,7 @@ BASE_CONFIG = {
                                             # gym_dockauv/objects/vehicles
     'radius': 0.5                           # Radius size of vehicle for collision detection
 }
+
+PREDICT_CONFIG = BASE_CONFIG
+PREDICT_CONFIG["title"] = "Prediction Run"
+PREDICT_CONFIG["save_path_folder"] = os.path.join(os.getcwd(), "predict_logs")

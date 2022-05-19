@@ -31,3 +31,4 @@ matplotlib~=3.5.1
 gym~=0.21.0
 stable-baselines3==1.5.0
 tensorflow==2.9.0
+pygame~=2.1.2

@@ -2,7 +2,6 @@ import os
 import logging
 
 import numpy as np
-import pygame
 
 import gym
 from matplotlib import pyplot as plt
@@ -10,6 +9,7 @@ from stable_baselines3 import A2C, PPO
 
 from gym_dockauv.utils.datastorage import EpisodeDataStorage, FullDataStorage
 from gym_dockauv.config.PPO_hyperparams import PPO_HYPER_PARAMS_DEFAULT
+from gym_dockauv.config.env_default_config import PREDICT_CONFIG
 
 # Set logger
 logger = logging.getLogger(__name__)
@@ -70,7 +70,7 @@ def train(total_timesteps: int,
 
 
 def predict(model_path: str):
-    env = gym.make("docking3d-v0")
+    env = gym.make("docking3d-v0", env_config=PREDICT_CONFIG)
     # Load the trained agent
     # NOTE: if you have loading issue, you can pass `print_system_info=True`
     # to compare the system on which the model was trained vs the current one
@@ -87,8 +87,11 @@ def predict(model_path: str):
     obs = env.reset(seed=5)
     for i in range(1000):
         action, _states = model.predict(obs, deterministic=True)
-        obs, rewards, dones, info = env.step(action)
+        obs, rewards, done, info = env.step(action)
         env.render()
+        if done:
+            break
+    env.reset()
 
 
 def post_analysis_directory(directory: str = "/home/erikx3/PycharmProjects/gym_dockauv/logs"):
@@ -117,6 +120,8 @@ def manual_control():
 
     Great for debugging purposes, since post analysis can be called on the log that is created
     """
+    import pygame
+
     # Settings:
     WINDOW_X = 600
     WINDOW_Y = 400

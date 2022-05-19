@@ -215,7 +215,7 @@ class Docking3d(gym.Env):
         """
         # TODO Think about how this should be done in future simulations
         rnd_arr = (np.random.random(3) - 0.5)
-        self.auv.position = rnd_arr * (3 / np.linalg.norm(rnd_arr))
+        self.auv.position = rnd_arr * (6 / np.linalg.norm(rnd_arr))
         # TODO: Add random attitude
 
     def step(self, action: np.ndarray) -> Tuple[np.ndarray, float, bool, dict]:
@@ -295,14 +295,14 @@ class Docking3d(gym.Env):
         # Reward for being closer to the goal location:
         self.last_reward_arr[0] = -((np.linalg.norm(self.auv.position - self.goal_location)) / self.max_dist_from_goal)**2 * 0.7
         # Reward for stable attitude
-        self.last_reward_arr[1] = (-np.sum(np.abs(self.auv.attitude[:2]))) / np.pi * 0.6
+        self.last_reward_arr[1] = (-np.sum(np.abs(self.auv.attitude[:2]))) / np.pi * 0.5
         # Negative cum_reward per time step
         self.last_reward_arr[2] = -0.05
 
         # Reward for action used (e.g. want to minimize action power usage) TODO
 
         # Add extra reward on checking which condition caused the episode to be done
-        self.last_reward_arr[3:] = np.array([500, -250, -250, -100]) * np.array(self.conditions)
+        self.last_reward_arr[3:] = np.array([200, -100, -100, -50]) * np.array(self.conditions)
 
         # Just for analyzing purpose:
         self.cum_reward_arr = self.cum_reward_arr + self.last_reward_arr
@@ -316,7 +316,7 @@ class Docking3d(gym.Env):
         Condition 0: Check if close to the goal
         Condition 1: Check if out of bounds for position
         Condition 2: Check if attitude (pitch, roll) too high
-        Condition 3: # Check if maximum time steps reached
+        Condition 3: Check if maximum time steps reached
 
         :return: [if simulation is done, extra discrete reward, indexes of conditions that are true]
         """

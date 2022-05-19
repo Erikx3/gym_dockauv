@@ -17,8 +17,10 @@ if __name__ == "__main__":
     # train.train(total_timesteps=200000, model_save_path="logs/PPO_docking",
     #             agent_hyper_params=PPO_HYPER_PARAMS_TEST, tb_log_name="PPO",
     #             timesteps_per_save=20000, model_load_path=None)
+    # train.post_analysis_directory(directory="/home/erikx3/PycharmProjects/gym_dockauv/logs")
     train.predict("logs/PPO_docking_204800")
-    train.post_analysis_directory(directory="/home/erikx3/PycharmProjects/gym_dockauv/logs")
+    train.post_analysis_directory(directory="/home/erikx3/PycharmProjects/gym_dockauv/predict_logs")
+    # train.manual_control()
 
 # Testing Simen vehicle and make video
 # if __name__ == "__main__":
