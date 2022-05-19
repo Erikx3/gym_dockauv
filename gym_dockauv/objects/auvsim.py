@@ -190,6 +190,10 @@ class AUVSim(StateSpace, ABC):
         """
         return self.state[3:6]
 
+    @attitude.setter
+    def attitude(self, value):
+        self.state[3:6] = value.copy()
+
     @property
     def eta(self):
         r"""

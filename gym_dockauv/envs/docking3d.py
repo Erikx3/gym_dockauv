@@ -109,6 +109,7 @@ class Docking3d(gym.Env):
         ]
         # self.meta_data_done = self.meta_data_reward[3:]
         self.max_dist_from_goal = self.config["max_dist_from_goal"]
+        self.max_attitude = self.config["max_attitude"]
 
         # Water current TODO
         self.nu_c = np.zeros(6)
@@ -215,9 +216,13 @@ class Docking3d(gym.Env):
         Setup a environment after each reset
         """
         # TODO Think about how this should be done in future simulations
-        rnd_arr = (np.random.random(3) - 0.5)
-        self.auv.position = rnd_arr * (6 / np.linalg.norm(rnd_arr))
-        # TODO: Add random attitude
+        # Position
+        rnd_arr_pos = (np.random.random(3) - 0.5)
+        self.auv.position = rnd_arr_pos * (6 / np.linalg.norm(rnd_arr_pos))
+        # Attitude
+        rnd_arr_attitude = (np.random.random(3) - 0.5)
+        att_factor = np.array([self.max_attitude*0.7, self.max_attitude*0.7, np.pi])  # Spawn at xx% of max attitude
+        self.auv.attitude = rnd_arr_attitude * att_factor  # Spawn with random attitude
 
     def step(self, action: np.ndarray) -> Tuple[np.ndarray, float, bool, dict]:
         # Simulate current TODO
@@ -328,7 +333,7 @@ class Docking3d(gym.Env):
         self.conditions = [
             dist_from_goal < 1.0,  # Condition 0: Check if close to the goal
             dist_from_goal > self.max_dist_from_goal,  # Condition 1: Check if out of bounds for position
-            np.any(np.abs(self.auv.attitude[:2]) > 80 / 180 * np.pi),
+            np.any(np.abs(self.auv.attitude[:2]) > self.max_attitude),
             # Condition 2: Check if attitude (pitch, roll) too high
             self.t_total_steps >= self.max_timesteps  # Condition 3: # Check if maximum time steps reached
         ]
