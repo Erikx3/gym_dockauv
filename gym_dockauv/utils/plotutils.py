@@ -205,6 +205,8 @@ class EpisodeVisualization:
         ax_cum.set_ylabel("cum r")
         ax_cum.legend()
 
+        fig.tight_layout()
+
 
 class EpisodeAnimation:
     """

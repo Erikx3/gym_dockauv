@@ -89,11 +89,12 @@ class Docking3d(gym.Env):
         self.collision = False  # Bool to indicate of vehicle has collided
 
         # Initialize observation, reward, done, info
+        self.n_rewards = 7
         self.observation = np.zeros(self.n_observations)
         self.done = False
         self.last_reward = 0
-        self.last_reward_arr = np.zeros(7)  # This should reflect the dimension of the rewards parts (for analysis)
-        self.cum_reward_arr = np.zeros(7)
+        self.last_reward_arr = np.zeros(self.n_rewards)  # This should reflect the dimension of the rewards parts (for analysis)
+        self.cum_reward_arr = np.zeros(self.n_rewards)
         self.info = {}
         self.conditions = None  # Boolean array to see which conditions are true
         # Description for the meta data
@@ -177,14 +178,14 @@ class Docking3d(gym.Env):
         self.last_reward = 0
         self.cumulative_reward = 0
         self.done = False
-        self.last_reward_arr = np.zeros(7)
-        self.cum_reward_arr = np.zeros(7)
+        self.last_reward_arr = np.zeros(self.n_rewards)
+        self.cum_reward_arr = np.zeros(self.n_rewards)
         self.info = {}
         self.conditions = None  # Boolean array to see which conditions are true
 
         # Update the seed:
         # TODO: Check if this makes all seeds same (e.g. for water current!!) or works in general
-        # Comment Thomas: maybe fix at 2-3 other places
+        # Comment Thomas: maybe need to fix at 2-3 other places
         if seed is not None:
             self._np_random, seed = seeding.np_random(seed)
 

@@ -3,6 +3,7 @@ This file serves as a template and default config, when e.g. gym.make is called
 """
 import numpy as np
 import os
+import copy
 
 BASE_CONFIG = {
     # ---------- GENERAL ----------
@@ -30,6 +31,18 @@ BASE_CONFIG = {
     'radius': 0.5                           # Radius size of vehicle for collision detection
 }
 
-PREDICT_CONFIG = BASE_CONFIG
+# ---------- Configuration for Training runs ----------
+TRAIN_CONFIG = copy.deepcopy(BASE_CONFIG)
+TRAIN_CONFIG["title"] = "Training Run"
+TRAIN_CONFIG["save_path_folder"] = os.path.join(os.getcwd(), "logs")
+
+# ---------- Configuration for Prediction runs ----------
+PREDICT_CONFIG = copy.deepcopy(BASE_CONFIG)
+PREDICT_CONFIG["interval_datastorage"] = 1
 PREDICT_CONFIG["title"] = "Prediction Run"
 PREDICT_CONFIG["save_path_folder"] = os.path.join(os.getcwd(), "predict_logs")
+
+# ---------- Configuration for Manual control runs ----------
+MANUAL_CONFIG = copy.deepcopy(BASE_CONFIG)
+MANUAL_CONFIG["title"] = "Manual Run"
+MANUAL_CONFIG["save_path_folder"] = os.path.join(os.getcwd(), "manual_logs")

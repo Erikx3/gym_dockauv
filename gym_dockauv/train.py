@@ -9,7 +9,7 @@ from stable_baselines3 import A2C, PPO
 
 from gym_dockauv.utils.datastorage import EpisodeDataStorage, FullDataStorage
 from gym_dockauv.config.PPO_hyperparams import PPO_HYPER_PARAMS_DEFAULT
-from gym_dockauv.config.env_default_config import PREDICT_CONFIG
+from gym_dockauv.config.env_default_config import PREDICT_CONFIG, MANUAL_CONFIG, TRAIN_CONFIG
 
 # Set logger
 logger = logging.getLogger(__name__)
@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 def train(total_timesteps: int,
           model_save_path: str = "logs/PPO_docking",
           agent_hyper_params: dict = PPO_HYPER_PARAMS_DEFAULT,
+          env_config: dict = TRAIN_CONFIG,
           tb_log_name: str = "PPO",
           timesteps_per_save: int = None,
           model_load_path: str = None) -> None:
@@ -35,13 +36,14 @@ def train(total_timesteps: int,
     :param total_timesteps: total timesteps for this training run
     :param model_save_path: path where to save the model
     :param agent_hyper_params: agent hyper parameter, default is always loaded
+    :param env_config: environment configuration
     :param tb_log_name: log file name of this run for tensor board
     :param timesteps_per_save: simulation timesteps before saving the model in that interval
     :param model_load_path: path of existing model, use to continue training with that model
     :return: None
     """
     # Create environment
-    env = gym.make("docking3d-v0")
+    env = gym.make("docking3d-v0", env_config=TRAIN_CONFIG)
     # Init variables
     elapsed_timesteps = 0
     sim_timesteps = timesteps_per_save if timesteps_per_save else total_timesteps
@@ -69,43 +71,47 @@ def train(total_timesteps: int,
     env.save_full_data_storage()
 
 
-def predict(model_path: str):
+def predict(model_path: str, n_episodes: int = 5):
+    """
+    Function to visualize and evaluate the actual model on the environment
+
+    :param model_path: full path of trained agent
+    :param n_episodes: number of episodes to run
+    :return:
+    """
     env = gym.make("docking3d-v0", env_config=PREDICT_CONFIG)
     # Load the trained agent
     # NOTE: if you have loading issue, you can pass `print_system_info=True`
     # to compare the system on which the model was trained vs the current one
-    # model = DQN.load("dqn_lunar", env=env, print_system_info=True)
     model = PPO.load(model_path, env=env)
-
-    # Evaluate the agent
-    # NOTE: If you use wrappers with your environment that modify rewards,
-    #       this will be reflected here. To evaluate with original rewards,
-    #       wrap environment in a "Monitor" wrapper before other wrappers.
-    # mean_reward, std_reward = evaluate_policy(model, model.get_env(), n_eval_episodes=10)
 
     # Enjoy trained agent
     obs = env.reset(seed=5)
-    for i in range(1000):
-        action, _states = model.predict(obs, deterministic=True)
-        obs, rewards, done, info = env.step(action)
-        env.render()
-        if done:
-            break
-    env.reset()
+    for i in range(n_episodes):
+        done = False
+        while not done:
+            action, _states = model.predict(obs, deterministic=True)
+            obs, rewards, done, info = env.step(action)
+            env.render()
+            if done:
+                break
+        env.reset()
+    env.save_full_data_storage()
 
 
-def post_analysis_directory(directory: str = "/home/erikx3/PycharmProjects/gym_dockauv/logs"):
+def post_analysis_directory(directory: str = "/home/erikx3/PycharmProjects/gym_dockauv/logs", show_full: bool = True,
+                            show_episode: bool = True):
     for file in os.listdir(directory):
         filename = os.fsdecode(file)
         # Capture full data pkl file
         full_path = os.path.join(directory, filename)
-        if filename.endswith("FULL_DATA_STORAGE.pkl"):
+        if filename.endswith("FULL_DATA_STORAGE.pkl") and show_full:
             full_stor = FullDataStorage()
             full_stor.load(full_path)
             full_stor.plot_rewards()
             plt.show()
         # Episode Data Storage:
-        elif filename.endswith(".pkl"):
+        elif filename.endswith(".pkl") and show_episode:
             epi_stor = EpisodeDataStorage()
             epi_stor.load(full_path)
             epi_stor.plot_epsiode_states_and_u()
@@ -126,7 +132,7 @@ def manual_control():
     WINDOW_X = 600
     WINDOW_Y = 400
     # Init environment
-    env = gym.make("docking3d-v0")
+    env = gym.make("docking3d-v0", env_config=MANUAL_CONFIG)
     env.reset()
     # Init pygame
     pygame.init()
@@ -160,8 +166,8 @@ def manual_control():
     action = np.zeros(6)
     valid_input_no = env.auv.u_bound.shape[0]
     while run:
-        # Text on pygame window
-        window.fill((0, 0, 0))
+        # Text and shapes on pygame window
+        window.fill((0, 0, 0))  # Make black background again
         window.blit(text_title, (0, 0))
         window.blit(text_note, (0, 30))
         pos_y = 80
@@ -170,12 +176,15 @@ def manual_control():
             window.blit(text1, (0, pos_y))
             window.blit(text2, (250, pos_y))
             window.blit(text3, (WINDOW_X - 50, pos_y))
+            # Here we draw the circle based on which keyboard are pressed
             circle_x = WINDOW_X-100 - (WINDOW_X-100-300)/2 * (action[count]+1)
-            pygame.draw.circle(window, (0, 255, 0), (circle_x, pos_y+10), 5)
+            pygame.draw.circle(window, 'green', (circle_x, pos_y+10), 5)
             pos_y += 45
             count += 1
+        # Draw a green line
         line_x = (250+WINDOW_X-50)/2
         pygame.draw.line(window, 'green', (line_x, 80), (line_x, 80+5*45 + 30))
+        # Update pygame window
         pygame.display.update()
         pygame.display.flip()
 
@@ -189,18 +198,18 @@ def manual_control():
         action[4] = (keys[pygame.K_h] - keys[pygame.K_k]) * 1
         action[5] = (keys[pygame.K_o] - keys[pygame.K_l]) * 1
 
-
+        # Get valid action, as number of inputs might be smaller than 6 for other vehicles
         valid_action = action[:valid_input_no]
-        # Need this part below to make everything work
+
+        # Need this part below to make everything work, but also quitting
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_q or event.type == pygame.QUIT:
-                    # pygame.quit()
                     run = False
         # print(action)
 
         # Env related stuff
         obs, rewards, dones, info = env.step(valid_action)
         env.render()
-
+    # This last call ensures, that we save a log for "episode one"
     env.reset()
