@@ -28,6 +28,11 @@ logger = logging.getLogger(__name__)
 class Docking3d(gym.Env):
     """
     Base Class for the docking environment
+
+    .. note:: Adding a reward or a done condition with reward should take the following steps:
+        - Add reward to the self.last_reward_arr
+        - Update the list self.meta_data_reward
+        - Update the doc for the reward_step() function (and of done())
     """
 
     def __init__(self, env_config: dict = BASE_CONFIG):
@@ -91,7 +96,7 @@ class Docking3d(gym.Env):
         self.collision = False  # Bool to indicate of vehicle has collided
 
         # Initialize observation, reward, done, info
-        self.n_rewards = 7
+        self.n_rewards = 8
         self.observation = np.zeros(self.n_observations)
         self.done = False
         self.last_reward = 0
@@ -104,6 +109,7 @@ class Docking3d(gym.Env):
             "Distance_goal",
             "Attitude",
             "time_step",
+            "action",
             "Done-Goal_reached",
             "Done-out_pos",
             "Done-out_att",
@@ -248,7 +254,7 @@ class Docking3d(gym.Env):
         self.done, cond_idx = self.is_done()
 
         # Calculate rewards
-        self.last_reward = self.reward_step()
+        self.last_reward = self.reward_step(action)
         self.cumulative_reward += self.last_reward
 
         # Make next observation TODO
@@ -290,31 +296,33 @@ class Docking3d(gym.Env):
 
         return obs
 
-    def reward_step(self) -> float:
+    def reward_step(self, action: np.ndarray) -> float:
         """
         Calculate the reward function, make sure to call self.is_done() before to update and check the done conditions
 
         Reward 1: Close gto goal location
         Reward 2: Stable attitude
         Reward 3: time step penalty
-        Reward 4: Done - Goal reached
-        Reward 5: Done - out of bounds position
-        Reward 6: Done - out of bounds attitude
-        Reward 7: Done - maximum episode steps
+        Reward 4: action use penalty
+        Reward 5: Done - Goal reached
+        Reward 6: Done - out of bounds position
+        Reward 7: Done - out of bounds attitude
+        Reward 8: Done - maximum episode steps
 
+        :param action: array with actions between -1 and 1
         :return: The single reward at this step
         """
         # Reward for being closer to the goal location:
         self.last_reward_arr[0] = -((np.linalg.norm(self.auv.position - self.goal_location)) / self.max_dist_from_goal)**2 * 0.7
         # Reward for stable attitude
-        self.last_reward_arr[1] = (-np.sum(np.abs(self.auv.attitude[:2]))) / np.pi * 0.5
+        self.last_reward_arr[1] = (-np.sum(np.abs(self.auv.attitude[:2]))) / np.pi * 0.6
         # Negative cum_reward per time step
         self.last_reward_arr[2] = -0.05
-
-        # Reward for action used (e.g. want to minimize action power usage) TODO
+        # Reward for action used (e.g. want to minimize action power usage)
+        self.last_reward_arr[3] = -np.sum(np.abs(action))/action.shape[0] * 0.4
 
         # Add extra reward on checking which condition caused the episode to be done
-        self.last_reward_arr[3:] = np.array([200, -100, -100, -50]) * np.array(self.conditions)
+        self.last_reward_arr[4:] = np.array([50, -100, -100, -50]) * np.array(self.conditions)
 
         # Just for analyzing purpose:
         self.cum_reward_arr = self.cum_reward_arr + self.last_reward_arr

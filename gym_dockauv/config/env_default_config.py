@@ -42,6 +42,7 @@ PREDICT_CONFIG = copy.deepcopy(BASE_CONFIG)
 PREDICT_CONFIG["interval_datastorage"] = 1
 PREDICT_CONFIG["title"] = "Prediction Run"
 PREDICT_CONFIG["save_path_folder"] = os.path.join(os.getcwd(), "predict_logs")
+# PREDICT_CONFIG["max_dist_from_goal"] = 10
 
 # ---------- Configuration for Manual control runs ----------
 MANUAL_CONFIG = copy.deepcopy(BASE_CONFIG)
