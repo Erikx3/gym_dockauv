@@ -291,18 +291,19 @@ class EpisodeAnimation:
 
         self.bm.add_artists([episode_text])
 
-    def add_shapes(self, ax: matplotlib.pyplot.axes, shapes: List[Shape]) -> None:
+    def add_shapes(self, ax: matplotlib.pyplot.axes, shapes: List[Shape], color: str = 'b') -> None:
         """
         Ass shape as static to existent axes
 
         :param shapes: list of shapes objects (e.g. Capsule)
         :param ax: existent axes (of this instance!)
+        :param color: color of added shapes, string notation of matplotlib
         :return: None
         """
         # Static shapes (assumed for now, drawing these dynamically could slow down the system significantly):
         for shape in shapes:
             for plot_var in shape.get_plot_variables():
-                ax.plot_surface(*plot_var, color='b', alpha=1.00)
+                ax.plot_surface(*plot_var, color=color, alpha=1.00)
 
     def update_radar_animation(self, pos: np.ndarray, end_pos: np.ndarray) -> None:
         """

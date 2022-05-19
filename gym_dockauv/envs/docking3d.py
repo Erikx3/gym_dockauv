@@ -15,6 +15,7 @@ from gym.utils import seeding
 from gym_dockauv.config.env_default_config import BASE_CONFIG
 from gym_dockauv.utils.datastorage import EpisodeDataStorage, FullDataStorage
 from gym_dockauv.utils.plotutils import EpisodeAnimation
+import gym_dockauv.objects.shape as shape
 
 # TODO: Think about making this a base class for further environments with different observations, rewards, setup?
 # TODO: Save animation option
@@ -73,7 +74,8 @@ class Docking3d(gym.Env):
                                                 dtype=np.float32)
 
         # General simulation variables:
-        self.t_total_steps = 0  # Number of steps in this simulation
+        self.t_total_steps = 0  # Number of total timesteps run so far in this environment
+        self.t_steps = 0  # Number of steps in this episode
         self.t_step_size = self.config["t_step_size"]
         self.episode = 0  # Current episode
         self.cumulative_reward = 0  # Current cumulative reward of agent
@@ -126,6 +128,7 @@ class Docking3d(gym.Env):
 
         # Animation
         self.episode_animation = None
+        self.ax = None
 
         logger.info('---------- Initialization of environment complete ---------- \n')
         logger.info('---------- Rewards function description ----------')
@@ -155,6 +158,7 @@ class Docking3d(gym.Env):
         if self.episode_animation:
             plt.close(self.episode_animation.fig)  # TODO: Window stays open, prob due to Gym
             self.episode_animation = None
+            self.ax = None
 
         # Save info to return in the end
         return_info_dict = self.info.copy()
@@ -170,7 +174,7 @@ class Docking3d(gym.Env):
 
         # ---------- General reset from here on -----------
         self.auv.reset()
-        self.t_total_steps = 0
+        self.t_steps = 0
         self.goal_reached = False
         self.collision = False
 
@@ -252,10 +256,12 @@ class Docking3d(gym.Env):
 
         # Save sim time info
         self.t_total_steps += 1
+        self.t_steps += 1
 
         # Update info dict
         self.info = {"episode_number": self.episode,  # Need to be episode number, because episode is used by sb3
-                     "t_step": self.t_total_steps,
+                     "t_step": self.t_steps,
+                     "t_total_steps": self.t_total_steps,
                      "cumulative_reward": self.cumulative_reward,
                      "last_reward": self.last_reward,
                      "done": self.done,
@@ -275,8 +281,8 @@ class Docking3d(gym.Env):
         obs[3] = np.clip(self.auv.relative_velocity[0] / 5, -1, 1)  # Forward speed, assuming 5m/s max
         obs[4] = np.clip(self.auv.relative_velocity[1] / 2, -1, 1)  # Side speed, assuming 5m/s max
         obs[5] = np.clip(self.auv.relative_velocity[2] / 2, -1, 1)  # Vertical speed, assuming 5m/s max
-        obs[6] = np.clip(self.auv.attitude[0] / np.pi / 2, -1, 1)  # Roll, assuming +-90deg max
-        obs[7] = np.clip(self.auv.attitude[1] / np.pi / 2, -1, 1)  # Pitch, assuming +-90deg max
+        obs[6] = np.clip(self.auv.attitude[0] / self.max_attitude, -1, 1)  # Roll, assuming +-90deg max
+        obs[7] = np.clip(self.auv.attitude[1] / self.max_attitude, -1, 1)  # Pitch, assuming +-90deg max
         obs[8] = np.clip(self.auv.attitude[2] / np.pi, -1, 1)  # Yaw, assuming +-180deg max
         obs[9] = np.clip(self.auv.angular_velocity[0] / 1.0, -1, 1)  # Angular Velocities, assuming 1 rad/s
         obs[10] = np.clip(self.auv.angular_velocity[1] / 1.0, -1, 1)
@@ -335,7 +341,7 @@ class Docking3d(gym.Env):
             dist_from_goal > self.max_dist_from_goal,  # Condition 1: Check if out of bounds for position
             np.any(np.abs(self.auv.attitude[:2]) > self.max_attitude),
             # Condition 2: Check if attitude (pitch, roll) too high
-            self.t_total_steps >= self.max_timesteps  # Condition 3: # Check if maximum time steps reached
+            self.t_steps >= self.max_timesteps  # Condition 3: # Check if maximum time steps reached
         ]
 
         # If goal reached
@@ -357,8 +363,10 @@ class Docking3d(gym.Env):
             self.init_episode_storage()  # The data storage is needed for the plot
         if self.episode_animation is None:
             self.episode_animation = EpisodeAnimation()
-            ax = self.episode_animation.init_path_animation()
-            self.episode_animation.add_episode_text(ax, self.episode)
+            self.ax = self.episode_animation.init_path_animation()
+            self.episode_animation.add_episode_text(self.ax, self.episode)
+            # Add goal location as tiny sphere, this one is not an obstacle!
+            self.episode_animation.add_shapes(self.ax, [shape.Sphere(self.goal_location, 0.5)], 'k')
 
         self.episode_animation.update_path_animation(positions=self.episode_data_storage.positions,
                                                      attitudes=self.episode_data_storage.attitudes)
