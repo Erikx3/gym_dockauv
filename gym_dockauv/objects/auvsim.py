@@ -175,6 +175,7 @@ class AUVSim(StateSpace, ABC):
 
     @position.setter
     def position(self, value):
+        """Setter for the position into state"""
         self.state[0:3] = value.copy()
 
     @property
@@ -192,6 +193,7 @@ class AUVSim(StateSpace, ABC):
 
     @attitude.setter
     def attitude(self, value):
+        """Setter for the attitude into state"""
         self.state[3:6] = value.copy()
 
     @property

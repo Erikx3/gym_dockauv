@@ -134,6 +134,7 @@ def manual_control():
     # Init environment
     env = gym.make("docking3d-v0", env_config=MANUAL_CONFIG)
     env.reset()
+    done = False
     # Init pygame
     pygame.init()
     window = pygame.display.set_mode((WINDOW_X, WINDOW_Y))
@@ -166,6 +167,7 @@ def manual_control():
     action = np.zeros(6)
     valid_input_no = env.auv.u_bound.shape[0]
     while run:
+        # --------- Pygame ----------
         # Text and shapes on pygame window
         window.fill((0, 0, 0))  # Make black background again
         window.blit(text_title, (0, 0))
@@ -188,7 +190,7 @@ def manual_control():
         pygame.display.update()
         pygame.display.flip()
 
-        # Derive action from keyboard input
+        # --------- Derive action from keyboard input ---------
         action = np.zeros(6)
         keys = pygame.key.get_pressed()
         action[0] = (keys[pygame.K_w] - keys[pygame.K_s]) * 1
@@ -206,10 +208,13 @@ def manual_control():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_q or event.type == pygame.QUIT:
                     run = False
-        # print(action)
 
-        # Env related stuff
-        obs, rewards, dones, info = env.step(valid_action)
-        env.render()
-    # This last call ensures, that we save a log for "episode one"
-    env.reset()
+        # --------- Environment ---------
+        if not done:
+            # Env related stuff
+            obs, rewards, done, info = env.step(valid_action)
+            env.render()
+        # This last call ensures, that we save a log for "episode one"
+        else:
+            env.reset()
+            done = False
