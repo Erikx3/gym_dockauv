@@ -12,10 +12,10 @@ gym\_dockauv.config.PPO\_hyperparams module
    :undoc-members:
    :show-inheritance:
 
-gym\_dockauv.config.env\_default\_config module
------------------------------------------------
+gym\_dockauv.config.env\_config module
+--------------------------------------
 
-.. automodule:: gym_dockauv.config.env_default_config
+.. automodule:: gym_dockauv.config.env_config
    :members:
    :undoc-members:
    :show-inheritance:

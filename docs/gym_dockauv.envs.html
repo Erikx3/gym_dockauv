@@ -93,14 +93,18 @@
 <span id="gym-dockauv-envs-docking3d-module"></span><h2>gym_dockauv.envs.docking3d module<a class="headerlink" href="#module-gym_dockauv.envs.docking3d" title="Permalink to this headline"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.Docking3d">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gym_dockauv.envs.docking3d.</span></span><span class="sig-name descname"><span class="pre">Docking3d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'config_name':</span> <span class="pre">'DEFAULT_BASE_CONFIG',</span> <span class="pre">'goal_location':</span> <span class="pre">array([0,</span> <span class="pre">0,</span> <span class="pre">0]),</span> <span class="pre">'interval_datastorage':</span> <span class="pre">200,</span> <span class="pre">'log_level':</span> <span class="pre">20,</span> <span class="pre">'max_attitude':</span> <span class="pre">1.0471975511965976,</span> <span class="pre">'max_dist_from_goal':</span> <span class="pre">10,</span> <span class="pre">'max_timesteps':</span> <span class="pre">500,</span> <span class="pre">'radius':</span> <span class="pre">0.5,</span> <span class="pre">'save_path_folder':</span> <span class="pre">'/home/erikx3/PycharmProjects/gym_dockauv/docsrc/logs',</span> <span class="pre">'t_step_size':</span> <span class="pre">0.1,</span> <span class="pre">'title':</span> <span class="pre">'DEFAULT',</span> <span class="pre">'vehicle':</span> <span class="pre">'BlueROV2',</span> <span class="pre">'verbose':</span> <span class="pre">1}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.Docking3d" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gym_dockauv.envs.docking3d.</span></span><span class="sig-name descname"><span class="pre">Docking3d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'action_reward_factors':</span> <span class="pre">array([0.05,</span> <span class="pre">0.15,</span> <span class="pre">0.05,</span> <span class="pre">0.25,</span> <span class="pre">0.25,</span> <span class="pre">0.25]),</span> <span class="pre">'config_name':</span> <span class="pre">'DEFAULT_BASE_CONFIG',</span> <span class="pre">'goal_location':</span> <span class="pre">array([0,</span> <span class="pre">0,</span> <span class="pre">0]),</span> <span class="pre">'interval_datastorage':</span> <span class="pre">200,</span> <span class="pre">'log_level':</span> <span class="pre">20,</span> <span class="pre">'max_attitude':</span> <span class="pre">1.0471975511965976,</span> <span class="pre">'max_dist_from_goal':</span> <span class="pre">10,</span> <span class="pre">'max_timesteps':</span> <span class="pre">500,</span> <span class="pre">'radius':</span> <span class="pre">0.5,</span> <span class="pre">'reward_factors':</span> <span class="pre">array([-</span> <span class="pre">7.e-01,</span> <span class="pre">-</span> <span class="pre">6.e-01,</span> <span class="pre">-</span> <span class="pre">5.e-02,</span> <span class="pre">-</span> <span class="pre">4.e-01,</span> <span class="pre">5.e+01,</span> <span class="pre">-</span> <span class="pre">1.e+02,</span> <span class="pre">-</span> <span class="pre">1.e+02,</span> <span class="pre">-</span> <span class="pre">5.e+01]),</span> <span class="pre">'save_path_folder':</span> <span class="pre">'/home/erikx3/PycharmProjects/gym_dockauv/docsrc/logs',</span> <span class="pre">'t_step_size':</span> <span class="pre">0.1,</span> <span class="pre">'title':</span> <span class="pre">'DEFAULT',</span> <span class="pre">'vehicle':</span> <span class="pre">'BlueROV2',</span> <span class="pre">'verbose':</span> <span class="pre">1}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.Docking3d" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">gym.core.Env</span></code></p>
-<p>Base Class for the docking environment</p>
+<p>Base Class for the docking environment, will also be registered with gym. However, the configs for the
+environment are found at gym_dockauv/config</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Adding a reward or a done condition with reward should take the following steps:
-- Add reward to the self.last_reward_arr
-- Update the list self.meta_data_reward
+<p>Adding a reward or a done condition with reward needs to take the following steps:
+- Add reward to the self.last_reward_arr in the reward step
+- Add a factor to it in the config file
+- Update number of self.n_rewards in __init__()
+- Update the list self.meta_data_reward in __init__()
+- Update the index of self.meta_data_done in __init__() if necessary
 - Update the doc for the reward_step() function (and of done())</p>
 </div>
 <dl class="field-list simple">
@@ -111,7 +115,7 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.Docking3d.generate_environment">
 <span class="sig-name descname"><span class="pre">generate_environment</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.Docking3d.generate_environment" title="Permalink to this definition"></a></dt>
-<dd><p>Setup a environment after each reset</p>
+<dd><p>Setup a environment after each reset call</p>
 </dd></dl>
 
 <dl class="py method">
@@ -230,6 +234,8 @@ integer seed right after initialization and then never again.</p>
 <dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.Docking3d.reward_step">
 <span class="sig-name descname"><span class="pre">reward_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.Docking3d.reward_step" title="Permalink to this definition"></a></dt>
 <dd><p>Calculate the reward function, make sure to call self.is_done() before to update and check the done conditions</p>
+<p>The factors are defined in the config. Each reward is normalized between 0..1, thus the factor decides its
+importance. Keep in mind the rewards for the done conditions will be sparse.</p>
 <p>Reward 1: Close gto goal location
 Reward 2: Stable attitude
 Reward 3: time step penalty
