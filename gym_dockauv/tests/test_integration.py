@@ -135,7 +135,7 @@ class TestIntegration(TestBlueROV2):
         # SO far without sensors, since it could be reanimated if needed, but not necessary for now
         epi_stor = EpisodeDataStorage()
         epi_stor.load(os.path.join(PATH_FOL, f"{STORAGE_NAME}.pkl"))
-        epi_stor.plot_epsiode_states_and_u()
+        epi_stor.plot_epsiode_states()
         plt.savefig(os.path.join(PATH_FOL, f"{STORAGE_NAME}_Plot.png"))
         plt.close('all')
         epi_stor.plot_episode_animation(t_per_step=None, title="Test Post Flight Visualization")

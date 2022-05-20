@@ -250,7 +250,7 @@ class Docking3d(gym.Env):
 
         # Update data storage if active
         if self.episode_data_storage:
-            self.episode_data_storage.update(self.nu_c, self.cum_reward_arr, self.last_reward_arr)
+            self.episode_data_storage.update(self.nu_c)
 
         # Update visualization if active
         if self.episode_animation:
@@ -411,6 +411,4 @@ class Docking3d(gym.Env):
         self.episode_data_storage.set_up_episode_storage(path_folder=self.save_path_folder, vehicle=self.auv,
                                                          step_size=self.t_step_size, nu_c_init=self.nu_c,
                                                          shapes=self.obstacles, radar=None, title=self.title,
-                                                         episode=self.episode, cum_rewards=self.cum_reward_arr,
-                                                         rewards=self.last_reward_arr,
-                                                         meta_data_reward=self.meta_data_reward)
+                                                         episode=self.episode, env=self)

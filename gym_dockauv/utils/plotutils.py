@@ -11,7 +11,6 @@ from ..objects.shape import Shape
 from .blitmanager import BlitManager
 from .geomutils import Rzyx
 
-
 # Set logger
 logger = logging.getLogger(__name__)
 
@@ -70,14 +69,13 @@ class EpisodeVisualization:
                 plt.pause(t_per_step)
 
     @staticmethod
-    def plot_episode_states_and_u(states: np.ndarray, nu_c: np.ndarray, u: np.ndarray, step_size: float,
-                                  episode: int = None, title: str = None):
+    def plot_episode_states(states: np.ndarray, nu_c: np.ndarray, step_size: float,
+                            episode: int = None, title: str = None):
         """
         Plot all the episode states and input u in one figure
 
         :param states: nx12 array
         :param nu_c: nx6 array of current
-        :param u: nxa array of actions
         :param step_size: fixed simulation step size
         :param episode: episode number
         :param title: title of figure
@@ -92,10 +90,9 @@ class EpisodeVisualization:
         ax_posxy = fig.add_subplot(3, 2, 1)
         ax_posz = fig.add_subplot(3, 2, 3)
         ax_euler = fig.add_subplot(3, 2, 5)
-        ax_nu_c = fig.add_subplot(4, 2, 2)
-        ax_vel = fig.add_subplot(4, 2, 4)
-        ax_ang = fig.add_subplot(4, 2, 6)
-        ax_u = fig.add_subplot(4, 2, 8)
+        ax_nu_c = fig.add_subplot(3, 2, 2)
+        ax_vel = fig.add_subplot(3, 2, 4)
+        ax_ang = fig.add_subplot(3, 2, 6)
 
         if episode or title:
             fig.suptitle(f'{title} - Episode {episode}')
@@ -151,6 +148,40 @@ class EpisodeVisualization:
         ax_ang.set_ylabel(r"$\omega$ [°/s]")
         ax_ang.legend()
 
+        fig.subplots_adjust(left=0.125, bottom=0.07, right=0.9, top=0.93, wspace=0.2, hspace=0.6)
+
+    @staticmethod
+    def plot_observation_and_u(observation: np.ndarray, u: np.ndarray, step_size: float, episode: int = None,
+                               title: str = None):
+        """
+        Plot the observation and the resulting input into the vehicle (which might be low pass filtered)
+
+        :param observation: array(n, o) with n data points and o observations
+        :param u: array(n, u) with n data points and u input
+        :param step_size: fixed step size
+        :param episode: optional episode number
+        :param title: optional title
+        :return:
+        """
+        # Get time array
+        time_arr = np.arange(len(observation[:, 0])) * step_size
+
+        # Init figure
+        fig = plt.figure(figsize=(12, 8))
+        ax_obs = fig.add_subplot(2, 1, 1)
+        ax_u = fig.add_subplot(2, 1, 2)
+
+        if episode or title:
+            fig.suptitle(f'{title} - Episode {episode}')
+
+        # Observations
+        for i in range(observation.shape[1]):
+            ax_obs.plot(time_arr, observation[:, i], label=f"Obs. {i}", linewidth=0.5)
+        ax_obs.set_title(r"Observation $o$")
+        ax_obs.set_xlabel("t [s]")
+        ax_obs.set_ylabel(r"o [ - ]")
+        ax_obs.legend()
+
         # Input
         for i in range(u.shape[1]):
             ax_u.plot(time_arr, u[:, i], label=f"Input {i}", linewidth=0.5)
@@ -159,7 +190,7 @@ class EpisodeVisualization:
         ax_u.set_ylabel(r"u [?]")
         ax_u.legend()
 
-        fig.subplots_adjust(left=0.125, bottom=0.07, right=0.9, top=0.93, wspace=0.2, hspace=0.6)
+        fig.tight_layout()
 
     @staticmethod
     def plot_rewards(cum_rewards: np.ndarray, rewards: np.ndarray, episode: Union[int, str] = None, title: str = None,
@@ -423,4 +454,3 @@ class EpisodeAnimation:
         #   an animation.
         ani.save(save_path, writer=writer_video)
         logger.info(f"Successfully saved EpisodeAnimation at {save_path}")
-

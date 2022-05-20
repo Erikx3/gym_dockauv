@@ -161,13 +161,16 @@ class ArrayList:
 
 class EpisodeDataStorage:
     r"""
-    Class to save data e.g. vehicle related data during a simulation (e.g. one episode). Initialize and update after
-    all other initialization and updates
+    Class to save data e.g. vehicle related data during a simulation (e.g. one episode) or env information (e.g.
+    reward, observations). Initialize and update after all other initialization and updates
 
     This data is saved in dictionaries, the keys for retrieval are going to be defined here. This class is highly
-    individually written to save my data and use wrapper round other functions.
+    individually written to save gym data and use wrapper around other functions.
 
     For the definition of the arrays, please refer to the vehicle documentation.
+
+    To add data, if it is an array, use the class ArrayList, which is faster. Make sure to update the setup function,
+    update function and the save function accordingly.
 
     .. note::
 
@@ -195,8 +198,9 @@ class EpisodeDataStorage:
             "episode": "episode number",
             "step_size": "step_size in simulation",
             "cum_rewards": "cumulative reward array",
-            "rewards": "reward array per step"
-            "meta_data_reward": "List of string for reward description"
+            "rewards": "reward array per step",
+            "meta_data_reward": "List of string for reward description",
+            "observation": "Array with observations as in environment"
         }
 
     """
@@ -211,9 +215,7 @@ class EpisodeDataStorage:
     def set_up_episode_storage(self, path_folder: str, vehicle: AUVSim, step_size: float,
                                nu_c_init: np.ndarray, shapes: List[Shape] = None,
                                radar: Radar = None, title: str = "", episode: int = -1,
-                               cum_rewards: np.ndarray = None,
-                               rewards: np.ndarray = None,
-                               meta_data_reward: List[str] = None
+                               env=None
                                ) -> None:
         r"""
         Set up the storage to save and update incoming data, including passing a reference to the vehicle and
@@ -230,9 +232,7 @@ class EpisodeDataStorage:
         :param radar: Radar sensor if used, save endpoints for post visualization
         :param title: Optional title for addendum
         :param episode: Episode number
-        :param cum_rewards: 1d array with cumulative rewards
-        :param rewards: 1d array with rewards
-        :param meta_data_reward: meta data of rewards
+        :param env: The gym environment
         :return: None
         """
         # Some variables for saving the file
@@ -246,8 +246,18 @@ class EpisodeDataStorage:
         self.radar = radar  # Can still be none!
         # Condition statements for saving data in one line
         end_pos_n = ArrayList(radar.end_pos_n) if radar is not None else None
-        cum_rewards_arr = ArrayList(cum_rewards) if cum_rewards is not None else ArrayList(np.zeros(1))
-        rewards_arr = ArrayList(rewards) if rewards is not None else ArrayList(np.zeros(1))
+        # Environment safing related stuff
+        self.env = env  # This acts as a permanent reference1
+        if env is not None:
+            cum_rewards_arr = ArrayList(env.cum_reward_arr)
+            rewards_arr = ArrayList(env.last_reward_arr)
+            meta_data_reward = env.meta_data_reward
+            observation = ArrayList(env.observation)
+        else:
+            cum_rewards_arr = None
+            rewards_arr = None
+            meta_data_reward = None
+            observation = None
 
         self.storage = {
             "vehicle": {
@@ -264,10 +274,11 @@ class EpisodeDataStorage:
             "step_size": step_size,
             "cum_rewards": cum_rewards_arr,
             "rewards": rewards_arr,
-            "meta_data_reward": meta_data_reward
+            "meta_data_reward": meta_data_reward,
+            "observation": observation
         }
 
-    def update(self, nu_c: np.ndarray, cum_rewards: np.ndarray = np.zeros(1), rewards: np.ndarray = np.zeros(1)) -> None:
+    def update(self, nu_c: np.ndarray) -> None:
         """
         should be called in the end of each simulation step
 
@@ -280,8 +291,10 @@ class EpisodeDataStorage:
         self.storage["vehicle"]["states_dot"].add_row(self.vehicle._state_dot)
         self.storage["vehicle"]["u"].add_row(self.vehicle.u)
         self.storage["nu_c"].add_row(nu_c)
-        self.storage["cum_rewards"].add_row(cum_rewards)
-        self.storage["rewards"].add_row(rewards)
+        if self.env is not None:
+            self.storage["cum_rewards"].add_row(self.env.cum_reward_arr)
+            self.storage["rewards"].add_row(self.env.last_reward_arr)
+            self.storage["observation"].add_row(self.env.observation)
         if self.radar is not None:
             self.storage["radar"].add_row(self.radar.end_pos_n)
 
@@ -291,11 +304,14 @@ class EpisodeDataStorage:
 
         :return: path to where file is saved
         """
+        # TODO: think about doing this automatically, but I like explicit
         self.storage["vehicle"]["states"] = self.storage["vehicle"]["states"].get_nparray()
         self.storage["vehicle"]["states_dot"] = self.storage["vehicle"]["states_dot"].get_nparray()
         self.storage["vehicle"]["u"] = self.storage["vehicle"]["u"].get_nparray()
-        self.storage["cum_rewards"] = self.storage["cum_rewards"].get_nparray()
-        self.storage["rewards"] = self.storage["rewards"].get_nparray()
+        if self.env is not None:
+            self.storage["cum_rewards"] = self.storage["cum_rewards"].get_nparray()
+            self.storage["rewards"] = self.storage["rewards"].get_nparray()
+            self.storage["observation"] = self.storage["observation"].get_nparray()
         if self.radar is not None:
             self.storage["radar"] = self.storage["radar"].get_nparray()
 
@@ -361,24 +377,31 @@ class EpisodeDataStorage:
             states=self.states,
             episode=self.storage["episode"],
             shapes=self.storage["shapes"],
-            radar_end_pos= self.storage["radar"],
+            radar_end_pos=self.storage["radar"],
             t_per_step=t_per_step,
             title=title
         )
 
-    def plot_epsiode_states_and_u(self):
+    def plot_epsiode_states(self):
         """
-        Individual wrapper for the static post simulation plot function
+        Individual wrapper for the static post simulation plot function for states
         :return:
         """
-        EpisodeVisualization.plot_episode_states_and_u(
-            states=self.states,
-            nu_c=self.nu_c,
-            u=self.u,
-            step_size=self.storage["step_size"],
-            episode=self.storage["episode"],
-            title=self.storage["title"]
-        )
+        EpisodeVisualization.plot_episode_states(states=self.states, nu_c=self.nu_c,
+                                                 step_size=self.storage["step_size"],
+                                                 episode=self.storage["episode"],
+                                                 title=self.storage["title"])
+
+    def plot_epsiode_observation_and_u(self):
+        """
+        Individual wrapper for the static post simulation plot function for observations
+        :return:
+        """
+        EpisodeVisualization.plot_observation_and_u(observation=self.storage["observation"],
+                                                    u=self.u,
+                                                    step_size=self.storage["step_size"],
+                                                    episode=self.storage["episode"],
+                                                    title=self.storage["title"])
 
     def plot_rewards(self):
         """
