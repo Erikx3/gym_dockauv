@@ -17,7 +17,7 @@ from gym_dockauv.utils.datastorage import EpisodeDataStorage, FullDataStorage
 from gym_dockauv.utils.plotutils import EpisodeAnimation
 import gym_dockauv.objects.shape as shape
 
-# TODO: Think about making this a base class for further environments with different observations, rewards, setup?
+# TODO: Think about making this a base class for further environments with generate environment functions!
 # TODO: Save animation option
 # TODO: Water current, radar sensors, obstacles (so far only capsules are supported)
 
@@ -74,7 +74,7 @@ class Docking3d(gym.Env):
         self.auv.step_size = self.config["t_step_size"]
 
         # Set the action and observation space
-        self.n_observations = 12
+        self.n_observations = 13
         self.action_space = gym.spaces.Box(low=self.auv.u_bound[:, 0],
                                            high=self.auv.u_bound[:, 1],
                                            dtype=np.float32)
@@ -278,6 +278,7 @@ class Docking3d(gym.Env):
                      "last_reward": self.last_reward,
                      "done": self.done,
                      "conditions_true": cond_idx,
+                     "conditions_true_info": [self.meta_data_done[i] for i in cond_idx],
                      "collision": self.collision,
                      "goal_reached": self.goal_reached,
                      "simulation_time": timer() - self.start_time_sim}
@@ -295,10 +296,11 @@ class Docking3d(gym.Env):
         obs[5] = np.clip(self.auv.relative_velocity[2] / 2, -1, 1)  # Vertical speed, assuming 5m/s max
         obs[6] = np.clip(self.auv.attitude[0] / self.max_attitude, -1, 1)  # Roll, assuming +-90deg max
         obs[7] = np.clip(self.auv.attitude[1] / self.max_attitude, -1, 1)  # Pitch, assuming +-90deg max
-        obs[8] = np.clip(self.auv.attitude[2] / np.pi, -1, 1)  # Yaw, assuming +-180deg max
-        obs[9] = np.clip(self.auv.angular_velocity[0] / 1.0, -1, 1)  # Angular Velocities, assuming 1 rad/s
-        obs[10] = np.clip(self.auv.angular_velocity[1] / 1.0, -1, 1)
-        obs[11] = np.clip(self.auv.angular_velocity[2] / 1.0, -1, 1)
+        obs[8] = np.clip(np.sin(self.auv.attitude[2]), -1, 1)  # Yaw, expressed in two polar values to make
+        obs[9] = np.clip(np.cos(self.auv.attitude[2]), -1, 1)  # sure observation does not jump between -1 and 1
+        obs[10] = np.clip(self.auv.angular_velocity[0] / 1.0, -1, 1)  # Angular Velocities, assuming 1 rad/s
+        obs[11] = np.clip(self.auv.angular_velocity[1] / 1.0, -1, 1)
+        obs[12] = np.clip(self.auv.angular_velocity[2] / 1.0, -1, 1)
 
         return obs
 
@@ -331,7 +333,7 @@ class Docking3d(gym.Env):
         self.last_reward_arr[3] = np.sum(np.abs(action) * self.action_reward_factors)
 
         # Add extra reward on checking which condition caused the episode to be done
-        self.last_reward_arr[4:] = np.array([50, -100, -100, -50]) * np.array(self.conditions)
+        self.last_reward_arr[4:] = np.array(self.conditions) * 1
 
         # Multiply factors defined in config
         self.last_reward_arr = self.last_reward_arr * self.reward_factors
