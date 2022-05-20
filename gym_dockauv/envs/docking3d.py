@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from gym.utils import seeding
 
-from gym_dockauv.config.env_default_config import BASE_CONFIG
+from gym_dockauv.config.env_config import BASE_CONFIG
 from gym_dockauv.utils.datastorage import EpisodeDataStorage, FullDataStorage
 from gym_dockauv.utils.plotutils import EpisodeAnimation
 import gym_dockauv.objects.shape as shape
@@ -27,11 +27,15 @@ logger = logging.getLogger(__name__)
 
 class Docking3d(gym.Env):
     """
-    Base Class for the docking environment
+    Base Class for the docking environment, will also be registered with gym. However, the configs for the
+    environment are found at gym_dockauv/config
 
-    .. note:: Adding a reward or a done condition with reward should take the following steps:
-        - Add reward to the self.last_reward_arr
-        - Update the list self.meta_data_reward
+    .. note:: Adding a reward or a done condition with reward needs to take the following steps:
+        - Add reward to the self.last_reward_arr in the reward step
+        - Add a factor to it in the config file
+        - Update number of self.n_rewards in __init__()
+        - Update the list self.meta_data_reward in __init__()
+        - Update the index of self.meta_data_done in __init__() if necessary
         - Update the doc for the reward_step() function (and of done())
     """
 
@@ -77,32 +81,28 @@ class Docking3d(gym.Env):
         self.observation_space = gym.spaces.Box(low=-np.ones(self.n_observations),
                                                 high=np.ones(self.n_observations),
                                                 dtype=np.float32)
+        self.observation = np.zeros(self.n_observations)
 
         # General simulation variables:
         self.t_total_steps = 0  # Number of total timesteps run so far in this environment
         self.t_steps = 0  # Number of steps in this episode
         self.t_step_size = self.config["t_step_size"]
         self.episode = 0  # Current episode
-        self.cumulative_reward = 0  # Current cumulative reward of agent
         self.max_timesteps = self.config["max_timesteps"]
         self.interval_datastorage = self.config["interval_datastorage"]
+        self.info = {}  # This will contain general simulation info
 
-        # Goal
-        self.goal_location = self.config["goal_location"]
-
-        # Declaring attributes
+        # Declaring further own attributes
         self.obstacles = []
         self.goal_reached = False  # Bool to check of goal is reached at the end of an episode
         self.collision = False  # Bool to indicate of vehicle has collided
 
-        # Initialize observation, reward, done, info
+        # Rewards
         self.n_rewards = 8
-        self.observation = np.zeros(self.n_observations)
-        self.done = False
-        self.last_reward = 0
-        self.last_reward_arr = np.zeros(self.n_rewards)  # This should reflect the dimension of the rewards parts (for analysis)
+        self.last_reward = 0  # Last reward
+        self.last_reward_arr = np.zeros(self.n_rewards)  # This should reflect the dimension of the rewards parts
+        self.cumulative_reward = 0  # Current cumulative reward of agent
         self.cum_reward_arr = np.zeros(self.n_rewards)
-        self.info = {}
         self.conditions = None  # Boolean array to see which conditions are true
         # Description for the meta data
         self.meta_data_reward = [
@@ -115,7 +115,13 @@ class Docking3d(gym.Env):
             "Done-out_att",
             "Done-max_t"
         ]
-        # self.meta_data_done = self.meta_data_reward[3:]
+        self.reward_factors = self.config["reward_factors"]
+        self.action_reward_factors = self.config["action_reward_factors"]
+
+        # Initialize Done condition and related stuff for the done condition
+        self.done = False
+        self.meta_data_done = self.meta_data_reward[4:]
+        self.goal_location = self.config["goal_location"]
         self.max_dist_from_goal = self.config["max_dist_from_goal"]
         self.max_attitude = self.config["max_attitude"]
 
@@ -132,7 +138,7 @@ class Docking3d(gym.Env):
         self.full_data_storage = FullDataStorage()
         self.full_data_storage.set_up_episode_storage(env=self, path_folder=self.save_path_folder, title=self.title)
 
-        # Animation
+        # Animation variables
         self.episode_animation = None
         self.ax = None
 
@@ -183,16 +189,16 @@ class Docking3d(gym.Env):
         self.t_steps = 0
         self.goal_reached = False
         self.collision = False
+        self.info = {}
 
         # Reset observation, cum_reward, done, info
         self.observation = np.zeros(self.n_observations, dtype=np.float32)
         self.last_reward = 0
         self.cumulative_reward = 0
-        self.done = False
         self.last_reward_arr = np.zeros(self.n_rewards)
         self.cum_reward_arr = np.zeros(self.n_rewards)
-        self.info = {}
-        self.conditions = None  # Boolean array to see which conditions are true
+        self.done = False
+        self.conditions = None
 
         # Update the seed:
         # TODO: Check if this makes all seeds same (e.g. for water current!!) or works in general
@@ -223,7 +229,7 @@ class Docking3d(gym.Env):
 
     def generate_environment(self):
         """
-        Setup a environment after each reset
+        Setup a environment after each reset call
         """
         # TODO Think about how this should be done in future simulations
         # Position
@@ -300,6 +306,9 @@ class Docking3d(gym.Env):
         """
         Calculate the reward function, make sure to call self.is_done() before to update and check the done conditions
 
+        The factors are defined in the config. Each reward is normalized between 0..1, thus the factor decides its
+        importance. Keep in mind the rewards for the done conditions will be sparse.
+
         Reward 1: Close gto goal location
         Reward 2: Stable attitude
         Reward 3: time step penalty
@@ -313,16 +322,19 @@ class Docking3d(gym.Env):
         :return: The single reward at this step
         """
         # Reward for being closer to the goal location:
-        self.last_reward_arr[0] = -((np.linalg.norm(self.auv.position - self.goal_location)) / self.max_dist_from_goal)**2 * 0.7
+        self.last_reward_arr[0] = ((np.linalg.norm(self.auv.position - self.goal_location)) / self.max_dist_from_goal)**2
         # Reward for stable attitude
-        self.last_reward_arr[1] = (-np.sum(np.abs(self.auv.attitude[:2]))) / np.pi * 0.6
+        self.last_reward_arr[1] = (np.sum(np.abs(self.auv.attitude[:2]))) / np.pi
         # Negative cum_reward per time step
-        self.last_reward_arr[2] = -0.05
+        self.last_reward_arr[2] = 1
         # Reward for action used (e.g. want to minimize action power usage)
-        self.last_reward_arr[3] = -np.sum(np.abs(action))/action.shape[0] * 0.4
+        self.last_reward_arr[3] = np.sum(np.abs(action) * self.action_reward_factors)
 
         # Add extra reward on checking which condition caused the episode to be done
         self.last_reward_arr[4:] = np.array([50, -100, -100, -50]) * np.array(self.conditions)
+
+        # Multiply factors defined in config
+        self.last_reward_arr = self.last_reward_arr * self.reward_factors
 
         # Just for analyzing purpose:
         self.cum_reward_arr = self.cum_reward_arr + self.last_reward_arr

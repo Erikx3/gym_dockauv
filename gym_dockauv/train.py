@@ -9,7 +9,7 @@ from stable_baselines3 import A2C, PPO
 
 from gym_dockauv.utils.datastorage import EpisodeDataStorage, FullDataStorage
 from gym_dockauv.config.PPO_hyperparams import PPO_HYPER_PARAMS_DEFAULT
-from gym_dockauv.config.env_default_config import PREDICT_CONFIG, MANUAL_CONFIG, TRAIN_CONFIG
+from gym_dockauv.config.env_config import PREDICT_CONFIG, MANUAL_CONFIG, TRAIN_CONFIG
 
 # Set logger
 logger = logging.getLogger(__name__)
