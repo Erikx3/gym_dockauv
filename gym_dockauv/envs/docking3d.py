@@ -15,6 +15,7 @@ from gym.utils import seeding
 from gym_dockauv.config.env_config import BASE_CONFIG
 from gym_dockauv.utils.datastorage import EpisodeDataStorage, FullDataStorage
 from gym_dockauv.utils.plotutils import EpisodeAnimation
+from gym_dockauv.objects.current import Current
 import gym_dockauv.objects.shape as shape
 import gym_dockauv.utils.geomutils as geom
 
@@ -75,7 +76,7 @@ class Docking3d(gym.Env):
         self.auv.step_size = self.config["t_step_size"]
 
         # Set the action and observation space
-        self.n_observations = 13
+        self.n_observations = 16
         self.action_space = gym.spaces.Box(low=self.auv.u_bound[:, 0],
                                            high=self.auv.u_bound[:, 1],
                                            dtype=np.float32)
@@ -131,8 +132,10 @@ class Docking3d(gym.Env):
         self.chi = 0
         self.upsilon = 0
 
-        # Water current TODO
-        self.nu_c = np.zeros(6)
+        # Water current
+        self.current = Current(mu=0.005, V_min=0.0, V_max=0.0, Vc_init=0.0,
+                               alpha_init=np.pi/4, beta_init=np.pi/4, white_noise_std=0.0, step_size=self.auv.step_size)
+        self.nu_c = self.current(self.auv.state)
 
         # Save and display simulation time
         self.start_time_sim = timer()
@@ -206,6 +209,11 @@ class Docking3d(gym.Env):
         self.done = False
         self.conditions = None
 
+        # Water current reset
+        self.current = Current(mu=0.005, V_min=0.0, V_max=0.0, Vc_init=0.0,
+                               alpha_init=np.pi/4, beta_init=np.pi/4, white_noise_std=0.0, step_size=self.auv.step_size)
+        self.nu_c = self.current(self.auv.state)
+
         # Navigation errors
         self.delta_d = 0
         self.chi = 0
@@ -224,7 +232,7 @@ class Docking3d(gym.Env):
         # Generate environment
         self.generate_environment()
 
-        # Save whole episode data if interval is met, or we need it for the renderer
+        # Init whole episode data if interval is met, or we need it for the renderer
         if self.episode % self.interval_datastorage == 0 or self.episode == 1:
             self.init_episode_storage()
         else:
@@ -247,15 +255,23 @@ class Docking3d(gym.Env):
         rnd_arr_pos = (np.random.random(3) - 0.5)
         self.auv.position = rnd_arr_pos * (6 / np.linalg.norm(rnd_arr_pos))
         # Attitude
-        rnd_arr_attitude = (np.random.random(3) - 0.5)
+        rnd_arr_attitude = (np.random.random(3) - 0.5) * 2
         att_factor = np.array([self.max_attitude * 0.7, self.max_attitude * 0.7, np.pi])  # Spawn at xx% of max attitude
         self.auv.attitude = rnd_arr_attitude * att_factor  # Spawn with random attitude
+        # Water current #TODO Add parameters to config
+        curr_angle = (np.random.random(2) - 0.5) * 2 * np.array([np.pi/2, np.pi])
+        self.current = Current(mu=0.005, V_min=0.5, V_max=0.5, Vc_init=0.5,
+                               alpha_init=curr_angle[0], beta_init=curr_angle[1], white_noise_std=0.0,
+                               step_size=self.auv.step_size)
+        self.nu_c = self.current(self.auv.state)
 
     def step(self, action: np.ndarray) -> Tuple[np.ndarray, float, bool, dict]:
-        # Simulate current TODO
+        # Simulate and update current in body frame
+        self.current.sim()
+        self.nu_c = self.current(self.auv.state)
 
         # Update AUV dynamics
-        self.auv.step(action, self.nu_c)
+        self.auv.step(action, self.current(self.auv.state))
 
         # Check collision TODO
 
@@ -328,6 +344,9 @@ class Docking3d(gym.Env):
         obs[10] = np.clip(self.auv.angular_velocity[0] / 1.0, -1, 1)  # Angular Velocities, assuming 1 rad/s
         obs[11] = np.clip(self.auv.angular_velocity[1] / 1.0, -1, 1)
         obs[12] = np.clip(self.auv.angular_velocity[2] / 1.0, -1, 1)
+        obs[13] = np.clip(self.nu_c[0] / 1, -1, 1)  # TODO: Add current max speed here instead of dividing by 1
+        obs[14] = np.clip(self.nu_c[1] / 1, -1, 1)
+        obs[15] = np.clip(self.nu_c[2] / 1, -1, 1)
 
         return obs
 

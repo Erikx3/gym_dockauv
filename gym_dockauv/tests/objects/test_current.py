@@ -13,7 +13,8 @@ class TestCurrent(unittest.TestCase):
 
     def setUp(self):
         self.current = Current(mu=0.01, V_min=0.5, V_max=1.0, Vc_init=0.5,
-                               alpha_init=np.pi/4, beta_init=np.pi/4, white_noise_std=0.1, step_size=0.1)  # Use consistent test values
+                               alpha_init=np.pi/4, beta_init=np.pi/4, white_noise_std=0.1, step_size=0.1)
+        # Use consistent test values, interesting comb is mu=0.005 and white_noise_std=0.05
 
 
 class TestCurrentFunc(TestCurrent):
