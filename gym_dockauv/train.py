@@ -219,3 +219,5 @@ def manual_control():
         else:
             env.reset()
             done = False
+    # Call in case of quit
+    env.reset()

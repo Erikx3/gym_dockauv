@@ -16,6 +16,7 @@ from gym_dockauv.config.env_config import BASE_CONFIG
 from gym_dockauv.utils.datastorage import EpisodeDataStorage, FullDataStorage
 from gym_dockauv.utils.plotutils import EpisodeAnimation
 import gym_dockauv.objects.shape as shape
+import gym_dockauv.utils.geomutils as geom
 
 # TODO: Think about making this a base class for further environments with generate environment functions!
 # TODO: Save animation option
@@ -288,9 +289,17 @@ class Docking3d(gym.Env):
     def observe(self) -> np.ndarray:
         diff = self.goal_location - self.auv.position
         obs = np.zeros(self.n_observations, dtype=np.float32)
-        obs[0] = np.clip(diff[0] / self.max_dist_from_goal, -1, 1)  # TODO: Position difference, with max_dist, incorrect
-        obs[1] = np.clip(diff[1] / self.max_dist_from_goal, -1, 1)
-        obs[2] = np.clip(diff[2] / self.max_dist_from_goal, -1, 1)
+        # Next 3 are the simple position differences
+        # obs[0] = np.clip(diff[0] / self.max_dist_from_goal, -1, 1)
+        # obs[1] = np.clip(diff[1] / self.max_dist_from_goal, -1, 1)
+        # obs[2] = np.clip(diff[2] / self.max_dist_from_goal, -1, 1)
+        # Distance from goal, contained within max_dist_from_goal
+        obs[0] = np.clip(np.linalg.norm(diff) / self.max_dist_from_goal, -1, 1)
+        obs[1] = np.clip((self.auv.attitude[1] + (geom.ssa(np.arctan2(diff[2], np.linalg.norm(diff[:2]))))) / (np.pi/2),
+                         -1, 1)  # Pitch error chi, will be between +90° and -90°
+        # Heading error upsilon, will be between -180 and +180 degree, observation jump is not fixed here,
+        # since it might be good to directly indicate which way to turn ist faster to adjust heading
+        obs[2] = np.clip((geom.ssa(np.arctan2(diff[1], diff[0]) - self.auv.attitude[2])) / np.pi, -1, 1)
         obs[3] = np.clip(self.auv.relative_velocity[0] / 5, -1, 1)  # Forward speed, assuming 5m/s max
         obs[4] = np.clip(self.auv.relative_velocity[1] / 2, -1, 1)  # Side speed, assuming 5m/s max
         obs[5] = np.clip(self.auv.relative_velocity[2] / 2, -1, 1)  # Vertical speed, assuming 5m/s max

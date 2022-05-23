@@ -56,4 +56,5 @@ MANUAL_CONFIG = copy.deepcopy(BASE_CONFIG)
 MANUAL_CONFIG["title"] = "Manual Run"
 MANUAL_CONFIG["save_path_folder"] = os.path.join(os.getcwd(), "manual_logs")
 MANUAL_CONFIG["interval_datastorage"] = 1
+#MANUAL_CONFIG["max_timesteps"] = 200000
 
