@@ -42,8 +42,16 @@ BASE_CONFIG = {
                   50, -100, -100, -50]),    # details
     "action_reward_factors": np.array(
         [0.05, 0.15, 0.05,                  # Negative reward factors for each possible action input used, must be
-         0.25, 0.25, 0.25])                 # changed depending on actionspace of vehicle
+         0.25, 0.25, 0.25]),                 # changed depending on actionspace of vehicle
 
+    # --------- RADAR -----------  Will be dynamically loaded via **kwargs
+    "radar": {
+        "freq": 1,                         # Frequency of updates of radars TODO: Not yet implemented
+        "alpha": 20 * np.pi / 180,          # Range of vertical angle wideness
+        "beta": 20 * np.pi / 180,           # Range of horizontal angle wideness
+        "ray_per_deg": 5 * np.pi / 180,     # rad inbetween each ray, must leave zero remainder with alpha and beta
+        "max_dist": 2                       # Maximum distance the radar can look ahead
+    }
 }
 
 # ---------- Configuration for Training runs ----------

@@ -89,9 +89,9 @@ class BaseDocking3d(gym.Env):
                                step_size=self.auv.step_size)
         self.nu_c = self.current(self.auv.attitude)
 
-        # Init radar sensor suite  #TODO Add to config
-        self.radar = Radar(eta=self.auv.eta, freq=1, alpha=1,
-                           beta=1, ray_per_deg=0.5, max_dist=2)
+        # Init radar sensor suite
+        self.radar_args = self.config["radar"]
+        self.radar = Radar(eta=self.auv.eta, **self.radar_args)
 
         # Init list of obstacles (that will collide with the vehicle or have intersection with the radar)
         self.obstacles = []  # type: list[shape.Shape]
