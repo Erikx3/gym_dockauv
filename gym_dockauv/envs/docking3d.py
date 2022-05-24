@@ -90,8 +90,8 @@ class BaseDocking3d(gym.Env):
         self.nu_c = self.current(self.auv.attitude)
 
         # Init radar sensor suite  #TODO Add to config
-        self.radar = Radar(eta=self.auv.eta, freq=1, alpha=2,
-                           beta=2, ray_per_deg=0.5, max_dist=2)
+        self.radar = Radar(eta=self.auv.eta, freq=1, alpha=1,
+                           beta=1, ray_per_deg=0.5, max_dist=2)
 
         # Set the action and observation space
         self.n_observations = 16
@@ -272,7 +272,7 @@ class BaseDocking3d(gym.Env):
         self.nu_c = self.current(self.auv.attitude)
 
         # Update AUV dynamics
-        self.auv.step(action, self.current(self.auv.state))
+        self.auv.step(action, self.current(self.auv.attitude))
 
         # Update radar
         self.radar.update_pos_and_att(self.auv.eta)
@@ -493,11 +493,14 @@ class SimpleDocking3d(BaseDocking3d):
         self.auv.position = rnd_arr_pos * (meters_away_from_goal / np.linalg.norm(rnd_arr_pos))
         # Attitude
         rnd_arr_attitude = (np.random.random(3) - 0.5) * 2
-        att_factor = np.array([self.max_attitude * 0.7, self.max_attitude * 0.7, np.pi])  # Spawn at xx% of max attitude
+        max_att_factor = 0.0
+        att_factor = np.array([self.max_attitude * max_att_factor,
+                               self.max_attitude * max_att_factor,
+                               np.pi])  # Spawn at xx% of max attitude
         self.auv.attitude = rnd_arr_attitude * att_factor  # Spawn with random attitude
         # Water current
         curr_angle = (np.random.random(2) - 0.5) * 2 * np.array([np.pi / 2, np.pi])  # Water current direction
         self.current = Current(mu=0.005, V_min=0.5, V_max=0.5, Vc_init=0.5,
                                alpha_init=curr_angle[0], beta_init=curr_angle[1], white_noise_std=0.0,
                                step_size=self.auv.step_size)
-        self.nu_c = self.current(self.auv.state)
+        self.nu_c = self.current(self.auv.attitude)
