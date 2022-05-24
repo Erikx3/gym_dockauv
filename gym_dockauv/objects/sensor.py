@@ -68,7 +68,7 @@ class Radar:
         self.rd_n = (geom.Rzyx(*eta[3:6]).T.dot(self.rd_b.T)).T
 
         # Initialize intersection distance for each, if no intersect, take max_dist
-        self.intersec_dist = np.full((self.n_rays,), max_dist)
+        self.intersec_dist = np.full((self.n_rays,), self.max_dist)
 
         # Get endpoint of all rays in {n} array(n, 3)
         self.end_pos_n = None
@@ -102,6 +102,16 @@ class Radar:
         :return: array (n,3), where the starting position is copied n times to create artificial array
         """
         return np.tile(self.pos, (self.n_rays, 1))
+
+    def reset(self, eta: np.ndarray):
+        """
+        Helper function to reset radar
+        """
+        self.update_pos_and_att(eta)
+        self.intersec_dist = np.full((self.n_rays,), self.max_dist)
+        self.update_end_pos()
+
+
 
 
 class Ray:

@@ -17,15 +17,18 @@ from gym_dockauv.config.env_config import BASE_CONFIG
 from gym_dockauv.utils.datastorage import EpisodeDataStorage, FullDataStorage
 from gym_dockauv.utils.plotutils import EpisodeAnimation
 from gym_dockauv.objects.current import Current
+from gym_dockauv.objects.sensor import Radar
+from gym_dockauv.objects.auvsim import AUVSim
 import gym_dockauv.objects.shape as shape
 import gym_dockauv.utils.geomutils as geom
 
 # TODO: Add logging, which subclass has been called
 # TODO: Save animation option
-# TODO: radar sensors, obstacles (so far only capsules are supported)
+# TODO: radar sensors (+ freq of updates?), obstacles (so far only capsules are supported)
 
 # Set logger
 logger = logging.getLogger(__name__)
+
 
 class BaseDocking3d(gym.Env):
     """
@@ -70,10 +73,25 @@ class BaseDocking3d(gym.Env):
         # Dynamically load class of vehicle and instantiate it (available vehicles under gym_dockauv/objects/vehicles)
         AUV = getattr(importlib.import_module("gym_dockauv.objects.vehicles." + self.config["vehicle"]),
                       self.config["vehicle"])
-        self.auv = AUV()
+        self.auv = AUV()  # type: AUVSim
 
         # Set step size for vehicle
         self.auv.step_size = self.config["t_step_size"]
+
+        # Navigation errors
+        self.delta_d = 0
+        self.chi = 0
+        self.upsilon = 0
+
+        # Water current
+        self.current = Current(mu=0.005, V_min=0.0, V_max=0.0, Vc_init=0.0,
+                               alpha_init=np.pi / 4, beta_init=np.pi / 4, white_noise_std=0.0,
+                               step_size=self.auv.step_size)
+        self.nu_c = self.current(self.auv.attitude)
+
+        # Init radar sensor suite  #TODO Add to config
+        self.radar = Radar(eta=self.auv.eta, freq=1, alpha=2,
+                           beta=2, ray_per_deg=0.5, max_dist=2)
 
         # Set the action and observation space
         self.n_observations = 16
@@ -126,16 +144,6 @@ class BaseDocking3d(gym.Env):
         self.goal_location = self.config["goal_location"]
         self.max_dist_from_goal = self.config["max_dist_from_goal"]
         self.max_attitude = self.config["max_attitude"]
-
-        # Navigation errors
-        self.delta_d = 0
-        self.chi = 0
-        self.upsilon = 0
-
-        # Water current
-        self.current = Current(mu=0.005, V_min=0.0, V_max=0.0, Vc_init=0.0,
-                               alpha_init=np.pi/4, beta_init=np.pi/4, white_noise_std=0.0, step_size=self.auv.step_size)
-        self.nu_c = self.current(self.auv.state)
 
         # Save and display simulation time
         self.start_time_sim = timer()
@@ -211,8 +219,12 @@ class BaseDocking3d(gym.Env):
 
         # Water current reset
         self.current = Current(mu=0.005, V_min=0.0, V_max=0.0, Vc_init=0.0,
-                               alpha_init=np.pi/4, beta_init=np.pi/4, white_noise_std=0.0, step_size=self.auv.step_size)
-        self.nu_c = self.current(self.auv.state)
+                               alpha_init=np.pi / 4, beta_init=np.pi / 4, white_noise_std=0.0,
+                               step_size=self.auv.step_size)
+        self.nu_c = self.current(self.auv.attitude)
+
+        # Radar reset:
+        self.radar.reset(self.auv.eta)
 
         # Navigation errors
         self.delta_d = 0
@@ -257,12 +269,16 @@ class BaseDocking3d(gym.Env):
     def step(self, action: np.ndarray) -> Tuple[np.ndarray, float, bool, dict]:
         # Simulate and update current in body frame
         self.current.sim()
-        self.nu_c = self.current(self.auv.state)
+        self.nu_c = self.current(self.auv.attitude)
 
         # Update AUV dynamics
         self.auv.step(action, self.current(self.auv.state))
 
-        # Check collision TODO
+        # Update radar
+        self.radar.update_pos_and_att(self.auv.eta)
+        self.radar.update_end_pos()
+
+        # Check collision (radar and auv) TODO
 
         # Update data storage if active
         if self.episode_data_storage:
@@ -430,9 +446,12 @@ class BaseDocking3d(gym.Env):
             self.episode_animation.add_episode_text(self.ax, self.episode)
             # Add goal location as tiny sphere, this one is not an obstacle!
             self.episode_animation.add_shapes(self.ax, [shape.Sphere(self.goal_location, 0.5)], 'k')
+            # Add radar
+            self.episode_animation.init_radar_animation(self.radar.n_rays)
 
         self.episode_animation.update_path_animation(positions=self.episode_data_storage.positions,
                                                      attitudes=self.episode_data_storage.attitudes)
+        self.episode_animation.update_radar_animation(self.radar.pos, self.radar.end_pos_n)
 
         # Possible implementation for rgb_array
         # https://stackoverflow.com/questions/35355930/matplotlib-figure-to-image-as-a-numpy-array,
@@ -451,7 +470,7 @@ class BaseDocking3d(gym.Env):
         self.episode_data_storage = EpisodeDataStorage()
         self.episode_data_storage.set_up_episode_storage(path_folder=self.save_path_folder, vehicle=self.auv,
                                                          step_size=self.t_step_size, nu_c_init=self.nu_c,
-                                                         shapes=self.obstacles, radar=None, title=self.title,
+                                                         shapes=self.obstacles, radar=self.radar, title=self.title,
                                                          episode=self.episode, env=self)
 
 
@@ -459,6 +478,7 @@ class SimpleDocking3d(BaseDocking3d):
     """
     This class generates a simple environment to drive in one point in space without obstacles and no current
     """
+
     def __init__(self, env_config: dict = BASE_CONFIG):
         super().__init__(env_config)
 

@@ -41,9 +41,9 @@ class Current:
         :param Theta: Euler Angles array 3x1 :math:`[\phi, \theta, \psi]^T`
         :return: 6x1 array
         """
-        phi = Theta[3]
-        theta = Theta[4]
-        psi = Theta[5]
+        phi = Theta[0]
+        theta = Theta[1]
+        psi = Theta[2]
 
         vel_current_NED = self.get_current_NED()
         vel_current_BODY = np.transpose(geom.Rzyx(phi, theta, psi)).dot(vel_current_NED)

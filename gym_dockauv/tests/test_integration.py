@@ -35,7 +35,7 @@ class TestIntegration(TestBlueROV2):
         # Water current
         current = Current(mu=0.01, V_min=0.0, V_max=0.5, Vc_init=0.1,
                           alpha_init=0.0, beta_init=0.0, white_noise_std=0.1, step_size=self.BlueROV2.step_size)
-        nu_c = current(self.BlueROV2.state)
+        nu_c = current(self.BlueROV2.attitude)
         #nu_c = np.array([0, 0, 0, 0, 0, 0])
 
         # Add sensor suite for testing
@@ -89,7 +89,7 @@ class TestIntegration(TestBlueROV2):
 
             # Simulate current
             current.sim()
-            nu_c = current(self.BlueROV2.state)
+            nu_c = current(self.BlueROV2.attitude)
             # Simulate vehicle
             self.BlueROV2.step(action, nu_c)
             # Update sensors

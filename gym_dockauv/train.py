@@ -10,6 +10,7 @@ from stable_baselines3 import A2C, PPO
 from gym_dockauv.utils.datastorage import EpisodeDataStorage, FullDataStorage
 from gym_dockauv.config.PPO_hyperparams import PPO_HYPER_PARAMS_DEFAULT
 from gym_dockauv.config.env_config import PREDICT_CONFIG, MANUAL_CONFIG, TRAIN_CONFIG, REGISTRATION_DICT
+from gym_dockauv.envs.docking3d import BaseDocking3d
 
 # Set logger
 logger = logging.getLogger(__name__)
@@ -45,7 +46,7 @@ def train(gym_env: str,
     :return: None
     """
     # Create environment
-    env = make_gym(gym_env=gym_env, env_config=env_config)
+    env = make_gym(gym_env=gym_env, env_config=env_config)  # type: BaseDocking3d
     # Init variables
     elapsed_timesteps = 0
     sim_timesteps = timesteps_per_save if timesteps_per_save else total_timesteps
@@ -82,7 +83,7 @@ def predict(gym_env: str, model_path: str, n_episodes: int = 5):
     :param n_episodes: number of episodes to run
     :return:
     """
-    env = make_gym(gym_env=gym_env, env_config=PREDICT_CONFIG)
+    env = make_gym(gym_env=gym_env, env_config=PREDICT_CONFIG)  # type: BaseDocking3d
     # Load the trained agent
     # NOTE: if you have loading issue, you can pass `print_system_info=True`
     # to compare the system on which the model was trained vs the current one
@@ -138,7 +139,7 @@ def manual_control(gym_env: str):
     WINDOW_X = 600
     WINDOW_Y = 400
     # Init environment
-    env = make_gym(gym_env=gym_env, env_config=MANUAL_CONFIG)
+    env = make_gym(gym_env=gym_env, env_config=MANUAL_CONFIG)  # type: BaseDocking3d
     env.reset()
     done = False
     # Init pygame
@@ -228,7 +229,7 @@ def manual_control(gym_env: str):
     env.reset()
 
 
-def make_gym(gym_env: str, env_config: dict) -> gym.Env:
+def make_gym(gym_env: str, env_config: dict) -> BaseDocking3d:
     """
     Wrapper to create and return gym and return error if key is wrong
 
