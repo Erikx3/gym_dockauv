@@ -9,13 +9,14 @@ from stable_baselines3 import A2C, PPO
 
 from gym_dockauv.utils.datastorage import EpisodeDataStorage, FullDataStorage
 from gym_dockauv.config.PPO_hyperparams import PPO_HYPER_PARAMS_DEFAULT
-from gym_dockauv.config.env_config import PREDICT_CONFIG, MANUAL_CONFIG, TRAIN_CONFIG
+from gym_dockauv.config.env_config import PREDICT_CONFIG, MANUAL_CONFIG, TRAIN_CONFIG, REGISTRATION_DICT
 
 # Set logger
 logger = logging.getLogger(__name__)
 
 
-def train(total_timesteps: int,
+def train(gym_env: str,
+          total_timesteps: int,
           model_save_path: str = "logs/PPO_docking",
           agent_hyper_params: dict = PPO_HYPER_PARAMS_DEFAULT,
           env_config: dict = TRAIN_CONFIG,
@@ -33,6 +34,7 @@ def train(total_timesteps: int,
         by default for PPO at 2048, thus the agents only checks if its own simulation time steps is bigger than 3000 
         after every multiple of 2048 
 
+    :param gym_env: Registration string of gym from docking3d
     :param total_timesteps: total timesteps for this training run
     :param model_save_path: path where to save the model
     :param agent_hyper_params: agent hyper parameter, default is always loaded
@@ -43,7 +45,7 @@ def train(total_timesteps: int,
     :return: None
     """
     # Create environment
-    env = gym.make("docking3d-v0", env_config=TRAIN_CONFIG)
+    env = make_gym(gym_env=gym_env, env_config=env_config)
     # Init variables
     elapsed_timesteps = 0
     sim_timesteps = timesteps_per_save if timesteps_per_save else total_timesteps
@@ -71,15 +73,16 @@ def train(total_timesteps: int,
     env.save_full_data_storage()
 
 
-def predict(model_path: str, n_episodes: int = 5):
+def predict(gym_env: str, model_path: str, n_episodes: int = 5):
     """
     Function to visualize and evaluate the actual model on the environment
 
+    :param gym_env: Registration string of gym from docking3d
     :param model_path: full path of trained agent
     :param n_episodes: number of episodes to run
     :return:
     """
-    env = gym.make("docking3d-v0", env_config=PREDICT_CONFIG)
+    env = make_gym(gym_env=gym_env, env_config=PREDICT_CONFIG)
     # Load the trained agent
     # NOTE: if you have loading issue, you can pass `print_system_info=True`
     # to compare the system on which the model was trained vs the current one
@@ -121,11 +124,13 @@ def post_analysis_directory(directory: str = "/home/erikx3/PycharmProjects/gym_d
             # epi_stor.plot_episode_animation(t_per_step=None, title="Test Post Flight Visualization")
 
 
-def manual_control():
+def manual_control(gym_env: str):
     """
     Function with pygame workaround to manually fly and debug the vehicle
 
     Great for debugging purposes, since post analysis can be called on the log that is created
+
+    :param gym_env: Registration string of gym from docking3d env
     """
     import pygame
 
@@ -133,7 +138,7 @@ def manual_control():
     WINDOW_X = 600
     WINDOW_Y = 400
     # Init environment
-    env = gym.make("docking3d-v0", env_config=MANUAL_CONFIG)
+    env = make_gym(gym_env=gym_env, env_config=MANUAL_CONFIG)
     env.reset()
     done = False
     # Init pygame
@@ -154,13 +159,13 @@ def manual_control():
         my_font.render('Input 6 / Angular z:', False, (255, 255, 255))]
     text_instructions2 = [my_font.render('w', False, (255, 255, 255)),
                           my_font.render('a', False, (255, 255, 255)),
-                          my_font.render('r', False, (255, 255, 255)),
+                          my_font.render('f', False, (255, 255, 255)),
                           my_font.render('u', False, (255, 255, 255)),
                           my_font.render('h', False, (255, 255, 255)),
                           my_font.render('o', False, (255, 255, 255))]
     text_instructions3 = [my_font.render('s', False, (255, 255, 255)),
                           my_font.render('d', False, (255, 255, 255)),
-                          my_font.render('f', False, (255, 255, 255)),
+                          my_font.render('r', False, (255, 255, 255)),
                           my_font.render('j', False, (255, 255, 255)),
                           my_font.render('k', False, (255, 255, 255)),
                           my_font.render('l', False, (255, 255, 255))]
@@ -180,13 +185,13 @@ def manual_control():
             window.blit(text2, (250, pos_y))
             window.blit(text3, (WINDOW_X - 50, pos_y))
             # Here we draw the circle based on which keyboard are pressed
-            circle_x = WINDOW_X-100 - (WINDOW_X-100-300)/2 * (action[count]+1)
-            pygame.draw.circle(window, 'green', (circle_x, pos_y+10), 5)
+            circle_x = WINDOW_X - 100 - (WINDOW_X - 100 - 300) / 2 * (action[count] + 1)
+            pygame.draw.circle(window, 'green', (circle_x, pos_y + 10), 5)
             pos_y += 45
             count += 1
         # Draw a green line
-        line_x = (250+WINDOW_X-50)/2
-        pygame.draw.line(window, 'green', (line_x, 80), (line_x, 80+5*45 + 30))
+        line_x = (250 + WINDOW_X - 50) / 2
+        pygame.draw.line(window, 'green', (line_x, 80), (line_x, 80 + 5 * 45 + 30))
         # Update pygame window
         pygame.display.update()
         pygame.display.flip()
@@ -221,3 +226,19 @@ def manual_control():
             done = False
     # Call in case of quit
     env.reset()
+
+
+def make_gym(gym_env: str, env_config: dict) -> gym.Env:
+    """
+    Wrapper to create and return gym and return error if key is wrong
+
+    :param gym_env: Registration string of gym from docking3d env
+    :param env_config: Config for environment
+    :return:
+    """
+    if gym_env in REGISTRATION_DICT:
+        env = gym.make(gym_env, env_config=env_config)
+        return env
+    else:
+        raise KeyError(f"Not valid gym environment registration string,"
+                       f" available options are {REGISTRATION_DICT.keys()}")

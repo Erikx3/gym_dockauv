@@ -4,6 +4,7 @@ import logging
 import os
 import pprint
 import time
+from abc import abstractmethod
 from timeit import default_timer as timer
 from typing import Tuple, Optional, Union
 
@@ -19,15 +20,14 @@ from gym_dockauv.objects.current import Current
 import gym_dockauv.objects.shape as shape
 import gym_dockauv.utils.geomutils as geom
 
-# TODO: Think about making this a base class for further environments with generate environment functions!
+# TODO: Add logging, which subclass has been called
 # TODO: Save animation option
-# TODO: Water current, radar sensors, obstacles (so far only capsules are supported)
+# TODO: radar sensors, obstacles (so far only capsules are supported)
 
 # Set logger
 logger = logging.getLogger(__name__)
 
-
-class Docking3d(gym.Env):
+class BaseDocking3d(gym.Env):
     """
     Base Class for the docking environment, will also be registered with gym. However, the configs for the
     environment are found at gym_dockauv/config
@@ -246,24 +246,13 @@ class Docking3d(gym.Env):
             return self.observation, return_info_dict
         return self.observation
 
+    @abstractmethod
     def generate_environment(self):
         """
-        Setup a environment after each reset call
+        Set up an environment after each reset call, can be used to in multiple environments to make multiple scenarios
+
         """
-        # TODO Think about how this should be done in future simulations
-        # Position
-        rnd_arr_pos = (np.random.random(3) - 0.5)
-        self.auv.position = rnd_arr_pos * (6 / np.linalg.norm(rnd_arr_pos))
-        # Attitude
-        rnd_arr_attitude = (np.random.random(3) - 0.5) * 2
-        att_factor = np.array([self.max_attitude * 0.7, self.max_attitude * 0.7, np.pi])  # Spawn at xx% of max attitude
-        self.auv.attitude = rnd_arr_attitude * att_factor  # Spawn with random attitude
-        # Water current #TODO Add parameters to config
-        curr_angle = (np.random.random(2) - 0.5) * 2 * np.array([np.pi/2, np.pi])
-        self.current = Current(mu=0.005, V_min=0.5, V_max=0.5, Vc_init=0.5,
-                               alpha_init=curr_angle[0], beta_init=curr_angle[1], white_noise_std=0.0,
-                               step_size=self.auv.step_size)
-        self.nu_c = self.current(self.auv.state)
+        pass
 
     def step(self, action: np.ndarray) -> Tuple[np.ndarray, float, bool, dict]:
         # Simulate and update current in body frame
@@ -464,3 +453,31 @@ class Docking3d(gym.Env):
                                                          step_size=self.t_step_size, nu_c_init=self.nu_c,
                                                          shapes=self.obstacles, radar=None, title=self.title,
                                                          episode=self.episode, env=self)
+
+
+class SimpleDocking3d(BaseDocking3d):
+    """
+    This class generates a simple environment to drive in one point in space without obstacles and no current
+    """
+    def __init__(self, env_config: dict = BASE_CONFIG):
+        super().__init__(env_config)
+
+    def generate_environment(self):
+        """
+        Set up an environment after each reset call, can be used to in multiple environments to make multiple scenarios
+
+        """
+        # Position
+        rnd_arr_pos = (np.random.random(3) - 0.5)
+        meters_away_from_goal = 6  # Distance spawned away from goal
+        self.auv.position = rnd_arr_pos * (meters_away_from_goal / np.linalg.norm(rnd_arr_pos))
+        # Attitude
+        rnd_arr_attitude = (np.random.random(3) - 0.5) * 2
+        att_factor = np.array([self.max_attitude * 0.7, self.max_attitude * 0.7, np.pi])  # Spawn at xx% of max attitude
+        self.auv.attitude = rnd_arr_attitude * att_factor  # Spawn with random attitude
+        # Water current
+        curr_angle = (np.random.random(2) - 0.5) * 2 * np.array([np.pi / 2, np.pi])  # Water current direction
+        self.current = Current(mu=0.005, V_min=0.5, V_max=0.5, Vc_init=0.5,
+                               alpha_init=curr_angle[0], beta_init=curr_angle[1], white_noise_std=0.0,
+                               step_size=self.auv.step_size)
+        self.nu_c = self.current(self.auv.state)

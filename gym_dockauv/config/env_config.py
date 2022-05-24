@@ -5,6 +5,12 @@ import numpy as np
 import os
 import copy
 
+# --------- Registration dictionary for gym environments ----------
+REGISTRATION_DICT = {
+    "SimpleDocking3d-v0": "gym_dockauv.envs:SimpleDocking3d"
+}
+
+# ---------- Base Config for all other possible configs ----------
 BASE_CONFIG = {
     # ---------- GENERAL ----------
     "config_name": "DEFAULT_BASE_CONFIG",   # Optional Identifier of config, if the title does not say everything
@@ -22,7 +28,7 @@ BASE_CONFIG = {
     "save_path_folder": os.path.join(os.getcwd(), "logs"),  # Folder name where all result files will be stored
 
     # ---------- GOAL AND DONE----------
-    "goal_location": np.array([0, 0, 0]),
+    "goal_location": np.array([0, 0, 0]),   # TODO: Think about moving goal location to gym generate_env
     "max_dist_from_goal": 10,               # Maximum distance away from goal before simulation end
     "max_attitude": 60/180*np.pi,           # Maximum attitude allowed for vehicle
 
