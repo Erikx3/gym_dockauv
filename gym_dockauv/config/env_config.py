@@ -7,7 +7,8 @@ import copy
 
 # --------- Registration dictionary for gym environments ----------
 REGISTRATION_DICT = {
-    "SimpleDocking3d-v0": "gym_dockauv.envs:SimpleDocking3d"
+    "SimpleDocking3d-v0": "gym_dockauv.envs:SimpleDocking3d",
+    "SimpleCurrentDocking3d-v0": "gym_dockauv.envs:SimpleCurrentDocking3d"
 }
 
 # ---------- Base Config for all other possible configs ----------

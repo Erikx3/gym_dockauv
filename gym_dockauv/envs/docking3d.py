@@ -93,6 +93,9 @@ class BaseDocking3d(gym.Env):
         self.radar = Radar(eta=self.auv.eta, freq=1, alpha=1,
                            beta=1, ray_per_deg=0.5, max_dist=2)
 
+        # Init list of obstacles (that will collide with the vehicle or have intersection with the radar)
+        self.obstacles = []  # type: list[shape.Shape]
+
         # Set the action and observation space
         self.n_observations = 16
         self.action_space = gym.spaces.Box(low=self.auv.u_bound[:, 0],
@@ -113,7 +116,6 @@ class BaseDocking3d(gym.Env):
         self.info = {}  # This will contain general simulation info
 
         # Declaring further own attributes
-        self.obstacles = []
         self.goal_reached = False  # Bool to check of goal is reached at the end of an episode
         self.collision = False  # Bool to indicate of vehicle has collided
 
@@ -226,6 +228,9 @@ class BaseDocking3d(gym.Env):
         # Radar reset:
         self.radar.reset(self.auv.eta)
 
+        # Obstacles reset
+        self.obstacles = []
+
         # Navigation errors
         self.delta_d = 0
         self.chi = 0
@@ -236,6 +241,7 @@ class BaseDocking3d(gym.Env):
         # Comment Thomas: maybe need to fix at 2-3 other places
         if seed is not None:
             self._np_random, seed = seeding.np_random(seed)
+            np.random.seed(seed)
 
         # Update episode number
         self.episode += 1
@@ -473,6 +479,23 @@ class BaseDocking3d(gym.Env):
                                                          shapes=self.obstacles, radar=self.radar, title=self.title,
                                                          episode=self.episode, env=self)
 
+    def generate_random_pos(self, d: float):
+        """
+        Function to generate random position with distance away from goal
+
+        :param d: Distance spawned away from goal
+        :return: array(3,) with random position
+        """
+        rnd_arr_pos = (np.random.random(3) - 0.5)
+        return self.goal_location + rnd_arr_pos * (d / np.linalg.norm(rnd_arr_pos))
+
+    def generate_random_att(self, max_att_factor: float = 0.7):
+        rnd_arr_attitude = (np.random.random(3) - 0.5) * 2
+        att_factor = np.array([self.max_attitude * max_att_factor,
+                               self.max_attitude * max_att_factor,
+                               np.pi])  # Spawn at xx% of max attitude
+        return rnd_arr_attitude * att_factor  # Spawn with random attitude
+
 
 class SimpleDocking3d(BaseDocking3d):
     """
@@ -488,19 +511,41 @@ class SimpleDocking3d(BaseDocking3d):
 
         """
         # Position
-        rnd_arr_pos = (np.random.random(3) - 0.5)
-        meters_away_from_goal = 6  # Distance spawned away from goal
-        self.auv.position = rnd_arr_pos * (meters_away_from_goal / np.linalg.norm(rnd_arr_pos))
+        self.auv.position = self.generate_random_pos(d=6)
         # Attitude
-        rnd_arr_attitude = (np.random.random(3) - 0.5) * 2
-        max_att_factor = 0.0
-        att_factor = np.array([self.max_attitude * max_att_factor,
-                               self.max_attitude * max_att_factor,
-                               np.pi])  # Spawn at xx% of max attitude
-        self.auv.attitude = rnd_arr_attitude * att_factor  # Spawn with random attitude
+        self.auv.attitude = self.generate_random_att(max_att_factor=0.7)
+        # Water current
+        curr_angle = (np.random.random(2) - 0.5) * 2 * np.array([np.pi / 2, np.pi])  # Water current direction
+        self.current = Current(mu=0.005, V_min=0.0, V_max=0.0, Vc_init=0.0,
+                               alpha_init=curr_angle[0], beta_init=curr_angle[1], white_noise_std=0.0,
+                               step_size=self.auv.step_size)
+        self.nu_c = self.current(self.auv.attitude)
+        # Obstacles:
+        self.obstacles = []
+
+
+class SimpleCurrentDocking3d(BaseDocking3d):
+    """
+    This class generates a simple environment to drive in one point in space without obstacles but with custom
+    defined current
+    """
+
+    def __init__(self, env_config: dict = BASE_CONFIG):
+        super().__init__(env_config)
+
+    def generate_environment(self):
+        """
+        Set up an environment after each reset call, can be used to in multiple environments to make multiple scenarios
+        """
+        # Position
+        self.auv.position = self.generate_random_pos(d=6)
+        # Attitude
+        self.auv.attitude = self.generate_random_att(max_att_factor=0.7)
         # Water current
         curr_angle = (np.random.random(2) - 0.5) * 2 * np.array([np.pi / 2, np.pi])  # Water current direction
         self.current = Current(mu=0.005, V_min=0.5, V_max=0.5, Vc_init=0.5,
                                alpha_init=curr_angle[0], beta_init=curr_angle[1], white_noise_std=0.0,
                                step_size=self.auv.step_size)
         self.nu_c = self.current(self.auv.attitude)
+        # Obstacles:
+        self.obstacles = []
