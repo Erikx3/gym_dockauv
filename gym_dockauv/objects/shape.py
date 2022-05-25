@@ -69,9 +69,19 @@ class Spheres:
         l = len(spheres)
         self.position = np.zeros((l, 3))
         self.radius = np.zeros(l)
+        self.objs = []
         for count, sphere in enumerate(spheres):
             self.position[count, :] = sphere.position
             self.radius[count] = sphere.radius
+            self.objs.append(sphere)
+
+    def __call__(self) -> List[Sphere]:
+        """
+        When this class is called as a function, return the spheres
+
+        :return: Return the list of spheres
+        """
+        return self.objs
 
 
 class Capsule(Shape):

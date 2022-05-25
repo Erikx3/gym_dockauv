@@ -19,6 +19,8 @@ from gym_dockauv.utils.plotutils import EpisodeAnimation
 from gym_dockauv.objects.current import Current
 from gym_dockauv.objects.sensor import Radar
 from gym_dockauv.objects.auvsim import AUVSim
+from gym_dockauv.objects.shape import Sphere, Spheres, Capsule, intersec_dist_line_capsule_vectorized, \
+    intersec_dist_lines_spheres_vectorized
 import gym_dockauv.objects.shape as shape
 import gym_dockauv.utils.geomutils as geom
 
@@ -94,7 +96,10 @@ class BaseDocking3d(gym.Env):
         self.radar = Radar(eta=self.auv.eta, **self.radar_args)
 
         # Init list of obstacles (that will collide with the vehicle or have intersection with the radar)
-        self.obstacles = []  # type: list[shape.Shape]
+        # Keep copy of capsules and spheres, as they are the only one supported so far:
+        self.capsules = []  # type: list[Capsule]
+        self.spheres = Spheres([])  # type: Spheres
+        self.obstacles = [*self.capsules, *self.spheres()]  # type: list[shape.Shape]
 
         # Set the action and observation space
         self.n_observations = 16
@@ -283,9 +288,29 @@ class BaseDocking3d(gym.Env):
         # Update radar
         self.radar.update(self.auv.eta)
         # TODO: Here update intersection of radar and obstacles
-        self.radar.update_intersec()
+        i_dist_list = []
+        # Calculate with capsules
+        for capsule in self.capsules:
+            i_dist_list.append(
+                intersec_dist_line_capsule_vectorized(
+                    l1=self.radar.pos_arr, ld=self.radar.rd_n, cap1=capsule.vec_bot, cap2=capsule.vec_top,
+                    cap_rad=capsule.radius)
+            )
+        # Then calculate intersection with spheres
+        if len(self.spheres()) > 0:
+            i_dist_list.append(
+                intersec_dist_lines_spheres_vectorized(
+                    l1=self.radar.pos_arr, ld=self.radar.rd_n, center=self.spheres.position, rad=self.spheres.radius)
+            )
+        # Get the smaller positive value of all intersection (as this will be the first intersection point)
+        if len(i_dist_list) > 0:
+            i_dist = np.vstack([*i_dist_list]).T
+            i_dist = i_dist[np.arange(i_dist.shape[0]), np.where(i_dist > 0, i_dist, np.inf).argmin(axis=1)]
+        else:
+            i_dist = None
+        self.radar.update_intersec(intersec_dist=i_dist)
 
-        # Check collision (radar and auv) TODO
+        # Check collision (auv) TODO
 
         # Update data storage if active
         if self.episode_data_storage:
@@ -452,7 +477,9 @@ class BaseDocking3d(gym.Env):
             self.ax = self.episode_animation.init_path_animation()
             self.episode_animation.add_episode_text(self.ax, self.episode)
             # Add goal location as tiny sphere, this one is not an obstacle!
-            self.episode_animation.add_shapes(self.ax, [shape.Sphere(self.goal_location, 0.5)], 'k')
+            self.episode_animation.add_shapes(self.ax, [shape.Sphere(self.goal_location, 0.2)], 'k')
+            # Add obstacles
+            self.episode_animation.add_shapes(self.ax, self.obstacles, 'r')
             # Add radar
             self.episode_animation.init_radar_animation(self.radar.n_rays)
 
@@ -550,3 +577,36 @@ class SimpleCurrentDocking3d(BaseDocking3d):
         self.nu_c = self.current(self.auv.attitude)
         # Obstacles:
         self.obstacles = []
+
+
+class ObstaclesDocking3d(BaseDocking3d):
+    """
+    This class generates an environment already with multiple obstacles
+    """
+
+    def __init__(self, env_config: dict = BASE_CONFIG):
+        super().__init__(env_config)
+
+    def generate_environment(self):
+        """
+        Set up an environment after each reset call, can be used to in multiple environments to make multiple scenarios
+        """
+        # Position
+        self.auv.position = self.generate_random_pos(d=6)
+        # Attitude
+        self.auv.attitude = self.generate_random_att(max_att_factor=0.7)
+        # Water current
+        curr_angle = (np.random.random(2) - 0.5) * 2 * np.array([np.pi / 2, np.pi])  # Water current direction
+        self.current = Current(mu=0.005, V_min=0.0, V_max=0.0, Vc_init=0.0,
+                               alpha_init=curr_angle[0], beta_init=curr_angle[1], white_noise_std=0.0,
+                               step_size=self.auv.step_size)
+        self.nu_c = self.current(self.auv.attitude)
+        # Obstacles:
+        self.capsules = [
+            Capsule(position=np.array([1.5, 0.0, -0.0]), radius=0.25, vec_top=np.array([1.5, 0.0, -0.8]))
+        ]
+        self.spheres = Spheres([
+            Sphere(position=np.array([1.8, 0.0, -1.2]), radius=0.3),
+            Sphere(position=np.array([2.3, 0.0, -1.5]), radius=0.3)
+        ])
+        self.obstacles = [*self.capsules, *self.spheres()]

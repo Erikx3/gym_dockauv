@@ -71,6 +71,7 @@ class Radar:
 
         # Initialize intersection distance for each, if no intersect, take max_dist
         self._intersec_dist_fallback = np.full((self.n_rays,), self.max_dist)
+        self.intersec_dist = copy.deepcopy(self._intersec_dist_fallback)
 
         # Get endpoint of all rays in {n} array(n, 3)
         self.end_pos_n = None
@@ -100,11 +101,13 @@ class Radar:
             dist are corrected automatically
         :return: None
         """
+        # Save actual intersec distances, if it is needed somewhere elese
         if intersec_dist is None:
             intersec_dist = self._intersec_dist_fallback
         # Post edit result from intersec to make sure they are valid
         else:
             intersec_dist[(intersec_dist < 0) | (intersec_dist > self.max_dist)] = self.max_dist
+        self.intersec_dist = copy.deepcopy(intersec_dist)
         # Update all end position points with intersection distance provided from outside
         self.end_pos_n = self.pos + self.rd_n * intersec_dist[:, None]
 
