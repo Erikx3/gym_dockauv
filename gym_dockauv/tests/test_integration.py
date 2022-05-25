@@ -93,13 +93,11 @@ class TestIntegration(TestBlueROV2):
             # Simulate vehicle
             self.BlueROV2.step(action, nu_c)
             # Update sensors
-            radar.update_pos_and_att(self.BlueROV2.eta)
+            radar.update(self.BlueROV2.eta)  # Update radar attitude first
             i_dist = intersec_dist_line_capsule_vectorized(
                 l1=radar.pos_arr, ld=radar.rd_n, cap1=capsule.vec_bot, cap2=capsule.vec_top,
-                cap_rad=capsule.radius)
-            i_dist[(i_dist < 0) | (i_dist > radar.max_dist)] = radar.max_dist  # Postedit result from intersec func
-            radar.intersec_dist = i_dist.copy()
-            radar.update_end_pos()
+                cap_rad=capsule.radius)  # Then calculate intersection
+            radar.update_intersec(intersec_dist=i_dist)  # Update radar intersections
             # Update data storage
             epi_storage.update(nu_c=nu_c)
             # Update animation of vehicle

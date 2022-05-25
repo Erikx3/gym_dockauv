@@ -1,3 +1,5 @@
+import copy
+
 import numpy as np
 from functools import cached_property
 
@@ -30,9 +32,9 @@ class Radar:
     :vartype rd_b: np.ndarray
     :var rd_n: array (n,3) for the direction of the rays in {n}
     :vartype rd_n: np.ndarray
-    :var intersec_dist: array (n,) for saving the intersection distance along rd_n, if no intersection the max distance
-        should be set
-    :vartype intersec_dist: np.ndarray
+    :var intersec_dist_fallback: array (n,) for saving the intersection distance for no intersection, the max distance
+        will be set
+    :vartype intersec_dist_fallback: np.ndarray
     :var end_pos_n: array (n,3) for saving the intersection point in {n}
     :vartype end_pos_n: np.ndarray
 
@@ -68,15 +70,17 @@ class Radar:
         self.rd_n = (geom.Rzyx(*eta[3:6]).T.dot(self.rd_b.T)).T
 
         # Initialize intersection distance for each, if no intersect, take max_dist
-        self.intersec_dist = np.full((self.n_rays,), self.max_dist)
+        self._intersec_dist_fallback = np.full((self.n_rays,), self.max_dist)
 
         # Get endpoint of all rays in {n} array(n, 3)
         self.end_pos_n = None
-        self.update_end_pos()
+        # Do one update e.g. for the end position
+        self.update(eta=eta)
+        self.update_intersec()
 
-    def update_pos_and_att(self, eta: np.ndarray) -> None:
+    def update(self, eta: np.ndarray) -> None:
         """
-        Updates all the rays direction in {n} and the actual position
+        Updates all the rays direction in {n} and the actual starting position,
 
         :param eta: array (6,) of position and attitude
         :return: None
@@ -88,11 +92,21 @@ class Radar:
         # Normalize these vectors
         self.rd_n = self.rd_n / np.linalg.norm(self.rd_n, axis=1)[:, None]
 
-    def update_end_pos(self):
+    def update_intersec(self, intersec_dist: [None, np.ndarray] = None) -> None:
         """
-        Update all end position points, should be called when intersec_dist is upated from the outside
+        Update the intersection points and thus the end points of the radar, fallback is used in case None is parsed
+
+        :param intersec_dist: array (n_rays,) with the intersection distances, negative and greater values than max
+            dist are corrected automatically
+        :return: None
         """
-        self.end_pos_n = self.pos + self.rd_n * self.intersec_dist[:, None]
+        if intersec_dist is None:
+            intersec_dist = self._intersec_dist_fallback
+        # Post edit result from intersec to make sure they are valid
+        else:
+            intersec_dist[(intersec_dist < 0) | (intersec_dist > self.max_dist)] = self.max_dist
+        # Update all end position points with intersection distance provided from outside
+        self.end_pos_n = self.pos + self.rd_n * intersec_dist[:, None]
 
     @property
     def pos_arr(self):
@@ -107,11 +121,8 @@ class Radar:
         """
         Helper function to reset radar
         """
-        self.update_pos_and_att(eta)
-        self.intersec_dist = np.full((self.n_rays,), self.max_dist)
-        self.update_end_pos()
-
-
+        self.update(eta=eta)
+        self.update_intersec()
 
 
 class Ray:

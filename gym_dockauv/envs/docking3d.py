@@ -281,8 +281,9 @@ class BaseDocking3d(gym.Env):
         self.auv.step(action, self.current(self.auv.attitude))
 
         # Update radar
-        self.radar.update_pos_and_att(self.auv.eta)
-        self.radar.update_end_pos()
+        self.radar.update(self.auv.eta)
+        # TODO: Here update intersection of radar and obstacles
+        self.radar.update_intersec()
 
         # Check collision (radar and auv) TODO
 
