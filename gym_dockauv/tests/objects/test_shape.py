@@ -51,6 +51,30 @@ class TestShapeFunc(TestShape):
         self.assertAlmostEqual(dist[0], 2**0.5-1)
         self.assertAlmostEqual(dist[1], -(2**0.5+1))
 
+    def test_intersec_dist_lines_spheres_vectorized(self):
+        l1 = np.array([
+            [0, 0, 3],
+            [0, -2, 0],
+            [2, 2, 0],
+            [-5, 0, 0]
+        ])
+        ld = np.array([
+            [0, 0, -2],
+            [0, 1, 0],
+            [1, 0, 0],
+            [1, 0, 0]
+        ])
+        center = np.array([
+            [0, 0, 0],
+            [-2, 0, 0]
+        ])
+        rad = np.array([1, 0.5])
+        dist = shape.intersec_dist_lines_spheres_vectorized(l1=l1, ld=ld, center=center, rad=rad)
+        self.assertAlmostEqual(dist[0], 2.0)
+        self.assertAlmostEqual(dist[1], 1.0)
+        self.assertAlmostEqual(dist[2], -np.inf)
+        self.assertAlmostEqual(dist[3], 2.5)
+
 
 if __name__ == '__main__':
     unittest.main()

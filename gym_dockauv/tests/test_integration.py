@@ -8,7 +8,7 @@ import time
 from gym_dockauv.tests.objects.test_BlueROV2 import TestBlueROV2
 from gym_dockauv.utils.plotutils import EpisodeAnimation, EpisodeVisualization
 from gym_dockauv.utils.datastorage import EpisodeDataStorage
-from gym_dockauv.objects.shape import Capsule, intersec_dist_line_capsule_vectorized
+from gym_dockauv.objects.shape import Capsule, intersec_dist_line_capsule_vectorized, Sphere, Spheres, intersec_dist_lines_spheres_vectorized
 from gym_dockauv.objects.current import Current
 from gym_dockauv.objects.sensor import Radar
 
@@ -57,7 +57,10 @@ class TestIntegration(TestBlueROV2):
         epi_anim.add_episode_text(ax, episode_nr)
         # Add shape for testing
         capsule = Capsule(position=np.array([1.5, 0.0, -0.0]), radius=0.25, vec_top=np.array([1.5, 0.0, -0.8]))
-        epi_anim.add_shapes(ax, [capsule])
+        sphere1 = Sphere(position=np.array([1.8, 0.0, -1.2]), radius=0.3)
+        sphere2 = Sphere(position=np.array([2.3, 0.0, -1.5]), radius=0.3)
+        spheres = Spheres(spheres=[sphere1, sphere2])
+        epi_anim.add_shapes(ax, [capsule, sphere1, sphere2])
         # Some extra axes manipulation for testing
         title = "Integration_Test_Episode_Simulation"
         ax.set(title=title)
@@ -67,7 +70,8 @@ class TestIntegration(TestBlueROV2):
         # Initialize Data Storage
         epi_storage = EpisodeDataStorage()
         epi_storage.set_up_episode_storage(path_folder=PATH_FOL, vehicle=self.BlueROV2,
-                                           step_size=self.BlueROV2.step_size, nu_c_init=nu_c, shapes=[capsule],
+                                           step_size=self.BlueROV2.step_size, nu_c_init=nu_c,
+                                           shapes=[capsule, sphere1, sphere2],
                                            radar=radar, title=title, episode=episode_nr)
         epi_storage.file_save_name = os.path.join(PATH_FOL, f"{STORAGE_NAME}.pkl")
 
@@ -94,9 +98,16 @@ class TestIntegration(TestBlueROV2):
             self.BlueROV2.step(action, nu_c)
             # Update sensors
             radar.update(self.BlueROV2.eta)  # Update radar attitude first
-            i_dist = intersec_dist_line_capsule_vectorized(
+            # Then calculate intersection with capsule
+            i_dist_cap = intersec_dist_line_capsule_vectorized(
                 l1=radar.pos_arr, ld=radar.rd_n, cap1=capsule.vec_bot, cap2=capsule.vec_top,
-                cap_rad=capsule.radius)  # Then calculate intersection
+                cap_rad=capsule.radius)
+            # Then calculate intersection with spheres
+            i_dist_sph = intersec_dist_lines_spheres_vectorized(
+                l1=radar.pos_arr, ld=radar.rd_n, center=spheres.position, rad=spheres.radius)
+            # Get the smaller positive value
+            i_dist = np.vstack([i_dist_cap, i_dist_sph]).T
+            i_dist = i_dist[np.arange(i_dist.shape[0]), np.where(i_dist > 0, i_dist, np.inf).argmin(axis=1)]
             radar.update_intersec(intersec_dist=i_dist)  # Update radar intersections
             # Update data storage
             epi_storage.update(nu_c=nu_c)

@@ -56,6 +56,24 @@ class Sphere(Shape):
         return x_c, y_c, z_c
 
 
+class Spheres:
+    """
+    Helper class to access and store data from all spheres
+
+    Most important is to access all the positions and radius as a big array for vectorized functions
+
+    This class can be enhanced with update or adding features, but are not needed in this case
+    """
+
+    def __init__(self, spheres: List[Sphere]):
+        l = len(spheres)
+        self.position = np.zeros((l, 3))
+        self.radius = np.zeros(l)
+        for count, sphere in enumerate(spheres):
+            self.position[count, :] = sphere.position
+            self.radius[count] = sphere.radius
+
+
 class Capsule(Shape):
     """
     Represents a Capsule, height is the total height, position is the center of the cylinder
@@ -166,6 +184,60 @@ def collision_capsule_sphere(cap1: np.ndarray, cap2: np.ndarray, cap_rad: float,
     dist = dist_line_point(sph_pos, cap1, cap2)
     # Check for collision
     return dist <= cap_rad + sph_rad
+
+
+def intersec_dist_line_sphere(l1: np.ndarray, ld: np.ndarray, center: np.ndarray, rad: float):
+    """
+    From: https://iquilezles.org/articles/intersectors/
+
+
+    :param l1: array (3,) for line starting point
+    :param ld: array (3,) for the line direction from the starting point (does not need to be unit vector)
+    :param center: array(3,) for the center of the sphere
+    :param rad: radius of the sphere
+    """
+
+    oc = l1 - center  # type: np.ndarray
+    rd = ld / np.linalg.norm(ld)
+    b = np.dot(oc, rd)  # will be float
+    c = np.dot(oc, oc) - rad * rad  # will be float
+    h = b * b - c  # float
+    if h < 0.0:
+        return -np.inf  # no intersection
+    h = np.sqrt(h)
+    return min([-b + h, -b - h], key=abs)
+
+
+def intersec_dist_lines_spheres_vectorized(l1: np.ndarray, ld: np.ndarray, center: np.ndarray, rad: np.ndarray):
+    """
+    Adapted from: https://iquilezles.org/articles/intersectors/
+
+    This functions calculates the minimum distance of all intersection between a number of rays and multiple spheres
+
+    nl is the number of rays, ns the number of sphere for the dimensions below in the description
+
+    :param l1: array (nl, 3) for line starting points
+    :param ld: array (nl, 3) for the line directions from the starting points (does not need to be unit vector)
+    :param center: array(ns, 3) for the center of the spheres
+    :param rad: array(ns,) for the radius of the spheres
+    :return: array(nl,) with the shortest intersection distance in the direction of each ray, otherwise result is
+        something negative (as no criteria for intersect "behind" the starting point is not well defined)
+    """
+
+    # array(3,) between each start point and center
+    oc = l1[:, None] - center  # array(nl, ns, 3)
+    rd = ld / np.linalg.norm(ld, axis=1)[:, None]  # array(nl, 3)
+    # (nl, ns, 3) . (3, nl) -> (nl, ns, nl); then taking diagonal -> (nl, ns, 1)
+    b = np.dot(oc, rd.T)[range(rd.shape[0]), :, range(rd.shape[0])] #np.diagonal(np.dot(oc, rd.T), axis1=1, axis2=2)
+    # (nl, ns, 3) . (3, ns, nl) -> (nl, ns, nl); then taking diagonal -> (nl, ns, 1)
+    c = np.linalg.norm(oc, axis=2)**2 - rad**2
+    h = b * b - c  # float
+    h[h < 0.0] = -np.inf  # no intersection at these points
+    mask = h >= 0.0
+    h[mask] = np.sqrt(h[mask])
+    res = np.minimum(-b + h, -b - h)  # This would not work if starting point is within sphere
+    # Only return the closest positive distance, otherwise it is just a random negative value (of 1st intersec)
+    return res[np.arange(res.shape[0]), np.where(res > 0, res, np.inf).argmin(axis=1)]
 
 
 def intersec_dist_line_capsule(l1: np.ndarray, ld: np.ndarray, cap1: np.ndarray, cap2: np.ndarray,
@@ -303,7 +375,7 @@ def dist_line_point(po: np.ndarray, l1: np.ndarray, l2: np.ndarray) -> float:
     :param po: array (3,) for the point position
     :param l1: array (3,) for start of line
     :param l2: array (3,) for end of line
-    :return: shortes distance between line and point
+    :return: shortest distance between line and point
     """
     # normalized tangent vector
     d = np.divide(l2 - l1, np.linalg.norm(l2 - l1))
