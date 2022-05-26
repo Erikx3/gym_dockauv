@@ -4,9 +4,10 @@ Master Thesis Project Code, Cooperation of TU Berlin and NTNU
 
 View the doc at: https://erikx3.github.io/gym_dockauv/
 
-> :warning: **TBD - Work in Progress**: Documentation via Sphinx hosted on Github Pages aswell as README.md
+> :warning: **TBD - Work in Progress, documentation missing**: Documentation via Sphinx hosted on Github Pages aswell as README.md
 
-https://user-images.githubusercontent.com/53977667/165626628-fa5cec8c-2f81-4792-91b2-2784eb4a80e2.mp4
+
+https://user-images.githubusercontent.com/53977667/170548416-8b0901c7-8c56-4071-8170-7f22855a01d1.mp4
 
 
 ___
@@ -49,7 +50,7 @@ python -m unittest -v gym_dockauv.tests.test_integration
 
 ### Other install
 
-Chosen matplotlib backend:
+Chosen matplotlib backend on linux:
 
 ```shell
 sudo apt-get install python3-tk
