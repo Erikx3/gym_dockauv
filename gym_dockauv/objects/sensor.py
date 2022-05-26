@@ -107,9 +107,9 @@ class Radar:
         # Post edit result from intersec to make sure they are valid
         else:
             intersec_dist[(intersec_dist < 0) | (intersec_dist > self.max_dist)] = self.max_dist
-        self.intersec_dist = copy.deepcopy(intersec_dist)
+        self.intersec_dist = intersec_dist
         # Update all end position points with intersection distance provided from outside
-        self.end_pos_n = self.pos + self.rd_n * intersec_dist[:, None]
+        self.end_pos_n = self.pos + self.rd_n * self.intersec_dist[:, None]
 
     @property
     def pos_arr(self):

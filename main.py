@@ -1,8 +1,9 @@
 from gym_dockauv.config.PPO_hyperparams import PPO_HYPER_PARAMS_TEST
 from gym_dockauv.config.env_config import TRAIN_CONFIG
 import gym_dockauv.train as train
+from gym_dockauv.utils.datastorage import EpisodeDataStorage
 
-GYM_ENV = "SimpleDocking3d-v0"
+GYM_ENV = "ObstaclesDocking3d-v0"
 
 if __name__ == "__main__":
     # train.train(total_timesteps=280000,
@@ -23,7 +24,10 @@ if __name__ == "__main__":
     train.manual_control(gym_env=GYM_ENV)
     train.post_analysis_directory(directory="/home/erikx3/PycharmProjects/gym_dockauv/manual_logs")
 
-
+    # # Example code on how to generate a video from a pkl file
+    # epi_stor = EpisodeDataStorage()
+    # epi_stor.load(file_name="pkl_file_path")
+    # epi_stor.save_animation_video(save_path="file_path_and_name.mp4", fps=30)
 
 
 

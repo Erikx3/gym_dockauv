@@ -443,7 +443,7 @@ class BaseDocking3d(gym.Env):
         Condition 2: Check if attitude (pitch, roll) too high
         Condition 3: Check if maximum time steps reached
 
-        :return: [if simulation is done, extra discrete reward, indexes of conditions that are true]
+        :return: [if simulation is done, indexes of conditions that are true]
         """
         # TODO: Collision
         # All conditions in a list

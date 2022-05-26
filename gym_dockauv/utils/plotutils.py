@@ -35,6 +35,44 @@ class EpisodeVisualization:
         pass
 
     @staticmethod
+    def save_animation_video(save_path: str, fps: int,
+                             states: np.ndarray,
+                             episode: int = None,
+                             shapes: List[Shape] = None,
+                             radar_end_pos: np.ndarray = None,
+                             title: str = None) -> None:
+        """
+        Wrapper to plot interactive animation of the episode animation after it has been saved
+
+        :param save_path: Where the video file should be saved, should end on .mp4
+        :param fps: Frames per second (if realtime wanted, enter 1/t_step here)
+        :param states: nx12 array of states
+        :param episode: Episode number
+        :param shapes: static shapes in plot
+        :param radar_end_pos: array(n_data, n_rays, 3) for all radar end pos
+        :param title: title for subplot
+        :param t_per_step: time between each frame
+        :return: None
+        """
+
+        epi_anim = EpisodeAnimation()
+        ax = epi_anim.init_path_animation()
+        epi_anim.add_episode_text(ax, episode)
+        kwargs = {"positions": states[:, 0:3],
+                  "attitudes": states[:, 3:6],
+                  }
+
+        if title:
+            ax.set(title=title)
+        if shapes:
+            epi_anim.add_shapes(ax, shapes)
+        if radar_end_pos is not None:
+            epi_anim.init_radar_animation(n_rays=radar_end_pos.shape[1])
+            kwargs["end_pos"] = radar_end_pos
+
+        epi_anim.save_animation(save_path=save_path, fps=20, frames=kwargs["positions"].shape[0], **kwargs)
+
+    @staticmethod
     def plot_episode_animation(states: np.ndarray, episode: int = None, shapes: List[Shape] = None,
                                radar_end_pos: np.ndarray = None, t_per_step: float = None, title: str = None) -> None:
         """
@@ -58,8 +96,6 @@ class EpisodeVisualization:
             epi_anim.add_shapes(ax, shapes)
         if radar_end_pos is not None:
             epi_anim.init_radar_animation(n_rays=radar_end_pos.shape[1])
-
-        states = states
 
         for i in range(states.shape[0]):
             epi_anim.update_path_animation(positions=states[:i + 1, 0:3], attitudes=states[:i + 1, 3:6])
@@ -437,8 +473,12 @@ class EpisodeAnimation:
         :param save_path: absolute path of where to store the video
 
         :Keyword Arguments:
-            * *position* (``np.ndarray``) --
+            * *positions* (``np.ndarray``) --
               array nx3, where n is the total number of all available position data points after the episode
+            * *attitudes* (``np.ndarray``) --
+              array nx3, where n is the total number of all available attitude data
+            * *end_pos* (``np.ndarray``) --
+              array nxnr, where n is the number of data and nr the number of rays
 
         :return: None
         """

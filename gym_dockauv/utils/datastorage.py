@@ -414,3 +414,16 @@ class EpisodeDataStorage:
                                           title=self.storage["title"],
                                           meta_data_reward=self.storage["meta_data_reward"]
                                           )
+
+    def save_animation_video(self, save_path: str, fps: int) -> None:
+        """
+        Individual wrapper to save video of loaded storage
+        :return:
+        """
+        EpisodeVisualization.save_animation_video(save_path=save_path,
+                                                  fps=fps,
+                                                  states=self.states,
+                                                  episode=self.storage["episode"],
+                                                  shapes=self.storage["shapes"],
+                                                  radar_end_pos=self.storage["radar"],
+                                                  title=self.storage["title"])
