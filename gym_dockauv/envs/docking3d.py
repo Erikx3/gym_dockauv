@@ -20,7 +20,7 @@ from gym_dockauv.objects.current import Current
 from gym_dockauv.objects.sensor import Radar
 from gym_dockauv.objects.auvsim import AUVSim
 from gym_dockauv.objects.shape import Sphere, Spheres, Capsule, intersec_dist_line_capsule_vectorized, \
-    intersec_dist_lines_spheres_vectorized
+    intersec_dist_lines_spheres_vectorized, collision_sphere_spheres, collision_capsule_sphere
 import gym_dockauv.objects.shape as shape
 import gym_dockauv.utils.geomutils as geom
 
@@ -125,7 +125,7 @@ class BaseDocking3d(gym.Env):
         self.collision = False  # Bool to indicate of vehicle has collided
 
         # Rewards
-        self.n_rewards = 8
+        self.n_rewards = 9
         self.last_reward = 0  # Last reward
         self.last_reward_arr = np.zeros(self.n_rewards)  # This should reflect the dimension of the rewards parts
         self.cumulative_reward = 0  # Current cumulative reward of agent
@@ -140,7 +140,8 @@ class BaseDocking3d(gym.Env):
             "Done-Goal_reached",
             "Done-out_pos",
             "Done-out_att",
-            "Done-max_t"
+            "Done-max_t",
+            "Done-collision"
         ]
         self.reward_factors = self.config["reward_factors"]
         self.action_reward_factors = self.config["action_reward_factors"]
@@ -291,7 +292,7 @@ class BaseDocking3d(gym.Env):
         self.radar.update_intersec(intersec_dist=i_dist)
 
         # Check collision between AUV and obstacles
-
+        self.collision = self.update_body_collision()
 
         # Update data storage if active
         if self.episode_data_storage:
@@ -372,6 +373,24 @@ class BaseDocking3d(gym.Env):
             i_dist = None  # This is okay, since radar updates can work with "None" intersection points
         return i_dist
 
+    def update_body_collision(self) -> bool:
+        """
+
+        :return: boolean if collision with any of the obstacles
+        """
+        col_bool_list = []
+        if len(self.spheres()) > 0:
+            col_bool_list.append(
+                collision_sphere_spheres(pos1=self.auv.position, rad1=self.auv.safety_radius,
+                                         pos2=self.spheres.position, rad2=self.spheres.radius)
+            )
+        for capsule in self.capsules:
+            col_bool_list.append(
+                collision_capsule_sphere(cap1=capsule.vec_bot, cap2=capsule.vec_top, cap_rad=capsule.radius,
+                                         sph_pos=self.auv.position, sph_rad=self.auv.safety_radius)
+            )
+        return any(col_bool_list)
+
     def observe(self) -> np.ndarray:
         obs = np.zeros(self.n_observations, dtype=np.float32)
         # Next 3 are the simple position differences
@@ -416,6 +435,7 @@ class BaseDocking3d(gym.Env):
         Reward 6: Done - out of bounds position
         Reward 7: Done - out of bounds attitude
         Reward 8: Done - maximum episode steps
+        Reward 9: Done - collision
 
         :param action: array with actions between -1 and 1
         :return: The single reward at this step
@@ -456,6 +476,7 @@ class BaseDocking3d(gym.Env):
         Condition 1: Check if out of bounds for position
         Condition 2: Check if attitude (pitch, roll) too high
         Condition 3: Check if maximum time steps reached
+        Condition 4: Check for collision
 
         :return: [if simulation is done, indexes of conditions that are true]
         """
@@ -469,7 +490,9 @@ class BaseDocking3d(gym.Env):
             # Condition 2: Check if attitude (pitch, roll) too high
             np.any(np.abs(self.auv.attitude[:2]) > self.max_attitude),
             # Condition 3: Check if maximum time steps reached
-            self.t_steps >= self.max_timesteps
+            self.t_steps >= self.max_timesteps,
+            # Condition 4: Collision with obstacle (is updated earlier)
+            self.collision
         ]
 
         # If goal reached

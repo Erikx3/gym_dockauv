@@ -39,11 +39,12 @@ BASE_CONFIG = {
                                             # gym_dockauv/objects/vehicles
     "radius": 0.5,                          # Radius size of vehicle for collision detection
     "reward_factors":
-        np.array([-0.7, -0.6, -0.05, -0.4,  # Reward factors for each reward, look into the reward step doc for more
-                  50, -100, -100, -50]),    # details
+        np.array(
+            [-0.7, -0.6, -0.05, -0.4,       # Reward factors for each reward, look into the reward step doc for more
+             50, -100, -100, -50, -100]),   # details
     "action_reward_factors": np.array(
         [0.05, 0.15, 0.05,                  # Negative reward factors for each possible action input used, must be
-         0.25, 0.25, 0.25]),                 # changed depending on actionspace of vehicle
+         0.25, 0.25, 0.25]),                # changed depending on actionspace of vehicle
 
     # --------- RADAR -----------  Will be dynamically loaded via **kwargs
     "radar": {
