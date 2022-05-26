@@ -27,6 +27,15 @@ class TestShapeFunc(TestShape):
         self.assertEqual(True, shape.collision_capsule_sphere(self.l11, self.l12, cap_rad, self.point, sph_rad))
         self.assertEqual(False, shape.collision_capsule_sphere(self.l21, self.l22, cap_rad, self.point2, sph_rad))
 
+    def test_collision_sphere_spheres(self):
+        pos1 = np.array([0, 0, 0])
+        rad1 = 1
+        pos2 = np.array([[3, 0, 0], [1, 1, 1]])
+        rad2 = np.array([1, 1])
+        self.assertEqual(True, shape.collision_sphere_spheres(pos1, rad1, pos2, rad2))
+        rad3 = np.array([1, 0.5])
+        self.assertEqual(False, shape.collision_sphere_spheres(pos1, rad1, pos2, rad3))
+
     def test_intersec_dist_line_capsule(self):
         cap_rad = 1
         dist = shape.intersec_dist_line_capsule(l1=self.l21, ld=(self.l22-self.l21), cap1=self.l11, cap2=self.l12,

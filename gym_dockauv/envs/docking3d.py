@@ -287,30 +287,11 @@ class BaseDocking3d(gym.Env):
 
         # Update radar
         self.radar.update(self.auv.eta)
-        # TODO: Here update intersection of radar and obstacles
-        i_dist_list = []
-        # Calculate with capsules
-        for capsule in self.capsules:
-            i_dist_list.append(
-                intersec_dist_line_capsule_vectorized(
-                    l1=self.radar.pos_arr, ld=self.radar.rd_n, cap1=capsule.vec_bot, cap2=capsule.vec_top,
-                    cap_rad=capsule.radius)
-            )
-        # Then calculate intersection with spheres
-        if len(self.spheres()) > 0:
-            i_dist_list.append(
-                intersec_dist_lines_spheres_vectorized(
-                    l1=self.radar.pos_arr, ld=self.radar.rd_n, center=self.spheres.position, rad=self.spheres.radius)
-            )
-        # Get the smaller positive value of all intersection (as this will be the first intersection point)
-        if len(i_dist_list) > 0:
-            i_dist = np.vstack([*i_dist_list]).T
-            i_dist = i_dist[np.arange(i_dist.shape[0]), np.where(i_dist > 0, i_dist, np.inf).argmin(axis=1)]
-        else:
-            i_dist = None
+        i_dist = self.update_radar_collision()
         self.radar.update_intersec(intersec_dist=i_dist)
 
-        # Check collision (auv) TODO
+        # Check collision between AUV and obstacles
+
 
         # Update data storage if active
         if self.episode_data_storage:
@@ -353,10 +334,43 @@ class BaseDocking3d(gym.Env):
         return self.observation, self.last_reward, self.done, self.info
 
     def update_navigation_errors(self):
+        """
+        Update some navigation error vaalues and save them to instance
+        :return:
+        """
         diff = self.goal_location - self.auv.position
         self.delta_d = np.linalg.norm(diff)
         self.chi = self.auv.attitude[1] + (geom.ssa(np.arctan2(diff[2], np.linalg.norm(diff[:2]))))
         self.upsilon = geom.ssa(np.arctan2(diff[1], diff[0]) - self.auv.attitude[2])
+
+    def update_radar_collision(self) -> Union[np.ndarray, None]:
+        """
+        Function to update the radar collision, MUST be called after radar position and attitude update to reflect
+        recent radar vectors
+
+        :return: array(nr, 1) number of rays nr with the closest collision point in direction of each radar
+        """
+        i_dist_list = []
+        # Calculate with capsules
+        for capsule in self.capsules:
+            i_dist_list.append(
+                intersec_dist_line_capsule_vectorized(
+                    l1=self.radar.pos_arr, ld=self.radar.rd_n, cap1=capsule.vec_bot, cap2=capsule.vec_top,
+                    cap_rad=capsule.radius)
+            )
+        # Then calculate intersection with spheres
+        if len(self.spheres()) > 0:
+            i_dist_list.append(
+                intersec_dist_lines_spheres_vectorized(
+                    l1=self.radar.pos_arr, ld=self.radar.rd_n, center=self.spheres.position, rad=self.spheres.radius)
+            )
+        # Get the smaller positive value of all intersection (as this will be the first intersection point)
+        if len(i_dist_list) > 0:
+            i_dist = np.vstack([*i_dist_list]).T  # Unfortunately slow, but good expandable solution
+            i_dist = i_dist[np.arange(i_dist.shape[0]), np.where(i_dist > 0, i_dist, np.inf).argmin(axis=1)]
+        else:
+            i_dist = None  # This is okay, since radar updates can work with "None" intersection points
+        return i_dist
 
     def observe(self) -> np.ndarray:
         obs = np.zeros(self.n_observations, dtype=np.float32)
@@ -448,11 +462,14 @@ class BaseDocking3d(gym.Env):
         # TODO: Collision
         # All conditions in a list
         self.conditions = [
-            self.delta_d < 1.0,  # Condition 0: Check if close to the goal
-            self.delta_d > self.max_dist_from_goal,  # Condition 1: Check if out of bounds for position
-            np.any(np.abs(self.auv.attitude[:2]) > self.max_attitude),
+            # Condition 0: Check if close to the goal
+            self.delta_d < 1.0,
+            # Condition 1: Check if out of bounds for position
+            self.delta_d > self.max_dist_from_goal,
             # Condition 2: Check if attitude (pitch, roll) too high
-            self.t_steps >= self.max_timesteps  # Condition 3: # Check if maximum time steps reached
+            np.any(np.abs(self.auv.attitude[:2]) > self.max_attitude),
+            # Condition 3: Check if maximum time steps reached
+            self.t_steps >= self.max_timesteps
         ]
 
         # If goal reached
@@ -477,9 +494,9 @@ class BaseDocking3d(gym.Env):
             self.ax = self.episode_animation.init_path_animation()
             self.episode_animation.add_episode_text(self.ax, self.episode)
             # Add goal location as tiny sphere, this one is not an obstacle!
-            self.episode_animation.add_shapes(self.ax, [shape.Sphere(self.goal_location, 0.2)], 'k')
+            self.episode_animation.add_shapes(self.ax, [shape.Sphere(self.goal_location, 0.1)], 'k')
             # Add obstacles
-            self.episode_animation.add_shapes(self.ax, self.obstacles, 'r')
+            self.episode_animation.add_shapes(self.ax, self.obstacles, 'b')
             # Add radar
             self.episode_animation.init_radar_animation(self.radar.n_rays)
 

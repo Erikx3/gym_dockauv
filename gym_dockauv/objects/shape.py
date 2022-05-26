@@ -178,6 +178,19 @@ def collision_sphere_sphere(pos1: np.ndarray, rad1: float, pos2: np.ndarray, rad
     return np.linalg.norm(pos1 - pos2) <= rad1 + rad2
 
 
+def collision_sphere_spheres(pos1: np.ndarray, rad1: float, pos2: np.ndarray, rad2: np.ndarray) -> bool:
+    """
+    Determining whether one sphere 1 collides with any of multiple spheres
+
+    :param pos1: (3,) array for position of first object
+    :param rad1: radius of first object
+    :param pos2: (n,3) array for position of all other spheres
+    :param rad2: radius of all other spheres
+    :return: returns true if collision
+    """
+    return np.any(np.linalg.norm(pos2 - pos1[None, :], axis=1) <= rad1 + rad2)
+
+
 def collision_capsule_sphere(cap1: np.ndarray, cap2: np.ndarray, cap_rad: float,
                              sph_pos: np.ndarray, sph_rad: float) -> bool:
     """
