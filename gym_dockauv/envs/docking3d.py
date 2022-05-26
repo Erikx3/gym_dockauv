@@ -506,7 +506,14 @@ class BaseDocking3d(gym.Env):
         done = bool(np.any(self.conditions))  # To satisfy environment checker
         return done, cond_idx
 
-    def render(self, mode="human", real_time=False):
+    def render(self, mode="human", rotate_cam=False, real_time=False):
+        """
+
+        :param mode: from base class, only human mode in this case
+        :param rotate_cam: if rotating the cam slowly (helps with depth in matplotlib)
+        :param real_time: if render should approx happen in real time
+        :return: None
+        """
         if real_time:
             plt.pause(self.t_step_size * 0.9)
 
@@ -526,6 +533,10 @@ class BaseDocking3d(gym.Env):
         self.episode_animation.update_path_animation(positions=self.episode_data_storage.positions,
                                                      attitudes=self.episode_data_storage.attitudes)
         self.episode_animation.update_radar_animation(self.radar.pos, self.radar.end_pos_n)
+        # Rotate camera:
+        if rotate_cam:
+            self.episode_animation.ax_path.azim += 1
+            # ax.view_init(elev=10., azim=ii)
 
         # Possible implementation for rgb_array
         # https://stackoverflow.com/questions/35355930/matplotlib-figure-to-image-as-a-numpy-array,
@@ -641,7 +652,7 @@ class ObstaclesDocking3d(BaseDocking3d):
                                alpha_init=curr_angle[0], beta_init=curr_angle[1], white_noise_std=0.0,
                                step_size=self.auv.step_size)
         self.nu_c = self.current(self.auv.attitude)
-        # Obstacles:
+        # Obstacles: TODO: Make random spawning, also from capsule!
         self.capsules = [
             Capsule(position=np.array([1.5, 0.0, -0.0]), radius=0.25, vec_top=np.array([1.5, 0.0, -0.8]))
         ]
