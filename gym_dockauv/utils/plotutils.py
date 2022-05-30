@@ -187,6 +187,45 @@ class EpisodeVisualization:
         fig.subplots_adjust(left=0.125, bottom=0.07, right=0.9, top=0.93, wspace=0.2, hspace=0.6)
 
     @staticmethod
+    def plot_observation(observation: np.ndarray, step_size: float, meta_data_obs: List[List[str]], episode: int = None,
+                         title: str = None):
+        """
+        Plot the observation with meta data (needs meta data on observation, more beautiful wrapper)
+
+        :param observation: array(n, o) with n data points and o observations
+        :param step_size: fixed step size
+        :param meta_data_obs: meta data of observation name in list of lists
+        :param episode: optional episode number
+        :param title: optional title
+        :return:
+        """
+        # Get time array
+        time_arr = np.arange(len(observation[:, 0])) * step_size
+
+        # Init figure
+        fig = plt.figure(figsize=(12, 8))
+        no_subplots = len(meta_data_obs)
+
+        if episode or title:
+            fig.suptitle(f'{title} - Episode {episode} - Observations')
+
+        p_count = 0
+        # Observations
+        for subplot_count, meta_data_list in enumerate(meta_data_obs):
+            ax_tmp = fig.add_subplot(no_subplots, 1, subplot_count+1)
+            for p in meta_data_list:
+                ax_tmp.plot(time_arr, observation[:, p_count], label=p, linewidth=0.5)
+                p_count += 1
+            ax_tmp.legend()
+            #ax_tmp.set_ylabel(r"o [ - ]")
+            ax_tmp.set_ylim([-1.1, 1.1])
+            ax_tmp.set_yticks([-1.0, 0.0, 1.0])
+
+        ax_tmp.set_xlabel("t [s]")
+
+        fig.tight_layout()
+
+    @staticmethod
     def plot_observation_and_u(observation: np.ndarray, u: np.ndarray, step_size: float, episode: int = None,
                                title: str = None):
         """

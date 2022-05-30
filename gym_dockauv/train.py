@@ -97,6 +97,7 @@ def predict(gym_env: str, model_path: str, n_episodes: int = 5):
             action, _states = model.predict(obs, deterministic=True)
             obs, rewards, done, info = env.step(action)
             env.render()
+            print(env.upsilon)
             if done:
                 break
         env.reset()
@@ -119,7 +120,8 @@ def post_analysis_directory(directory: str = "/home/erikx3/PycharmProjects/gym_d
             epi_stor = EpisodeDataStorage()
             epi_stor.load(full_path)
             epi_stor.plot_epsiode_states()
-            epi_stor.plot_epsiode_observation_and_u()
+            #epi_stor.plot_epsiode_observation_and_u()
+            epi_stor.plot_observation()
             epi_stor.plot_rewards()
             plt.show()
             # epi_stor.plot_episode_animation(t_per_step=None, title="Test Post Flight Visualization")

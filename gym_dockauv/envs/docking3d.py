@@ -54,6 +54,7 @@ class BaseDocking3d(gym.Env):
         self.save_path_folder = self.config["save_path_folder"]
         self.log_level = self.config["log_level"]
         self.verbose = self.config["verbose"]
+        self.interval_episode_log = self.config["interval_episode_log"]
         os.makedirs(self.save_path_folder, exist_ok=True)
         # Initialize logger
         utc_str = datetime.datetime.utcnow().strftime('%Y_%m_%dT%H_%M_%S')
@@ -110,6 +111,14 @@ class BaseDocking3d(gym.Env):
                                                 high=np.ones(self.n_observations),
                                                 dtype=np.float32)
         self.observation = np.zeros(self.n_observations)
+        # The inner lists decide, in which subplot the observations will go
+        self.meta_data_observation = [
+            ["delta_d", "chi", "upsilon"],
+            ["u", "v", "w"],
+            ["phi", "theta", "psi_sin", "psi_cos"],
+            ["p", "q", "r"],
+            ["u_c",  "v_c", "w_c"]
+        ]
 
         # General simulation variables:
         self.t_total_steps = 0  # Number of total timesteps run so far in this environment
@@ -249,6 +258,12 @@ class BaseDocking3d(gym.Env):
             self._np_random, seed = seeding.np_random(seed)
             np.random.seed(seed)
 
+        # Log the episode
+        if self.episode == 1 or self.episode % self.interval_episode_log == 0:
+            logger.info("Environment reset call: \n" + pprint.pformat(return_info_dict))
+        else:
+            logger.debug("Environment reset call: \n" + pprint.pformat(return_info_dict))
+
         # Update episode number
         self.episode += 1
 
@@ -261,9 +276,6 @@ class BaseDocking3d(gym.Env):
             self.init_episode_storage()
         else:
             self.episode_data_storage = None
-
-        # Log the episode
-        logger.info("Environment reset call: \n" + pprint.pformat(return_info_dict))
 
         # Return info if wanted
         if return_info:
@@ -393,14 +405,10 @@ class BaseDocking3d(gym.Env):
 
     def observe(self) -> np.ndarray:
         obs = np.zeros(self.n_observations, dtype=np.float32)
-        # Next 3 are the simple position differences
-        # obs[0] = np.clip(diff[0] / self.max_dist_from_goal, -1, 1)
-        # obs[1] = np.clip(diff[1] / self.max_dist_from_goal, -1, 1)
-        # obs[2] = np.clip(diff[2] / self.max_dist_from_goal, -1, 1)
         # Distance from goal, contained within max_dist_from_goal
         obs[0] = np.clip(self.delta_d / self.max_dist_from_goal, -1, 1)
-        obs[1] = np.clip(self.chi / (np.pi / 2),
-                         -1, 1)  # Pitch error chi, will be between +90° and -90°
+        # Pitch error chi, will be between +90° and -90°
+        obs[1] = np.clip(self.chi / (np.pi / 2), -1, 1)
         # Heading error upsilon, will be between -180 and +180 degree, observation jump is not fixed here,
         # since it might be good to directly indicate which way to turn is faster to adjust heading
         obs[2] = np.clip(self.upsilon / np.pi, -1, 1)
@@ -454,8 +462,8 @@ class BaseDocking3d(gym.Env):
         self.last_reward_arr[1] = (np.sum(np.abs(self.auv.attitude[:2]))) / np.pi
         # Negative cum_reward per time step
         self.last_reward_arr[2] = 1
-        # Reward for action used (e.g. want to minimize action power usage)
-        self.last_reward_arr[3] = np.sum(np.abs(action) * self.action_reward_factors)
+        # Reward for action used (e.g. want to minimize action power usage), factors can be scalar or matching array
+        self.last_reward_arr[3] = np.sum(np.abs(action) / self.auv.u_bound.shape[0] * self.action_reward_factors)
 
         # Add extra reward on checking which condition caused the episode to be done
         self.last_reward_arr[4:] = np.array(self.conditions) * 1

@@ -27,6 +27,7 @@ BASE_CONFIG = {
     # ---------- SIMULATION --------------
     "t_step_size": 0.10,                    # Length of each simulation timestep [s]
     "interval_datastorage": 200,            # Interval of episodes on which extended data is saved through data class
+    "interval_episode_log": 50,             # Log the episode info dict in specific interval into the log file
     "save_path_folder": os.path.join(os.getcwd(), "logs"),  # Folder name where all result files will be stored
 
     # ---------- GOAL AND DONE----------
@@ -42,9 +43,8 @@ BASE_CONFIG = {
         np.array(
             [-0.7, -0.6, -0.05, -0.4,       # Reward factors for each reward, look into the reward step doc for more
              50, -100, -100, -50, -100]),   # details
-    "action_reward_factors": np.array(
-        [0.05, 0.15, 0.05,                  # Negative reward factors for each possible action input used, must be
-         0.25, 0.25, 0.25]),                # changed depending on actionspace of vehicle
+    "action_reward_factors": 1,             # Negative reward factor for action, can be an array matching the number of
+                                            # actions or just a scalar multiplied with the normalized sum of the action
 
     # --------- RADAR -----------  Will be dynamically loaded via **kwargs
     "radar": {
@@ -66,6 +66,7 @@ PREDICT_CONFIG = copy.deepcopy(BASE_CONFIG)
 PREDICT_CONFIG["interval_datastorage"] = 1
 PREDICT_CONFIG["title"] = "Prediction Run"
 PREDICT_CONFIG["save_path_folder"] = os.path.join(os.getcwd(), "predict_logs")
+PREDICT_CONFIG["interval_episode_log"] = 1
 # PREDICT_CONFIG["max_dist_from_goal"] = 10
 
 # ---------- Configuration for Manual control runs ----------
@@ -73,5 +74,6 @@ MANUAL_CONFIG = copy.deepcopy(BASE_CONFIG)
 MANUAL_CONFIG["title"] = "Manual Run"
 MANUAL_CONFIG["save_path_folder"] = os.path.join(os.getcwd(), "manual_logs")
 MANUAL_CONFIG["interval_datastorage"] = 1
+MANUAL_CONFIG["interval_episode_log"] = 1
 #MANUAL_CONFIG["max_timesteps"] = 200000
 

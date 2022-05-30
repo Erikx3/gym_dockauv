@@ -253,11 +253,13 @@ class EpisodeDataStorage:
             rewards_arr = ArrayList(env.last_reward_arr)
             meta_data_reward = env.meta_data_reward
             observation = ArrayList(env.observation)
+            meta_data_observation = env.meta_data_observation
         else:
             cum_rewards_arr = None
             rewards_arr = None
             meta_data_reward = None
             observation = None
+            meta_data_observation = None
 
         self.storage = {
             "vehicle": {
@@ -275,7 +277,8 @@ class EpisodeDataStorage:
             "cum_rewards": cum_rewards_arr,
             "rewards": rewards_arr,
             "meta_data_reward": meta_data_reward,
-            "observation": observation
+            "observation": observation,
+            "meta_data_observation": meta_data_observation,
         }
 
     def update(self, nu_c: np.ndarray) -> None:
@@ -402,6 +405,18 @@ class EpisodeDataStorage:
                                                     step_size=self.storage["step_size"],
                                                     episode=self.storage["episode"],
                                                     title=self.storage["title"])
+
+    def plot_observation(self):
+        """
+        Individual wrapper for plotting the observations wih metadata in subplots
+        :return:
+        """
+
+        EpisodeVisualization.plot_observation(observation=self.storage["observation"],
+                                              step_size=self.storage["step_size"],
+                                              meta_data_obs=self.storage["meta_data_observation"],
+                                              episode=self.storage["episode"],
+                                              title=self.storage["title"])
 
     def plot_rewards(self):
         """
