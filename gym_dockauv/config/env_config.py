@@ -9,6 +9,7 @@ import copy
 REGISTRATION_DICT = {
     "SimpleDocking3d-v0": "gym_dockauv.envs:SimpleDocking3d",
     "SimpleCurrentDocking3d-v0": "gym_dockauv.envs:SimpleCurrentDocking3d",
+    "CapsuleDocking3d-v0": "gym_dockauv.envs:CapsuleDocking3d",
     "ObstaclesDocking3d-v0": "gym_dockauv.envs:ObstaclesDocking3d"
 }
 
@@ -31,7 +32,6 @@ BASE_CONFIG = {
     "save_path_folder": os.path.join(os.getcwd(), "logs"),  # Folder name where all result files will be stored
 
     # ---------- GOAL AND DONE----------
-    "goal_location": np.array([0, 0, 0]),   # TODO: Think about moving goal location to gym generate_env
     "max_dist_from_goal": 10,               # Maximum distance away from goal before simulation end
     "max_attitude": 60/180*np.pi,           # Maximum attitude allowed for vehicle
 

@@ -1,6 +1,7 @@
 import matplotlib.pyplot
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+from matplotlib.colors import LightSource
 import numpy as np
 import logging
 
@@ -51,7 +52,6 @@ class EpisodeVisualization:
         :param shapes: static shapes in plot
         :param radar_end_pos: array(n_data, n_rays, 3) for all radar end pos
         :param title: title for subplot
-        :param t_per_step: time between each frame
         :return: None
         """
 
@@ -70,7 +70,7 @@ class EpisodeVisualization:
             epi_anim.init_radar_animation(n_rays=radar_end_pos.shape[1])
             kwargs["end_pos"] = radar_end_pos
 
-        epi_anim.save_animation(save_path=save_path, fps=20, frames=kwargs["positions"].shape[0], **kwargs)
+        epi_anim.save_animation(save_path=save_path, fps=fps, frames=kwargs["positions"].shape[0], **kwargs)
 
     @staticmethod
     def plot_episode_animation(states: np.ndarray, episode: int = None, shapes: List[Shape] = None,
@@ -214,12 +214,13 @@ class EpisodeVisualization:
         for subplot_count, meta_data_list in enumerate(meta_data_obs):
             ax_tmp = fig.add_subplot(no_subplots, 1, subplot_count+1)
             for p in meta_data_list:
-                ax_tmp.plot(time_arr, observation[:, p_count], label=p, linewidth=0.5)
+                ax_tmp.plot(time_arr, observation[:, p_count], label=p, linewidth=1.1)
                 p_count += 1
             ax_tmp.legend()
-            #ax_tmp.set_ylabel(r"o [ - ]")
+            # ax_tmp.set_ylabel(r"o [ - ]")
             ax_tmp.set_ylim([-1.1, 1.1])
-            ax_tmp.set_yticks([-1.0, 0.0, 1.0])
+            ax_tmp.set_yticks([-1.0, -0.5, 0.0, 0.5, 1.0])
+            ax_tmp.grid()
 
         ax_tmp.set_xlabel("t [s]")
 
@@ -409,7 +410,7 @@ class EpisodeAnimation:
         # Static shapes (assumed for now, drawing these dynamically could slow down the system significantly):
         for shape in shapes:
             for plot_var in shape.get_plot_variables():
-                ax.plot_surface(*plot_var, color=color, alpha=1.00)
+                ax.plot_surface(*plot_var, color=color, alpha=0.5)
 
     def update_radar_animation(self, pos: np.ndarray, end_pos: np.ndarray) -> None:
         """
