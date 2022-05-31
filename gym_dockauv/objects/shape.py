@@ -39,20 +39,20 @@ class Sphere(Shape):
                  self.position[2] + z_c]]
 
     @staticmethod
-    def get_plot_shape(radius: float, scale: int = 1, sweep1: int = 20, sweep2: int = 20):
+    def get_plot_shape(radius: float, scale: float = 1, sweep1: int = 20, sweep2: int = 20):
         """
         Also used by capsule to create half spheres, therefor static method
 
         :param radius: radius of sphere
-        :param scale: [0, 2] range for circle
+        :param scale: [0, 1] range for circle
         :param sweep1: first sweep of mesh
         :param sweep2: second sweep of mesh
         :return: x, y, z coordinates for plotting function
         """
         u, v = np.mgrid[0:scale * np.pi:sweep1 * 1j, 0:2 * np.pi:sweep2 * 1j]
-        x_c = radius * np.cos(u) * np.sin(v)
+        x_c = radius * np.sin(u) * np.cos(v)
         y_c = radius * np.sin(u) * np.sin(v)
-        z_c = radius * np.cos(v)
+        z_c = radius * np.cos(u)
         return x_c, y_c, z_c
 
 
@@ -113,8 +113,9 @@ class Capsule(Shape):
 
     @cached_property
     def get_plot_shape_sph(self):
-        x_c1, y_c1, z_c1 = Sphere.get_plot_shape(self.radius)
-        x_c2, y_c2, z_c2 = [x_c1 + self.vec_top[0], y_c1 + self.vec_top[1], z_c1 + self.vec_top[2]]
+        # NOTE: This only works when capsule is aligned with z axis
+        x_c1, y_c1, z_c1 = Sphere.get_plot_shape(self.radius, scale=0.5)
+        x_c2, y_c2, z_c2 = [x_c1 + self.vec_top[0], y_c1 + self.vec_top[1], -z_c1 + self.vec_top[2]]
         x_c1, y_c1, z_c1 = [x_c1 + self.vec_bot[0], y_c1 + self.vec_bot[1], z_c1 + self.vec_bot[2]]
         return [[x_c1, y_c1, z_c1], [x_c2, y_c2, z_c2]]
 
