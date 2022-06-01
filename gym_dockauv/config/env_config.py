@@ -49,10 +49,10 @@ BASE_CONFIG = {
     # --------- RADAR -----------  Will be dynamically loaded via **kwargs
     "radar": {
         "freq": 1,                         # Frequency of updates of radars TODO: Not yet implemented
-        "alpha": 20 * np.pi / 180,          # Range of vertical angle wideness
-        "beta": 20 * np.pi / 180,           # Range of horizontal angle wideness
-        "ray_per_deg": 5 * np.pi / 180,     # rad inbetween each ray, must leave zero remainder with alpha and beta
-        "max_dist": 2                       # Maximum distance the radar can look ahead
+        "alpha": 70 * np.pi / 180,          # Range of vertical angle wideness
+        "beta": 70 * np.pi / 180,           # Range of horizontal angle wideness
+        "ray_per_deg": 10 * np.pi / 180,     # rad inbetween each ray, must leave zero remainder with alpha and beta
+        "max_dist": 5                       # Maximum distance the radar can look ahead
     }
 }
 

@@ -44,6 +44,10 @@ class BaseDocking3d(gym.Env):
         - Update the list self.meta_data_reward in __init__()
         - Update the index of self.meta_data_done in __init__() if necessary
         - Update the doc for the reward_step() function (and of done())
+
+    .. note:: Adding observations:
+        - Add plus one to self.n_observation in __init__, update meta data here too
+        - Add observation in observe() function, clip it accordingly, maybe update self.observation_space
     """
 
     def __init__(self, env_config: dict = BASE_CONFIG):
@@ -103,11 +107,16 @@ class BaseDocking3d(gym.Env):
         self.obstacles = [*self.capsules, *self.spheres()]  # type: list[shape.Shape]
 
         # Set the action and observation space
-        self.n_observations = 16
+        self.n_obs_without_radar = 16
+        self.n_observations = self.n_obs_without_radar + self.radar.n_rays
         self.action_space = gym.spaces.Box(low=self.auv.u_bound[:, 0],
                                            high=self.auv.u_bound[:, 1],
                                            dtype=np.float32)
-        self.observation_space = gym.spaces.Box(low=-np.ones(self.n_observations),
+        # Except for delta distance and rays, observation is between -1 and 1
+        obs_low = -np.ones(self.n_observations)
+        obs_low[0] = 0
+        obs_low[self.n_obs_without_radar:] = 0
+        self.observation_space = gym.spaces.Box(low=obs_low,
                                                 high=np.ones(self.n_observations),
                                                 dtype=np.float32)
         self.observation = np.zeros(self.n_observations)
@@ -117,7 +126,8 @@ class BaseDocking3d(gym.Env):
             ["u", "v", "w"],
             ["phi", "theta", "psi_sin", "psi_cos"],
             ["p", "q", "r"],
-            ["u_c",  "v_c", "w_c"]
+            ["u_c",  "v_c", "w_c"],
+            [f"ray_{i}" for i in range(self.radar.n_rays)]
         ]
 
         # General simulation variables:
@@ -418,15 +428,15 @@ class BaseDocking3d(gym.Env):
     def observe(self) -> np.ndarray:
         obs = np.zeros(self.n_observations, dtype=np.float32)
         # Distance from goal, contained within max_dist_from_goal
-        obs[0] = np.clip(self.delta_d / self.max_dist_from_goal, -1, 1)
+        obs[0] = np.clip(self.delta_d / self.max_dist_from_goal, 0, 1)
         # Pitch error chi, will be between +90° and -90°
         obs[1] = np.clip(self.chi / (np.pi / 2), -1, 1)
         # Heading error upsilon, will be between -180 and +180 degree, observation jump is not fixed here,
         # since it might be good to directly indicate which way to turn is faster to adjust heading
         obs[2] = np.clip(self.upsilon / np.pi, -1, 1)
         obs[3] = np.clip(self.auv.relative_velocity[0] / 5, -1, 1)  # Forward speed, assuming 5m/s max
-        obs[4] = np.clip(self.auv.relative_velocity[1] / 2, -1, 1)  # Side speed, assuming 5m/s max
-        obs[5] = np.clip(self.auv.relative_velocity[2] / 2, -1, 1)  # Vertical speed, assuming 5m/s max
+        obs[4] = np.clip(self.auv.relative_velocity[1] / 2, -1, 1)  # Side speed, assuming 2m/s max
+        obs[5] = np.clip(self.auv.relative_velocity[2] / 2, -1, 1)  # Vertical speed, assuming 2m/s max
         obs[6] = np.clip(self.auv.attitude[0] / self.max_attitude, -1, 1)  # Roll, assuming +-90deg max
         obs[7] = np.clip(self.auv.attitude[1] / self.max_attitude, -1, 1)  # Pitch, assuming +-90deg max
         obs[8] = np.clip(np.sin(self.auv.attitude[2]), -1, 1)  # Yaw, expressed in two polar values to make
@@ -437,6 +447,7 @@ class BaseDocking3d(gym.Env):
         obs[13] = np.clip(self.nu_c[0] / 1, -1, 1)  # TODO: Add current max speed here instead of dividing by 1
         obs[14] = np.clip(self.nu_c[1] / 1, -1, 1)
         obs[15] = np.clip(self.nu_c[2] / 1, -1, 1)
+        obs[self.n_obs_without_radar:] = np.clip(self.radar.intersec_dist / self.radar.max_dist, 0, 1)
 
         return obs
 
@@ -610,7 +621,7 @@ class SimpleDocking3d(BaseDocking3d):
 
         """
         # Goal location:
-        self.goal_location = np.array(0.0, 0.0, 0.0)
+        self.goal_location = np.array([0.0, 0.0, 0.0])
         # Position
         self.auv.position = self.generate_random_pos(d=6)
         # Attitude
@@ -639,7 +650,7 @@ class SimpleCurrentDocking3d(BaseDocking3d):
         Set up an environment after each reset call, can be used to in multiple environments to make multiple scenarios
         """
         # Goal location:
-        self.goal_location = np.array(0.0, 0.0, 0.0)
+        self.goal_location = np.array([0.0, 0.0, 0.0])
         # Position
         self.auv.position = self.generate_random_pos(d=6)
         # Attitude
@@ -706,7 +717,7 @@ class ObstaclesDocking3d(BaseDocking3d):
         Set up an environment after each reset call, can be used to in multiple environments to make multiple scenarios
         """
         # Goal location:
-        self.goal_location = np.array(0.0, 0.0, 0.0)
+        self.goal_location = np.array([0.0, 0.0, 0.0])
         # Position
         self.auv.position = self.generate_random_pos(d=6)
         # Attitude
