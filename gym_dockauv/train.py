@@ -96,7 +96,7 @@ def predict(gym_env: str, model_path: str, n_episodes: int = 5):
         while not done:
             action, _states = model.predict(obs, deterministic=True)
             obs, rewards, done, info = env.step(action)
-            env.render()
+            env.render(rotate_cam=True)
             if done:
                 break
         env.reset()

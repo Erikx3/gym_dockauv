@@ -586,7 +586,8 @@ class BaseDocking3d(gym.Env):
         self.episode_data_storage = EpisodeDataStorage()
         self.episode_data_storage.set_up_episode_storage(path_folder=self.save_path_folder, vehicle=self.auv,
                                                          step_size=self.t_step_size, nu_c_init=self.nu_c,
-                                                         shapes=self.obstacles, radar=self.radar, title=self.title,
+                                                         shapes=[*self.obstacles, shape.Sphere(self.goal_location, 0.15)],
+                                                         radar=self.radar, title=self.title,
                                                          episode=self.episode, env=self)
 
     def generate_random_pos(self, d: float):

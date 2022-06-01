@@ -138,15 +138,15 @@ class EpisodeVisualization:
         ax_posxy.invert_xaxis()
         ax_posxy.invert_yaxis()
         ax_posxy.set_title("Position $x$ and $y$")
-        ax_posxy.set_xlabel("x [m]")
-        ax_posxy.set_ylabel("y [m]")
+        ax_posxy.set_xlabel("North [m]")
+        ax_posxy.set_ylabel("East [m]")
 
         # Height plot
         ax_posz.plot(time_arr, states[:, 2], 'g-')
         ax_posz.invert_yaxis()  # Is here the z axis that we invert
         ax_posz.set_title("Position $z$ in NED")
         ax_posz.set_xlabel("t [s]")
-        ax_posz.set_ylabel("z [m]")
+        ax_posz.set_ylabel("Down [m]")
 
         # Euler
         ax_euler.plot(time_arr, np.rad2deg(states[:, 3]), 'y-', label=r"Roll $\phi$")
@@ -351,6 +351,11 @@ class EpisodeAnimation:
         self.ax_path.attitude_art = self.ax_path.quiver([], [], [], [], [], [], length=0.1, normalize=True)
 
         self.bm.add_artists([self.ax_path.path_art, self.ax_path.head_art])
+
+        # Add labels
+        self.ax_path.set_xlabel("North [m]")
+        self.ax_path.set_ylabel("East [m]")
+        self.ax_path.set_zlabel("Down [m]")
 
         # Try to fix deep camera angle issues
         self.ax_path.set_proj_type('ortho')
