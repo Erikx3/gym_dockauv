@@ -10,7 +10,9 @@ REGISTRATION_DICT = {
     "SimpleDocking3d-v0": "gym_dockauv.envs:SimpleDocking3d",
     "SimpleCurrentDocking3d-v0": "gym_dockauv.envs:SimpleCurrentDocking3d",
     "CapsuleDocking3d-v0": "gym_dockauv.envs:CapsuleDocking3d",
-    "ObstaclesDocking3d-v0": "gym_dockauv.envs:ObstaclesDocking3d"
+    "CapsuleCurrentDocking3d-v0": "gym_dockauv.envs:CapsuleCurrentDocking3d",
+    "ObstaclesDocking3d-v0": "gym_dockauv.envs:ObstaclesDocking3d",
+    "ObstaclesCurrentDocking3d-v0": "gym_dockauv.envs:ObstaclesCurrentDocking3d"
 }
 
 # ---------- Base Config for all other possible configs ----------
@@ -32,8 +34,9 @@ BASE_CONFIG = {
     "save_path_folder": os.path.join(os.getcwd(), "logs"),  # Folder name where all result files will be stored
 
     # ---------- GOAL AND DONE----------
-    "max_dist_from_goal": 10,               # Maximum distance away from goal before simulation end
+    "max_dist_from_goal": 20,               # Maximum distance away from goal before simulation end
     "max_attitude": 60/180*np.pi,           # Maximum attitude allowed for vehicle
+    "dist_goal_reached": 0.1,               # Distance within it counts as goal successfully reached
 
     # ---------- AUV & REWARDS ----------
     "vehicle": "BlueROV2",                  # Name of the vehicle, look for available vehicles in

@@ -132,7 +132,7 @@ class BaseDocking3d(gym.Env):
             ["u", "v", "w"],
             ["phi", "theta", "psi_sin", "psi_cos"],
             ["p", "q", "r"],
-            ["u_c",  "v_c", "w_c"],
+            ["u_c", "v_c", "w_c"],
             [f"ray_{i}" for i in range(self.radar.n_rays)]
         ]
 
@@ -174,7 +174,8 @@ class BaseDocking3d(gym.Env):
         # Initialize Done condition and related stuff for the done condition
         self.done = False
         self.meta_data_done = self.meta_data_reward[4:]
-        self.goal_location = None  # Tis needs to be defined in self.generate_environment
+        self.goal_location = None  # This needs to be defined in self.generate_environment
+        self.dist_goal_reached = self.config["dist_goal_reached"]  # Distance within for successfully reached goal
         self.max_dist_from_goal = self.config["max_dist_from_goal"]
         self.max_attitude = self.config["max_attitude"]
 
@@ -521,7 +522,7 @@ class BaseDocking3d(gym.Env):
         # All conditions in a list
         self.conditions = [
             # Condition 0: Check if close to the goal
-            self.delta_d < 1.0,
+            self.delta_d < self.dist_goal_reached,
             # Condition 1: Check if out of bounds for position
             self.delta_d > self.max_dist_from_goal,
             # Condition 2: Check if attitude (pitch, roll) too high
@@ -592,7 +593,8 @@ class BaseDocking3d(gym.Env):
         self.episode_data_storage = EpisodeDataStorage()
         self.episode_data_storage.set_up_episode_storage(path_folder=self.save_path_folder, vehicle=self.auv,
                                                          step_size=self.t_step_size, nu_c_init=self.nu_c,
-                                                         shapes=[*self.obstacles, shape.Sphere(self.goal_location, 0.15)],
+                                                         shapes=[*self.obstacles,
+                                                                 shape.Sphere(self.goal_location, 0.15)],
                                                          radar=self.radar, title=self.title,
                                                          episode=self.episode, env=self)
 
@@ -627,23 +629,24 @@ class SimpleDocking3d(BaseDocking3d):
         Set up an environment after each reset call, can be used to in multiple environments to make multiple scenarios
 
         """
+        DISTANCE_FROM_GOAL = 15
+
         # Goal location:
         self.goal_location = np.array([0.0, 0.0, 0.0])
-        # Position
-        self.auv.position = self.generate_random_pos(d=6)
+        # Position  # TODO: ADD MAXIMUM z value to spawn location
+        self.auv.position = self.generate_random_pos(d=DISTANCE_FROM_GOAL)
         # Attitude
         self.auv.attitude = self.generate_random_att(max_att_factor=0.7)
         # Water current
-        curr_angle = (np.random.random(2) - 0.5) * 2 * np.array([np.pi / 2, np.pi])  # Water current direction
         self.current = Current(mu=0.005, V_min=0.0, V_max=0.0, Vc_init=0.0,
-                               alpha_init=curr_angle[0], beta_init=curr_angle[1], white_noise_std=0.0,
+                               alpha_init=0.0, beta_init=0.0, white_noise_std=0.0,
                                step_size=self.auv.step_size)
         self.nu_c = self.current(self.auv.attitude)
         # Obstacles:
         self.obstacles = []
 
 
-class SimpleCurrentDocking3d(BaseDocking3d):
+class SimpleCurrentDocking3d(SimpleDocking3d):
     """
     This class generates a simple environment to drive in one point in space without obstacles but with custom
     defined current
@@ -656,23 +659,17 @@ class SimpleCurrentDocking3d(BaseDocking3d):
         """
         Set up an environment after each reset call, can be used to in multiple environments to make multiple scenarios
         """
-        # Goal location:
-        self.goal_location = np.array([0.0, 0.0, 0.0])
-        # Position
-        self.auv.position = self.generate_random_pos(d=6)
-        # Attitude
-        self.auv.attitude = self.generate_random_att(max_att_factor=0.7)
+        # Same setup as before:
+        super().generate_environment()
         # Water current
         curr_angle = (np.random.random(2) - 0.5) * 2 * np.array([np.pi / 2, np.pi])  # Water current direction
         self.current = Current(mu=0.005, V_min=0.5, V_max=0.5, Vc_init=0.5,
                                alpha_init=curr_angle[0], beta_init=curr_angle[1], white_noise_std=0.0,
                                step_size=self.auv.step_size)
         self.nu_c = self.current(self.auv.attitude)
-        # Obstacles:
-        self.obstacles = []
 
 
-class CapsuleDocking3d(BaseDocking3d):
+class CapsuleDocking3d(SimpleDocking3d):
     """
     This class generates an environment only with the capsule to dock at
     """
@@ -684,36 +681,31 @@ class CapsuleDocking3d(BaseDocking3d):
         """
         Set up an environment after each reset call, can be used to in multiple environments to make multiple scenarios
         """
-        # Goal location: Random around the shaft of the capsule
-        capsule_radius = 0.5
-        capsule_height = 3.0
+        CAPSULE_RADIUS = 1.0
+        CAPSULE_HEIGHT = 4.0
+
+        # Same setup as before:
+        super().generate_environment()
+        # Goal location: Random around the shaft of the capsule + auv radius + margin to make it even possible to
+        # reach the goal before colliding with the capsule
         theta = np.random.rand() * 2 * np.pi
-        x, y = np.cos(theta) * capsule_radius, np.sin(theta) * capsule_radius
+        radius = CAPSULE_RADIUS + self.auv.safety_radius
+        x, y = np.cos(theta) * CAPSULE_RADIUS, np.sin(theta) * CAPSULE_RADIUS
         self.goal_location = np.array([x,
                                        y,
-                                       (np.random.rand()-0.5)*capsule_height])
-        # Position
-        self.auv.position = self.generate_random_pos(d=6)
-        # Attitude
-        self.auv.attitude = self.generate_random_att(max_att_factor=0.7)
-        # Water current
-        curr_angle = (np.random.random(2) - 0.5) * 2 * np.array([np.pi / 2, np.pi])  # Water current direction
-        self.current = Current(mu=0.005, V_min=0.0, V_max=0.0, Vc_init=0.0,
-                               alpha_init=curr_angle[0], beta_init=curr_angle[1], white_noise_std=0.0,
-                               step_size=self.auv.step_size)
-        self.nu_c = self.current(self.auv.attitude)
-        # Obstacles:
+                                       (np.random.rand() - 0.5) * CAPSULE_HEIGHT])
+        # Obstacles (only the capsule at goal location):
         self.capsules = [
             Capsule(position=np.array([0.0, 0.0, 0.0]),
-                    radius=capsule_radius,
-                    vec_top=np.array([0.0, 0.0, -capsule_height/2.0]))
+                    radius=CAPSULE_RADIUS,
+                    vec_top=np.array([0.0, 0.0, -CAPSULE_HEIGHT / 2.0]))
         ]
         self.obstacles = [*self.capsules]
 
 
-class ObstaclesDocking3d(BaseDocking3d):
+class CapsuleCurrentDocking3d(CapsuleDocking3d):
     """
-    This class generates an environment already with multiple obstacles
+    This class generates an environment only with the capsule to dock at and with current
     """
 
     def __init__(self, env_config: dict = BASE_CONFIG):
@@ -723,24 +715,72 @@ class ObstaclesDocking3d(BaseDocking3d):
         """
         Set up an environment after each reset call, can be used to in multiple environments to make multiple scenarios
         """
-        # Goal location:
-        self.goal_location = np.array([0.0, 0.0, 0.0])
-        # Position
-        self.auv.position = self.generate_random_pos(d=6)
-        # Attitude
-        self.auv.attitude = self.generate_random_att(max_att_factor=0.7)
+        # Same setup as before:
+        super().generate_environment()
         # Water current
         curr_angle = (np.random.random(2) - 0.5) * 2 * np.array([np.pi / 2, np.pi])  # Water current direction
-        self.current = Current(mu=0.005, V_min=0.0, V_max=0.0, Vc_init=0.0,
+        self.current = Current(mu=0.005, V_min=0.5, V_max=0.5, Vc_init=0.5,
                                alpha_init=curr_angle[0], beta_init=curr_angle[1], white_noise_std=0.0,
                                step_size=self.auv.step_size)
         self.nu_c = self.current(self.auv.attitude)
-        # Obstacles: TODO: Make random spawning, also from capsule!
-        self.capsules = [
-            Capsule(position=np.array([1.5, 0.0, -0.0]), radius=0.25, vec_top=np.array([1.5, 0.0, -0.8]))
-        ]
-        self.spheres = Spheres([
-            Sphere(position=np.array([1.8, 0.0, -1.2]), radius=0.3),
-            Sphere(position=np.array([2.3, 0.0, -1.5]), radius=0.3)
-        ])
-        self.obstacles = [*self.capsules, *self.spheres()]
+
+
+class ObstaclesDocking3d(CapsuleDocking3d):
+    """
+    This class generates an environment already with multiple obstacles
+    """
+
+    def __init__(self, env_config: dict = BASE_CONFIG):
+        super().__init__(env_config)
+
+    def generate_environment(self):
+        """
+        Set up and environment with multiple capsules as obstacles around the goal location (e.g. a pear or oil rig)
+        """
+        CAPSULE_OBSTACLES_RADIUS = 1.0
+        CAPSULE_OBSTACLES_HEIGHT = 20.0
+        CAPSULE_DISTANCE_FROM_CENTER = 6
+        NUMBER_OF_CAPSULES = 4
+
+        # Same setup as before:
+        super().generate_environment()
+
+        # Generate new capsules
+        new_capsules = []
+        theta = np.random.rand() * 2 * np.pi
+        for i in range(NUMBER_OF_CAPSULES):
+            x = np.cos(theta) * CAPSULE_DISTANCE_FROM_CENTER
+            y = np.sin(theta) * CAPSULE_DISTANCE_FROM_CENTER
+            theta += 2 * np.pi / NUMBER_OF_CAPSULES
+            # Create new capsule and append to list
+            new_capsules.append(
+                Capsule(position=np.array([x, y, 0.0]),
+                        radius=CAPSULE_OBSTACLES_RADIUS,
+                        vec_top=np.array([x, y, -CAPSULE_OBSTACLES_HEIGHT / 2.0]))
+            )
+        # Add Obstacles:
+        self.capsules.extend(new_capsules)
+        self.obstacles.extend(new_capsules)
+
+
+class ObstaclesCurrentDocking3d(ObstaclesDocking3d):
+    """
+    Set up and environment with multiple capsules as obstacles around the goal location (e.g. a pear or oil rig)
+    Add water current to it
+    """
+
+    def __init__(self, env_config: dict = BASE_CONFIG):
+        super().__init__(env_config)
+
+    def generate_environment(self):
+        """
+        Set up an environment after each reset call, can be used to in multiple environments to make multiple scenarios
+        """
+        # Same setup as before:
+        super().generate_environment()
+        # Water current
+        curr_angle = (np.random.random(2) - 0.5) * 2 * np.array([np.pi / 2, np.pi])  # Water current direction
+        self.current = Current(mu=0.005, V_min=0.5, V_max=0.5, Vc_init=0.5,
+                               alpha_init=curr_angle[0], beta_init=curr_angle[1], white_noise_std=0.0,
+                               step_size=self.auv.step_size)
+        self.nu_c = self.current(self.auv.attitude)
