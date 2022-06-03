@@ -176,6 +176,8 @@ class BaseDocking3d(gym.Env):
         self.meta_data_done = self.meta_data_reward[4:]
         self.goal_location = None  # This needs to be defined in self.generate_environment
         self.dist_goal_reached = self.config["dist_goal_reached"]  # Distance within for successfully reached goal
+        self.velocity_goal_reached = self.config["velocity_goal_reached"]  # Velocity limit at goal
+        self.ang_rate_goal_reached = self.config["ang_rate_goal_reached"]  # Angular rate limit at goal
         self.max_dist_from_goal = self.config["max_dist_from_goal"]
         self.max_attitude = self.config["max_attitude"]
 
@@ -478,8 +480,9 @@ class BaseDocking3d(gym.Env):
         :param action: array with actions between -1 and 1
         :return: The single reward at this step
         """
+        # TODO: Add reward for the collision detection and obstacle closeness
+        #  (maybe need complex function that takes the distance to goal into account)
         # Reward for being closer to the goal location (with old observations):
-        # self.last_reward_arr[0] = ((np.linalg.norm(self.auv.position - self.goal_location)) / self.max_dist_from_goal)**2
         self.last_reward_arr[0] = (
                                           (
                                                   self.delta_d / self.max_dist_from_goal
@@ -489,11 +492,11 @@ class BaseDocking3d(gym.Env):
                                           / 3
                                   ) ** 2
         # Reward for stable attitude
-        self.last_reward_arr[1] = (np.sum(np.abs(self.auv.attitude[:2]))) / np.pi
+        self.last_reward_arr[1] = ((np.sum(np.abs(self.auv.attitude[:2]))) / np.pi) ** 2
         # Negative cum_reward per time step
         self.last_reward_arr[2] = 1
         # Reward for action used (e.g. want to minimize action power usage), factors can be scalar or matching array
-        self.last_reward_arr[3] = np.sum(np.abs(action) / self.auv.u_bound.shape[0] * self.action_reward_factors)
+        self.last_reward_arr[3] = (np.sum(np.abs(action) / self.auv.u_bound.shape[0] * self.action_reward_factors)) ** 2
 
         # Add extra reward on checking which condition caused the episode to be done
         self.last_reward_arr[4:] = np.array(self.conditions) * 1
@@ -501,6 +504,14 @@ class BaseDocking3d(gym.Env):
         # Multiply factors defined in config
         self.last_reward_arr = self.last_reward_arr * self.reward_factors
 
+        # Extra reward based on how the goal has been reached! # TODO: Give these factors a name and add attitude
+        if self.conditions[0]:
+            self.last_reward_arr[4] += (
+                    + 20 * (self.velocity_goal_reached / max(self.velocity_goal_reached,
+                                                             np.linalg.norm(self.auv.position_dot)) ** 2)
+                    + 20 * (self.ang_rate_goal_reached / max(self.ang_rate_goal_reached,
+                                                             np.linalg.norm(self.auv.euler_dot)) ** 2)
+            )
         # Just for analyzing purpose:
         self.cum_reward_arr = self.cum_reward_arr + self.last_reward_arr
 
@@ -518,7 +529,6 @@ class BaseDocking3d(gym.Env):
 
         :return: [if simulation is done, indexes of conditions that are true]
         """
-        # TODO: Collision
         # All conditions in a list
         self.conditions = [
             # Condition 0: Check if close to the goal
@@ -533,8 +543,12 @@ class BaseDocking3d(gym.Env):
             self.collision
         ]
 
-        # If goal reached
-        if self.conditions[0]:
+        # If goal reached  TODO: Attitude constraint?
+        if (
+                self.conditions[0]
+                and np.linalg.norm(self.auv.position_dot) < self.velocity_goal_reached
+                and np.linalg.norm(self.auv.euler_dot) < self.ang_rate_goal_reached
+        ):
             self.goal_reached = True
 
         # Return also the indexes of which cond is activated

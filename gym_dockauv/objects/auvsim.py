@@ -250,6 +250,13 @@ class AUVSim(StateSpace, ABC):
         return self._state_dot[0:3]
 
     @property
+    def euler_dot(self):
+        r"""
+        Returns :math:`\boldsymbol{\dot{Theta}}`
+        """
+        return self._state_dot[3:6]
+
+    @property
     def chi(self):
         r"""
         Returns the azimuth angle :math:`\chi` .

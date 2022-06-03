@@ -25,7 +25,7 @@ BASE_CONFIG = {
     "verbose": 1,                           # If logs should also appear in output console, either 0 or 1
 
     # ---------- EPISODE ----------
-    "max_timesteps": 500,                   # Maximum amount of timesteps before episode ends
+    "max_timesteps": 600,                   # Maximum amount of timesteps before episode ends
 
     # ---------- SIMULATION --------------
     "t_step_size": 0.10,                    # Length of each simulation timestep [s]
@@ -36,7 +36,9 @@ BASE_CONFIG = {
     # ---------- GOAL AND DONE----------
     "max_dist_from_goal": 20,               # Maximum distance away from goal before simulation end
     "max_attitude": 60/180*np.pi,           # Maximum attitude allowed for vehicle
-    "dist_goal_reached": 0.1,               # Distance within it counts as goal successfully reached
+    "dist_goal_reached": 0.1,               # Distance [m] within it counts as goal successfully reached
+    "velocity_goal_reached": 0.1,           # Total speed (norm(u,v,w)) for when goal reached for success
+    "ang_rate_goal_reached": 5 * np.pi/180,  # Total angular rate (norm(p,q,r)) for when goal reached for success
 
     # ---------- AUV & REWARDS ----------
     "vehicle": "BlueROV2",                  # Name of the vehicle, look for available vehicles in
