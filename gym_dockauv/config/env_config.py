@@ -38,6 +38,13 @@ BASE_CONFIG = {
     # ---------- AUV & REWARDS ----------
     "vehicle": "BlueROV2",                  # Name of the vehicle, look for available vehicles in
                                             # gym_dockauv/objects/vehicles
+                                            # Observation normalization parameters
+    "u_max": 2.0,                           # Surge max
+    "v_max": 1.5,                           # Sway max
+    "w_max": 1.5,                           # Heave max
+    "p_max": 90 * np.pi/180,                # Roll rate max
+    "q_max": 90 * np.pi/180,                # Pitch rate max
+    "r_max": 120 * np.pi/180,               # Yaw rate max
     "radius": 0.5,                          # Radius size of vehicle for collision detection
     "reward_factors":
         np.array(

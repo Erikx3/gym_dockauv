@@ -25,8 +25,6 @@ import gym_dockauv.objects.shape as shape
 import gym_dockauv.utils.geomutils as geom
 
 # TODO: Add logging, which subclass has been called
-# TODO: Save animation option
-# TODO: radar sensors (+ freq of updates?), obstacles (so far only capsules are supported)
 
 # Set logger
 logger = logging.getLogger(__name__)
@@ -84,6 +82,14 @@ class BaseDocking3d(gym.Env):
 
         # Set step size for vehicle
         self.auv.step_size = self.config["t_step_size"]
+
+        # Set assumption values for vehicle max velocities from config
+        self.u_max = self.config["u_max"]
+        self.v_max = self.config["v_max"]
+        self.w_max = self.config["w_max"]
+        self.p_max = self.config["p_max"]
+        self.q_max = self.config["q_max"]
+        self.r_max = self.config["r_max"]
 
         # Navigation errors
         self.delta_d = 0
@@ -427,26 +433,26 @@ class BaseDocking3d(gym.Env):
 
     def observe(self) -> np.ndarray:
         obs = np.zeros(self.n_observations, dtype=np.float32)
-        # Distance from goal, contained within max_dist_from_goal
+        # Distance from goal, contained within max_dist_from_goal before done
         obs[0] = np.clip(self.delta_d / self.max_dist_from_goal, 0, 1)
         # Pitch error chi, will be between +90° and -90°
         obs[1] = np.clip(self.chi / (np.pi / 2), -1, 1)
         # Heading error upsilon, will be between -180 and +180 degree, observation jump is not fixed here,
         # since it might be good to directly indicate which way to turn is faster to adjust heading
         obs[2] = np.clip(self.upsilon / np.pi, -1, 1)
-        obs[3] = np.clip(self.auv.relative_velocity[0] / 5, -1, 1)  # Forward speed, assuming 5m/s max
-        obs[4] = np.clip(self.auv.relative_velocity[1] / 2, -1, 1)  # Side speed, assuming 2m/s max
-        obs[5] = np.clip(self.auv.relative_velocity[2] / 2, -1, 1)  # Vertical speed, assuming 2m/s max
-        obs[6] = np.clip(self.auv.attitude[0] / self.max_attitude, -1, 1)  # Roll, assuming +-90deg max
-        obs[7] = np.clip(self.auv.attitude[1] / self.max_attitude, -1, 1)  # Pitch, assuming +-90deg max
+        obs[3] = np.clip(self.auv.relative_velocity[0] / self.u_max, -1, 1)  # Surge Forward speed
+        obs[4] = np.clip(self.auv.relative_velocity[1] / self.v_max, -1, 1)  # Sway Side speed
+        obs[5] = np.clip(self.auv.relative_velocity[2] / self.w_max, -1, 1)  # Heave Vertical speed
+        obs[6] = np.clip(self.auv.attitude[0] / self.max_attitude, -1, 1)  # Roll
+        obs[7] = np.clip(self.auv.attitude[1] / self.max_attitude, -1, 1)  # Pitch
         obs[8] = np.clip(np.sin(self.auv.attitude[2]), -1, 1)  # Yaw, expressed in two polar values to make
         obs[9] = np.clip(np.cos(self.auv.attitude[2]), -1, 1)  # sure observation does not jump between -1 and 1
-        obs[10] = np.clip(self.auv.angular_velocity[0] / 1.0, -1, 1)  # Angular Velocities, assuming 1 rad/s
-        obs[11] = np.clip(self.auv.angular_velocity[1] / 1.0, -1, 1)
-        obs[12] = np.clip(self.auv.angular_velocity[2] / 1.0, -1, 1)
-        obs[13] = np.clip(self.nu_c[0] / 1, -1, 1)  # TODO: Add current max speed here instead of dividing by 1
-        obs[14] = np.clip(self.nu_c[1] / 1, -1, 1)
-        obs[15] = np.clip(self.nu_c[2] / 1, -1, 1)
+        obs[10] = np.clip(self.auv.angular_velocity[0] / self.p_max, -1, 1)  # Angular Velocities, roll rate
+        obs[11] = np.clip(self.auv.angular_velocity[1] / self.q_max, -1, 1)  # pitch rate
+        obs[12] = np.clip(self.auv.angular_velocity[2] / self.r_max, -1, 1)  # Yaw rate
+        obs[13] = np.clip(self.nu_c[0] / 2, -1, 1)  # Assuming in general current max. speed of 2m/s
+        obs[14] = np.clip(self.nu_c[1] / 2, -1, 1)
+        obs[15] = np.clip(self.nu_c[2] / 2, -1, 1)
         obs[self.n_obs_without_radar:] = np.clip(self.radar.intersec_dist / self.radar.max_dist, 0, 1)
 
         return obs

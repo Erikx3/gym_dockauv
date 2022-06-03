@@ -32,7 +32,7 @@ class BlueROV2(AUVSim):
         # These are the values for controlling the BlueROV2 in a simplified way via the joystick, assuming we have a
         # mapping from the six controls to 6dof movement
         if control_mode == 'joystick':
-            self.K_thrust = 5  # Reduced maximum thrust here as from [2] for restricting too fast movement
+            self.K_thrust = 20  # Reduced maximum thrust here as from [2] for restricting too fast movement
             # B Matrix calculated from assumption in direct control mode with low level control
             self._B = np.array([
                 [2.83, 0.0, 0.0, 0.0, 0.0, 0.0],
