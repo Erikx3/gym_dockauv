@@ -212,7 +212,7 @@ class EpisodeVisualization:
         p_count = 0
         # Observations
         for subplot_count, meta_data_list in enumerate(meta_data_obs):
-            ax_tmp = fig.add_subplot(no_subplots, 1, subplot_count+1)
+            ax_tmp = fig.add_subplot(no_subplots, 1, subplot_count + 1)
             for p in meta_data_list:
                 ax_tmp.plot(time_arr, observation[:, p_count], label=p, linewidth=1.1)
                 p_count += 1
@@ -227,12 +227,10 @@ class EpisodeVisualization:
         fig.tight_layout()
 
     @staticmethod
-    def plot_observation_and_u(observation: np.ndarray, u: np.ndarray, step_size: float, episode: int = None,
-                               title: str = None):
+    def plot_u(u: np.ndarray, step_size: float, episode: int = None, title: str = None):
         """
-        Plot the observation and the resulting input into the vehicle (which might be low pass filtered)
+        Plot the resulting input into the vehicle (which might be low pass filtered)
 
-        :param observation: array(n, o) with n data points and o observations
         :param u: array(n, u) with n data points and u input
         :param step_size: fixed step size
         :param episode: optional episode number
@@ -240,23 +238,14 @@ class EpisodeVisualization:
         :return:
         """
         # Get time array
-        time_arr = np.arange(len(observation[:, 0])) * step_size
+        time_arr = np.arange(len(u[:, 0])) * step_size
 
         # Init figure
         fig = plt.figure(figsize=(12, 8))
-        ax_obs = fig.add_subplot(2, 1, 1)
-        ax_u = fig.add_subplot(2, 1, 2)
+        ax_u = fig.add_subplot(1, 1, 1)
 
         if episode or title:
-            fig.suptitle(f'{title} - Episode {episode}')
-
-        # Observations
-        for i in range(observation.shape[1]):
-            ax_obs.plot(time_arr, observation[:, i], label=f"Obs. {i}", linewidth=0.5)
-        ax_obs.set_title(r"Observation $o$")
-        ax_obs.set_xlabel("t [s]")
-        ax_obs.set_ylabel(r"o [ - ]")
-        ax_obs.legend()
+            fig.suptitle(f'{title} - Episode {episode} - Input')
 
         # Input
         for i in range(u.shape[1]):

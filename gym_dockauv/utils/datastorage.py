@@ -395,16 +395,15 @@ class EpisodeDataStorage:
                                                  episode=self.storage["episode"],
                                                  title=self.storage["title"])
 
-    def plot_epsiode_observation_and_u(self):
+    def plot_u(self):
         """
         Individual wrapper for the static post simulation plot function for observations
         :return:
         """
-        EpisodeVisualization.plot_observation_and_u(observation=self.storage["observation"],
-                                                    u=self.u,
-                                                    step_size=self.storage["step_size"],
-                                                    episode=self.storage["episode"],
-                                                    title=self.storage["title"])
+        EpisodeVisualization.plot_u(u=self.u,
+                                    step_size=self.storage["step_size"],
+                                    episode=self.storage["episode"],
+                                    title=self.storage["title"])
 
     def plot_observation(self):
         """

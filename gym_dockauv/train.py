@@ -121,7 +121,7 @@ def post_analysis_directory(directory: str = "/home/erikx3/PycharmProjects/gym_d
             epi_stor = EpisodeDataStorage()
             epi_stor.load(full_path)
             epi_stor.plot_epsiode_states()
-            #epi_stor.plot_epsiode_observation_and_u()
+            epi_stor.plot_u()
             epi_stor.plot_observation()
             epi_stor.plot_rewards()
             plt.show()
