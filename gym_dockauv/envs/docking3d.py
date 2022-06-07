@@ -168,7 +168,15 @@ class BaseDocking3d(gym.Env):
             "Done-max_t",
             "Done-collision"
         ]
-        self.reward_factors = self.config["reward_factors"]
+        self.reward_factors = self.config["reward_factors"]  # Dictionary containing weights!
+        # Extraxt done rewards in an array
+        self.w_done = np.array([
+            self.reward_factors["w_goal"],
+            self.reward_factors["w_deltad_max"],
+            self.reward_factors["w_Theta_max"],
+            self.reward_factors["w_t_max"],
+            self.reward_factors["w_col"]
+        ])
         self.action_reward_factors = self.config["action_reward_factors"]
 
         # Initialize Done condition and related stuff for the done condition
@@ -437,7 +445,8 @@ class BaseDocking3d(gym.Env):
     def observe(self) -> np.ndarray:
         obs = np.zeros(self.n_observations, dtype=np.float32)
         # Distance from goal, contained within max_dist_from_goal before done
-        obs[0] = np.clip(1 - (np.log(self.delta_d / self.max_dist_from_goal) / np.log(self.dist_goal_reached / self.max_dist_from_goal)), 0, 1)
+        obs[0] = np.clip(1 - (np.log(self.delta_d / self.max_dist_from_goal) / np.log(
+            self.dist_goal_reached / self.max_dist_from_goal)), 0, 1)
         # Pitch error chi, will be between +90° and -90°
         obs[1] = np.clip(self.chi / (np.pi / 2), -1, 1)
         # Heading error upsilon, will be between -180 and +180 degree, observation jump is not fixed here,
@@ -481,37 +490,33 @@ class BaseDocking3d(gym.Env):
         """
         # TODO: Add reward for the collision detection and obstacle closeness
         #  (maybe need complex function that takes the distance to goal into account)
-        # Reward for being closer to the goal location (with old observations): TODO Split up with factors
+        # Reward for being closer to the goal location (with old observations):
         self.last_reward_arr[0] = (
-                                          (
-                                                  # (self.delta_d / self.max_dist_from_goal)**2
-                                                  1 - (np.log(self.delta_d / self.max_dist_from_goal) / np.log(
-                                                    self.dist_goal_reached / self.max_dist_from_goal))
-                                                  + (np.abs(self.chi) / (np.pi / 2))**2
-                                                  + (np.abs(self.upsilon) / np.pi)**2
-                                          )
-                                          / 3
-                                  )
+            -self.reward_factors["w_d"] * (1 - (np.log(self.delta_d / self.max_dist_from_goal) / np.log(
+                self.dist_goal_reached / self.max_dist_from_goal)))
+            - self.reward_factors["w_chi"] * (np.abs(self.chi) / (np.pi / 2)) ** 2
+            - self.reward_factors["w_upsilon"] * (np.abs(self.upsilon) / np.pi) ** 2
+        )
         # Reward for stable attitude
-        self.last_reward_arr[1] = ((np.sum(np.abs(self.auv.attitude[:2]))) / np.pi) ** 2
+        self.last_reward_arr[1] = -self.reward_factors["w_phi"] * (np.abs(self.auv.attitude[0]) / self.max_attitude) ** 2 \
+                                  - self.reward_factors["w_theta"] * (np.abs(self.auv.attitude[1]) / self.max_attitude) ** 2
         # Negative cum_reward per time step
-        self.last_reward_arr[2] = 1
+        self.last_reward_arr[2] = -self.reward_factors["w_t"]
         # Reward for action used (e.g. want to minimize action power usage), factors can be scalar or matching array
-        self.last_reward_arr[3] = (np.sum(np.abs(action) / self.auv.u_bound.shape[0] * self.action_reward_factors)) ** 2
+        self.last_reward_arr[3] = - (np.sum(np.abs(action) / self.auv.u_bound.shape[0] * self.action_reward_factors)) ** 2
 
         # Add extra reward on checking which condition caused the episode to be done
-        self.last_reward_arr[4:] = np.array(self.conditions) * 1
+        self.last_reward_arr[4:] = np.array(self.conditions) * self.w_done
 
-        # Multiply factors defined in config
-        self.last_reward_arr = self.last_reward_arr * self.reward_factors
-
-        # Extra reward based on how the goal has been reached! # TODO: Give these factors a name and add attitude
+        # Extra reward based on how the goal has been reached! # TODO: add attitude
         if self.conditions[0]:
             self.last_reward_arr[4] += (
-                    + 20 * (self.velocity_goal_reached / max(self.velocity_goal_reached,
-                                                             np.linalg.norm(self.auv.position_dot)) ** 2)
-                    + 20 * (self.ang_rate_goal_reached / max(self.ang_rate_goal_reached,
-                                                             np.linalg.norm(self.auv.euler_dot)) ** 2)
+                    + self.reward_factors["w_goal_pdot"] * (
+                        self.velocity_goal_reached / max(self.velocity_goal_reached,
+                                                         np.linalg.norm(self.auv.position_dot)) ** 2)
+                    + self.reward_factors["w_goal_Thetadot"] * (
+                        self.ang_rate_goal_reached / max(self.ang_rate_goal_reached,
+                                                         np.linalg.norm(self.auv.euler_dot)) ** 2)
             )
         # Just for analyzing purpose:
         self.cum_reward_arr = self.cum_reward_arr + self.last_reward_arr

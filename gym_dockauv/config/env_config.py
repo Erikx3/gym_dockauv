@@ -51,19 +51,31 @@ BASE_CONFIG = {
     "q_max": 90 * np.pi/180,                # Pitch rate max
     "r_max": 120 * np.pi/180,               # Yaw rate max
     "radius": 0.5,                          # Radius size of vehicle for collision detection
-    "reward_factors":
-        np.array(
-            [-0.7, -0.6, -0.05, -0.4,       # Reward factors for each reward, look into the reward step doc for more
-             50, -100, -100, -50, -100]),   # details
-    "action_reward_factors": 1,             # Negative reward factor for action, can be an array matching the number of
+    "reward_factors": {                     # Reward factors / weights in dictionary
+        "w_d": 1.0,                         # Continuous: distance from goal
+        "w_chi": 1.0,                       # Continuous: chi error (heading)
+        "w_upsilon": 0.5,                   # Continuous: upsilon error (elevation)
+        "w_phi": 0.8,                       # Continuous: phi error (roll angle)
+        "w_theta": 0.8,                     # Continuous: theta error (pitch angle)
+        "w_t": 0.05,                        # Continuous: constant time step punish
+        "w_oa": 1.0,                        # Continuous: obstacle avoidance parameter
+        "w_goal": 50.0,                     # Discrete: reaching goal
+        "w_goal_pdot": 20.0,                # Discrete: reaching goal with certain low speed
+        "w_goal_Thetadot": 20.0,            # Discrete: Reaching goal with certain low angular rate
+        "w_deltad_max": -100.0,             # Discrete: Flying out of bounds
+        "w_Theta_max": -100.0,              # Discrete: Too high attitude
+        "w_t_max": -50.0,                   # Discrete: Episode maximum length over
+        "w_col": -100.0,                    # Discrete: Collision factor
+    },
+    "action_reward_factors": 1.5,           # reward factor w_{u,i} for action, can be an array matching the number of
                                             # actions or just a scalar multiplied with the normalized sum of the action
 
     # --------- RADAR -----------  Will be dynamically loaded via **kwargs
     "radar": {
-        "freq": 1,                         # Frequency of updates of radars TODO: Not yet implemented
+        "freq": 1,                          # Frequency of updates of radars TODO: Not yet implemented
         "alpha": 70 * np.pi / 180,          # Range of vertical angle wideness
         "beta": 70 * np.pi / 180,           # Range of horizontal angle wideness
-        "ray_per_deg": 10 * np.pi / 180,     # rad inbetween each ray, must leave zero remainder with alpha and beta
+        "ray_per_deg": 10 * np.pi / 180,    # rad inbetween each ray, must leave zero remainder with alpha and beta
         "max_dist": 5                       # Maximum distance the radar can look ahead
     }
 }
