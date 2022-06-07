@@ -182,6 +182,7 @@ class BaseDocking3d(gym.Env):
         # Initialize Done condition and related stuff for the done condition
         self.done = False
         self.meta_data_done = self.meta_data_reward[4:]
+        self.goal_constraints = []  # List of booleans for further contraints as soon as goal is reached
         self.goal_location = None  # This needs to be defined in self.generate_environment
         self.dist_goal_reached = self.config["dist_goal_reached"]  # Distance within for successfully reached goal
         self.velocity_goal_reached = self.config["velocity_goal_reached"]  # Velocity limit at goal
@@ -260,6 +261,7 @@ class BaseDocking3d(gym.Env):
         self.cum_reward_arr = np.zeros(self.n_rewards)
         self.done = False
         self.conditions = None
+        self.goal_constraints = []
 
         # Water current reset
         self.current = Current(mu=0.005, V_min=0.0, V_max=0.0, Vc_init=0.0,
@@ -381,6 +383,7 @@ class BaseDocking3d(gym.Env):
                      "conditions_true_info": [self.meta_data_done[i] for i in cond_idx],
                      "collision": self.collision,
                      "goal_reached": self.goal_reached,
+                     "goal_contraints": self.goal_constraints,
                      "simulation_time": timer() - self.start_time_sim}
 
         return self.observation, self.last_reward, self.done, self.info
@@ -550,11 +553,11 @@ class BaseDocking3d(gym.Env):
         ]
 
         # If goal reached  TODO: Attitude constraint?
-        if (
-                self.conditions[0]
-                and np.linalg.norm(self.auv.position_dot) < self.velocity_goal_reached
-                and np.linalg.norm(self.auv.euler_dot) < self.ang_rate_goal_reached
-        ):
+        self.goal_constraints = [
+            np.linalg.norm(self.auv.position_dot) < self.velocity_goal_reached,
+            np.linalg.norm(self.auv.euler_dot) < self.ang_rate_goal_reached
+        ]
+        if self.conditions[0] and all(self.goal_constraints):
             self.goal_reached = True
 
         # Return also the indexes of which cond is activated
