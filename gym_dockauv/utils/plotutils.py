@@ -6,7 +6,7 @@ import numpy as np
 import logging
 
 # Used for typehints
-from typing import List, Union
+from typing import List, Union, Callable
 from ..objects.shape import Shape
 
 from .blitmanager import BlitManager
@@ -539,3 +539,25 @@ class EpisodeAnimation:
         #   an animation.
         ani.save(save_path, writer=writer_video)
         logger.info(f"Successfully saved EpisodeAnimation at {save_path}")
+
+
+def plot_function(f: Callable, xlim: List[float], xlabel: str, ylabel: str,
+                  title: str) -> [plt.figure, plt.axes]:
+    """
+
+    :param f: Funcion
+    :param xlim: x limits for linspace
+    :param xlabel: xlabel
+    :param ylabel: ylabel
+    :param title: Title
+    :return: plot
+    """
+    x = np.linspace(xlim[0], xlim[1], 100)
+
+    # calculate the function
+    y = f(x)
+
+    fig = plt.figure(figsize=(12, 8))
+    ax = fig.add_subplot(1, 1, 1)
+    ax.plot(x, y, "b-", linewidth=1.2)
+    ax.set(title=title, xlabel=xlabel, ylabel=ylabel)

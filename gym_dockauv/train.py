@@ -74,13 +74,14 @@ def train(gym_env: str,
     env.save_full_data_storage()
 
 
-def predict(gym_env: str, model_path: str, n_episodes: int = 5):
+def predict(gym_env: str, model_path: str, n_episodes: int = 5, render: bool = True):
     """
     Function to visualize and evaluate the actual model on the environment
 
     :param gym_env: Registration string of gym from docking3d
     :param model_path: full path of trained agent
     :param n_episodes: number of episodes to run
+    :param render: boolean for render
     :return:
     """
     env = make_gym(gym_env=gym_env, env_config=PREDICT_CONFIG)  # type: BaseDocking3d
@@ -96,7 +97,8 @@ def predict(gym_env: str, model_path: str, n_episodes: int = 5):
         while not done:
             action, _states = model.predict(obs, deterministic=True)
             obs, rewards, done, info = env.step(action)
-            env.render(rotate_cam=True)
+            if render:
+                env.render(rotate_cam=True)
             if done:
                 break
         env.reset()

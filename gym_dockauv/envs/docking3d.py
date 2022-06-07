@@ -437,7 +437,7 @@ class BaseDocking3d(gym.Env):
     def observe(self) -> np.ndarray:
         obs = np.zeros(self.n_observations, dtype=np.float32)
         # Distance from goal, contained within max_dist_from_goal before done
-        obs[0] = np.clip(self.delta_d / self.max_dist_from_goal, 0, 1)
+        obs[0] = np.clip(1 - (np.log(self.delta_d / self.max_dist_from_goal) / np.log(self.dist_goal_reached / self.max_dist_from_goal)), 0, 1)
         # Pitch error chi, will be between +90° and -90°
         obs[1] = np.clip(self.chi / (np.pi / 2), -1, 1)
         # Heading error upsilon, will be between -180 and +180 degree, observation jump is not fixed here,
@@ -457,7 +457,6 @@ class BaseDocking3d(gym.Env):
         obs[14] = np.clip(self.nu_c[1] / 2, -1, 1)
         obs[15] = np.clip(self.nu_c[2] / 2, -1, 1)
         obs[self.n_obs_without_radar:] = np.clip(self.radar.intersec_dist / self.radar.max_dist, 0, 1)
-
         return obs
 
     def reward_step(self, action: np.ndarray) -> float:
@@ -482,15 +481,17 @@ class BaseDocking3d(gym.Env):
         """
         # TODO: Add reward for the collision detection and obstacle closeness
         #  (maybe need complex function that takes the distance to goal into account)
-        # Reward for being closer to the goal location (with old observations):
+        # Reward for being closer to the goal location (with old observations): TODO Split up with factors
         self.last_reward_arr[0] = (
                                           (
-                                                  self.delta_d / self.max_dist_from_goal
-                                                  + np.abs(self.chi) / (np.pi / 2)
-                                                  + np.abs(self.upsilon) / np.pi
+                                                  # (self.delta_d / self.max_dist_from_goal)**2
+                                                  1 - (np.log(self.delta_d / self.max_dist_from_goal) / np.log(
+                                                    self.dist_goal_reached / self.max_dist_from_goal))
+                                                  + (np.abs(self.chi) / (np.pi / 2))**2
+                                                  + (np.abs(self.upsilon) / np.pi)**2
                                           )
                                           / 3
-                                  ) ** 2
+                                  )
         # Reward for stable attitude
         self.last_reward_arr[1] = ((np.sum(np.abs(self.auv.attitude[:2]))) / np.pi) ** 2
         # Negative cum_reward per time step
@@ -647,7 +648,7 @@ class SimpleDocking3d(BaseDocking3d):
 
         # Goal location:
         self.goal_location = np.array([0.0, 0.0, 0.0])
-        # Position  # TODO: ADD MAXIMUM z value to spawn location
+        # Position
         self.auv.position = self.generate_random_pos(d=DISTANCE_FROM_GOAL)
         # Attitude
         self.auv.attitude = self.generate_random_att(max_att_factor=0.7)
@@ -704,7 +705,7 @@ class CapsuleDocking3d(SimpleDocking3d):
         # reach the goal before colliding with the capsule
         theta = np.random.rand() * 2 * np.pi
         radius = CAPSULE_RADIUS + self.auv.safety_radius
-        x, y = np.cos(theta) * CAPSULE_RADIUS, np.sin(theta) * CAPSULE_RADIUS
+        x, y = np.cos(theta) * radius, np.sin(theta) * radius
         self.goal_location = np.array([x,
                                        y,
                                        (np.random.rand() - 0.5) * CAPSULE_HEIGHT])
@@ -751,8 +752,9 @@ class ObstaclesDocking3d(CapsuleDocking3d):
         """
         Set up and environment with multiple capsules as obstacles around the goal location (e.g. a pear or oil rig)
         """
+        # TODO: ADD strategy for spawn location to be away from capsules! (maybe to z location limitation, do not forget to update reset function then)
         CAPSULE_OBSTACLES_RADIUS = 1.0
-        CAPSULE_OBSTACLES_HEIGHT = 20.0
+        CAPSULE_OBSTACLES_HEIGHT = 2 * self.max_dist_from_goal
         CAPSULE_DISTANCE_FROM_CENTER = 6
         NUMBER_OF_CAPSULES = 4
 
