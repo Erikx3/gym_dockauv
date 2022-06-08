@@ -415,3 +415,19 @@ def dist_line_point(po: np.ndarray, l1: np.ndarray, l2: np.ndarray) -> float:
     c = np.cross(po - l1, d)
 
     return np.hypot(h, np.linalg.norm(c))
+
+
+def vec_line_point(po: np.ndarray, l1: np.ndarray, l2: np.ndarray) -> np.ndarray:
+    """
+    This function returns the vector pointing from the line towards the point
+
+    :param po: array (3,) for the point position
+    :param l1: array (3,) for start of line
+    :param l2: array (3,) for end of line
+    :return: array(3,) pointing from line to point
+    """
+    d_vec = (l2 - l1) / np.linalg.norm(l2 - l1)  # Unit vector for line
+    v = po - l1
+    t = np.dot(v, d_vec)  # Projection distance
+    pro = l1 + t * d_vec  # Projected point on line
+    return pro - po

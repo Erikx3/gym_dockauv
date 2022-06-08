@@ -84,6 +84,24 @@ class TestShapeFunc(TestShape):
         self.assertAlmostEqual(dist[2], -np.inf)
         self.assertAlmostEqual(dist[3], 2.5)
 
+    def test_vec_line_point(self):
+        # Some 2d tests first
+        po_2d = np.array([0, 0])
+        l1_2d = np.array([-2, 1])
+        l2_2d = np.array([2, 1])
+        res_2d = shape.vec_line_point(po_2d, l1_2d, l2_2d)
+        self.assertAlmostEqual(res_2d[0], 0.0)
+        self.assertAlmostEqual(res_2d[1], 1.0)
+
+        # Some 3d test
+        po_3d = np.array([0, 0, 1])
+        l1_3d = np.array([-2, 1, 2])
+        l2_3d = np.array([2, 1, 0])
+        res_3d = shape.vec_line_point(po_3d, l1_3d, l2_3d)
+        self.assertAlmostEqual(res_3d[0], 0.0)
+        self.assertAlmostEqual(res_3d[1], 1.0)
+        self.assertAlmostEqual(res_3d[2], 0.0)
+
 
 if __name__ == '__main__':
     unittest.main()

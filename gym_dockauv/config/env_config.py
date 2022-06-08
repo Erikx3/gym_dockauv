@@ -36,9 +36,10 @@ BASE_CONFIG = {
     # ---------- GOAL AND DONE----------
     "max_dist_from_goal": 20,               # Maximum distance away from goal before simulation end
     "max_attitude": 60/180*np.pi,           # Maximum attitude allowed for vehicle
-    "dist_goal_reached": 0.1,               # Distance [m] within it counts as goal successfully reached
-    "velocity_goal_reached": 0.1,           # Total speed (norm(u,v,w)) for when goal reached for success
-    "ang_rate_goal_reached": 5 * np.pi/180,  # Total angular rate (norm(p,q,r)) for when goal reached for success
+    "dist_goal_reached_tol": 0.1,           # Distance [m] within it counts as goal successfully reached
+    "velocity_goal_reached_tol": 0.1,       # Total speed (norm(u,v,w)) for when goal reached for success
+    "ang_rate_goal_reached_tol": 5 * np.pi/180,  # Total angular rate (norm(p,q,r)) for when goal reached for success
+    "attitude_goal_reached_tol": 5 * np.pi/180,  # Maximum attitude tolerance from desired attitude at goal loc
 
     # ---------- AUV & REWARDS ----------
     "vehicle": "BlueROV2",                  # Name of the vehicle, look for available vehicles in
@@ -53,9 +54,9 @@ BASE_CONFIG = {
     "radius": 0.5,                          # Radius size of vehicle for collision detection
     "reward_factors": {                     # Reward factors / weights in dictionary
         "w_d": 1.0,                         # Continuous: distance from goal
-        "w_chi": 1.0,                       # Continuous: chi error (heading)
-        "w_upsilon": 0.5,                   # Continuous: upsilon error (elevation)
-        "w_phi": 0.8,                       # Continuous: phi error (roll angle)
+        "w_delta_psi": 1.0,                 # Continuous: chi error (heading)
+        "w_delta_theta": 0.5,               # Continuous: delta_theta error (elevation)
+        "w_phi": 1.2,                       # Continuous: phi error (roll angle)
         "w_theta": 0.8,                     # Continuous: theta error (pitch angle)
         "w_t": 0.05,                        # Continuous: constant time step punish
         "w_oa": 1.0,                        # Continuous: obstacle avoidance parameter
@@ -67,7 +68,7 @@ BASE_CONFIG = {
         "w_t_max": -50.0,                   # Discrete: Episode maximum length over
         "w_col": -100.0,                    # Discrete: Collision factor
     },
-    "action_reward_factors": 1.5,           # reward factor w_{u,i} for action, can be an array matching the number of
+    "action_reward_factors": 2.5,           # reward factor w_{u,i} for action, can be an array matching the number of
                                             # actions or just a scalar multiplied with the normalized sum of the action
 
     # --------- RADAR -----------  Will be dynamically loaded via **kwargs
