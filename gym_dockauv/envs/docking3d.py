@@ -503,16 +503,17 @@ class BaseDocking3d(gym.Env):
         # TODO: Add continuous reward function for speed, angular and attitude
         # Reward for being closer to the goal location (with old observations):
         self.last_reward_arr[0] = (
-                -self.reward_factors["w_d"] * (1 - (np.log(self.delta_d / self.max_dist_from_goal) / np.log(
-                    self.dist_goal_reached_tol / self.max_dist_from_goal)))
+                -self.reward_factors["w_d"] * Reward.log_precision(x=self.delta_d,
+                                                                   x_goal=self.dist_goal_reached_tol,
+                                                                   x_max=self.max_dist_from_goal)
                 - self.reward_factors["w_delta_theta"] * (np.abs(self.delta_theta) / (np.pi / 2)) ** 2
                 - self.reward_factors["w_delta_psi"] * (np.abs(self.delta_psi) / np.pi) ** 2
         )
         # Reward for stable attitude
         self.last_reward_arr[1] = -self.reward_factors["w_phi"] * (
-                    np.abs(self.auv.attitude[0]) / self.max_attitude) ** 2 \
+                np.abs(self.auv.attitude[0]) / self.max_attitude) ** 2 \
                                   - self.reward_factors["w_theta"] * (
-                                              np.abs(self.auv.attitude[1]) / self.max_attitude) ** 2
+                                          np.abs(self.auv.attitude[1]) / self.max_attitude) ** 2
         # Negative cum_reward per time step
         self.last_reward_arr[2] = -self.reward_factors["w_t"]
         # Reward for action used (e.g. want to minimize action power usage), factors can be scalar or matching array
@@ -525,12 +526,12 @@ class BaseDocking3d(gym.Env):
         # Extra reward based on how the goal has been reached! # TODO: add attitude, make this logarithmic more reward for small speed?
         if self.conditions[0]:
             self.last_reward_arr[4] += (
-                    + self.reward_factors["w_goal_pdot"] * (
-                    self.velocity_goal_reached_tol / max(self.velocity_goal_reached_tol,
-                                                         np.linalg.norm(self.auv.position_dot)) ** 2)
-                    + self.reward_factors["w_goal_Thetadot"] * (
-                            self.ang_rate_goal_reached_tol / max(self.ang_rate_goal_reached_tol,
-                                                                 np.linalg.norm(self.auv.euler_dot)) ** 2)
+                    + self.reward_factors["w_goal_pdot"] * Reward.sq_goal_constraints(
+                x=np.linalg.norm(self.auv.position_dot),
+                l=self.velocity_goal_reached_tol)
+                    + self.reward_factors["w_goal_Thetadot"] * Reward.sq_goal_constraints(
+                x=np.linalg.norm(self.auv.euler_dot),
+                l=self.ang_rate_goal_reached_tol)
             )
         # Just for analyzing purpose:
         self.cum_reward_arr = self.cum_reward_arr + self.last_reward_arr
@@ -571,7 +572,7 @@ class BaseDocking3d(gym.Env):
                 (-self.attitude_goal_reached_tol <= geom.ssa(
                     self.auv.attitude[2] - self.heading_goal_reached) <= +self.attitude_goal_reached_tol),
                 all((-self.attitude_goal_reached_tol <= self.auv.attitude[:2]) & (
-                            self.auv.attitude[:2] <= self.attitude_goal_reached_tol))
+                        self.auv.attitude[:2] <= self.attitude_goal_reached_tol))
             ]
             if all(self.goal_constraints):
                 self.goal_reached = True
@@ -653,6 +654,52 @@ class BaseDocking3d(gym.Env):
                                self.max_attitude * max_att_factor,
                                np.pi])  # Spawn at xx% of max attitude
         return rnd_arr_attitude * att_factor  # Spawn with random attitude
+
+
+class Reward:
+    """
+    Static class to group the different reward functions
+    """
+
+    @staticmethod
+    def log_precision(x: float, x_goal: float, x_max: float) -> float:
+        """
+        Function to scale logarithmic function between x_goal->y=0 and x_max->y=1
+
+        :param x: actual value
+        :param x_max: maximum value
+        :param x_goal: goal value (smaller than max!)
+        :return: x value scaled on log (0 <= x <= 1 when x_goal <= x <= x_max)
+        """
+        return 1 - (np.log(x / x_max) / np.log(x_goal / x_max))
+
+    @staticmethod
+    def disc_goal_constraints(x: float, x_des: float, perc: float = 0.1):
+        """
+        Function for the final discrete reward when goal is reached for the constraints. This assumes a desired small
+        positive value as a target (e.g. tolerance) and the actual achieves value (positive). Overshoot percentage is
+        used to make sure, the final result is always below the desired value.
+
+        :param x: actual value
+        :param x_des: desired value
+        :param perc: percentage to overshoot desired value
+        :return: reward [0..2] for actual value from desired value [0..1]
+            extra reward when des value actually reached [0,1]
+        """
+        x_des -= x_des * perc
+        return (x_des / max(x_des, x)) ** 2 + (x < x_des)
+
+    @staticmethod
+    def cont_goal_constraints(x: float, delta_d: float, x_des: float, delta_d_des: float):
+        """
+        Continuous reward functions for some goal constraints put into a from goal distance dependent function
+        :param x: actual value
+        :param delta_d: distance from goal
+        :param x_des: desired value
+        :param delta_d_des: desired delta distance (needed to form function)
+        :return: reward [0..1] for actual value x with delta_d
+        """
+        return ((1 - (x_des / max(x_des, x))) * (delta_d_des/ max(delta_d_des, delta_d)))**0.5
 
 
 class SimpleDocking3d(BaseDocking3d):

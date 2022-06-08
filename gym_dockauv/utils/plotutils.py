@@ -530,8 +530,8 @@ class EpisodeAnimation:
         logger.info(f"Successfully saved EpisodeAnimation at {save_path}")
 
 
-def plot_function(f: Callable, xlim: List[float], xlabel: str, ylabel: str,
-                  title: str) -> [plt.figure, plt.axes]:
+def plot_function2d(f: Callable, xlim: List[float], xlabel: str, ylabel: str,
+                    title: str = None, **kwargs) -> [plt.figure, plt.axes]:
     """
 
     :param f: Funcion
@@ -541,12 +541,43 @@ def plot_function(f: Callable, xlim: List[float], xlabel: str, ylabel: str,
     :param title: Title
     :return: plot
     """
-    x = np.linspace(xlim[0], xlim[1], 100)
+    x = np.linspace(xlim[0], xlim[1], 10000)
 
-    # calculate the function
-    y = f(x)
+    # calculate the function in a safe manner, if array operations are not supported
+    y = np.zeros(x.shape[0])
+    for count, x_val in enumerate(x):
+        y[count] = f(x_val, **kwargs)
 
     fig = plt.figure(figsize=(12, 8))
     ax = fig.add_subplot(1, 1, 1)
-    ax.plot(x, y, "b-", linewidth=1.2)
+    ax.plot(x, y, "b-", linewidth=2)
     ax.set(title=title, xlabel=xlabel, ylabel=ylabel)
+
+
+def plot_function3d(f: Callable, xlim: List[float], ylim: List[float], xlabel: str, ylabel: str, zlabel: str,
+                    title: str = None, **kwargs) -> [plt.figure, plt.axes]:
+    """
+
+    :param f: Funcion
+    :param xlim: x limits for linspace
+    :param ylim: y limits for linspace
+    :param xlabel: x-label
+    :param ylabel: y-label
+    :param zlabel: z-label
+    :param title: Title
+    :return: plot
+    """
+
+    x = np.linspace(xlim[0], xlim[1], 100)
+    y = np.linspace(ylim[0], ylim[1], 100)
+
+    X, Y = np.meshgrid(x, y)
+    Z = np.zeros(X.shape)
+    # Safe method in case array operation not supported
+    for ind1, (x_row, y_row) in enumerate(zip(X, Y)):
+        for ind2, (x_val, y_val) in enumerate(zip(x_row, y_row)):
+            Z[ind1, ind2] = f(x_val, y_val, **kwargs)
+    fig = plt.figure(figsize=(12, 8))
+    ax = plt.axes(projection='3d')
+    ax.plot_surface(X, Y, Z)
+    ax.set(title=title, xlabel=xlabel, ylabel=ylabel, zlabel=zlabel)
