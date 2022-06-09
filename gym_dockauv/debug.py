@@ -1,5 +1,6 @@
 # This file is used to analyze or visualize various aspect of the environment
 import matplotlib.pyplot as plt
+import numpy as np
 
 from gym_dockauv.utils.plotutils import plot_function2d, plot_function3d
 from gym_dockauv.config.env_config import BASE_CONFIG
@@ -30,12 +31,16 @@ def debug_disc_goal_contraints():
     plt.grid()
 
 
-def debug_cont_goal_constraints():
+def debug_cont_goal_constraints_velocity():
     kwargs = {
         "x_des": BASE_CONFIG["velocity_goal_reached_tol"],
         "x_max": BASE_CONFIG["u_max"],
+        "x_exp": 1.0,
+        "x_rev": False,
         "delta_d_des": BASE_CONFIG["dist_goal_reached_tol"],
-        "delta_d_max": BASE_CONFIG["max_dist_from_goal"]
+        "delta_d_max": BASE_CONFIG["max_dist_from_goal"],
+        "delta_d_exp": 2.0,
+        "delta_d_rev": True
     }
     plot_function3d(f=Reward.cont_goal_constraints,
                     xlim=[BASE_CONFIG["velocity_goal_reached_tol"], BASE_CONFIG["u_max"]],
@@ -47,9 +52,31 @@ def debug_cont_goal_constraints():
                     )
 
 
+def debug_cont_goal_constraints_heading():
+    kwargs = {
+        "x_des": 0.0,
+        "x_max": np.pi,
+        "x_exp": 4.0,
+        "x_rev": False,
+        "delta_d_des": BASE_CONFIG["dist_goal_reached_tol"],
+        "delta_d_max": BASE_CONFIG["max_dist_from_goal"],
+        "delta_d_exp": 4.0,
+        "delta_d_rev": False
+    }
+    plot_function3d(f=Reward.cont_goal_constraints,
+                    xlim=[0.0, np.pi],
+                    ylim=[BASE_CONFIG["dist_goal_reached_tol"], BASE_CONFIG["max_dist_from_goal"]],
+                    xlabel=r"$\Delta \psi [rad]$",
+                    ylabel=r"$\Delta d$ [m]",
+                    zlabel="r [-]",
+                    **kwargs
+                    )
+
+
 if __name__ == "__main__":
-    debug_log_precision()
-    debug_disc_goal_contraints()
-    debug_cont_goal_constraints()
+    # debug_log_precision()
+    # debug_disc_goal_contraints()
+    debug_cont_goal_constraints_velocity()
+    debug_cont_goal_constraints_heading()
 
     plt.show()

@@ -672,7 +672,8 @@ class Reward:
         :param x_goal: goal value (smaller than max!)
         :return: x value scaled on log (0 <= x <= 1 when x_goal <= x <= x_max)
         """
-        return 1 - np.clip((np.log(x / x_max) / np.log(x_goal / x_max)), 0, 1)
+        epsilon = 0.001  # Protection against log(0.0)
+        return 1 - np.clip((np.log(max(x, epsilon) / x_max) / np.log(max(x_goal, epsilon) / x_max)), 0, 1)
 
     @staticmethod
     def disc_goal_constraints(x: float, x_des: float, perc: float = 0.1) -> float:
@@ -691,21 +692,27 @@ class Reward:
         return (x_des / max(x_des, x)) ** 2 + (x < x_des)
 
     @staticmethod
-    def cont_goal_constraints(x: float, delta_d: float, x_des: float, x_max: float, delta_d_des: float,
-                              delta_d_max: float) -> float:
+    def cont_goal_constraints(x: float, delta_d: float, x_des: float, delta_d_des: float, x_max: float,
+                              delta_d_max: float, x_exp: float = 1.0, delta_d_exp: float = 1.0, x_rev: bool = False,
+                              delta_d_rev: bool = False) -> float:
         """
         Continuous reward functions for some goal constraints put into a from goal distance dependent function
 
         :param x: actual value
         :param delta_d: distance from goal
         :param x_des: desired value
-        :param x_max: max value
         :param delta_d_des: desired delta distance (needed to form function)
+        :param x_max: max value
         :param delta_d_max: maximum delta distance (needed to form function)
+        :param x_exp: exponent for term of x
+        :param delta_d_exp: exponent for term of delta_d
+        :param x_rev: parameter to reverse direction on x
+        :param delta_d_rev: parameter to reverse direction on delta_d
         :return: reward [0..1] for actual value x with delta_d
         """
-
-        return (Reward.log_precision(x, x_des, x_max)) * (1-Reward.log_precision(delta_d, delta_d_des, delta_d_max))**2
+        r_x = np.abs((float(x_rev)-Reward.log_precision(x, x_des, x_max)))**x_exp
+        r_delta_d = np.abs((float(delta_d_rev)-Reward.log_precision(delta_d, delta_d_des, delta_d_max)))**delta_d_exp
+        return r_x * r_delta_d
 
 
 class SimpleDocking3d(BaseDocking3d):
