@@ -664,17 +664,18 @@ class Reward:
     @staticmethod
     def log_precision(x: float, x_goal: float, x_max: float) -> float:
         """
-        Function to scale logarithmic function between x_goal->y=0 and x_max->y=1
+        Function to scale logarithmic function between x_goal->y=0 and x_max->y=1 (clip in case max or des value got
+        over-/ or undershot
 
         :param x: actual value
         :param x_max: maximum value
         :param x_goal: goal value (smaller than max!)
         :return: x value scaled on log (0 <= x <= 1 when x_goal <= x <= x_max)
         """
-        return 1 - (np.log(x / x_max) / np.log(x_goal / x_max))
+        return 1 - np.clip((np.log(x / x_max) / np.log(x_goal / x_max)), 0, 1)
 
     @staticmethod
-    def disc_goal_constraints(x: float, x_des: float, perc: float = 0.1):
+    def disc_goal_constraints(x: float, x_des: float, perc: float = 0.1) -> float:
         """
         Function for the final discrete reward when goal is reached for the constraints. This assumes a desired small
         positive value as a target (e.g. tolerance) and the actual achieves value (positive). Overshoot percentage is
@@ -690,16 +691,21 @@ class Reward:
         return (x_des / max(x_des, x)) ** 2 + (x < x_des)
 
     @staticmethod
-    def cont_goal_constraints(x: float, delta_d: float, x_des: float, delta_d_des: float):
+    def cont_goal_constraints(x: float, delta_d: float, x_des: float, x_max: float, delta_d_des: float,
+                              delta_d_max: float) -> float:
         """
         Continuous reward functions for some goal constraints put into a from goal distance dependent function
+
         :param x: actual value
         :param delta_d: distance from goal
         :param x_des: desired value
+        :param x_max: max value
         :param delta_d_des: desired delta distance (needed to form function)
+        :param delta_d_max: maximum delta distance (needed to form function)
         :return: reward [0..1] for actual value x with delta_d
         """
-        return ((1 - (x_des / max(x_des, x))) * (delta_d_des/ max(delta_d_des, delta_d)))**0.5
+
+        return (Reward.log_precision(x, x_des, x_max)) * (1-Reward.log_precision(delta_d, delta_d_des, delta_d_max))**2
 
 
 class SimpleDocking3d(BaseDocking3d):
