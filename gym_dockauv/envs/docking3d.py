@@ -501,13 +501,33 @@ class BaseDocking3d(gym.Env):
         # TODO: Add reward for the collision detection and obstacle closeness
         #  (maybe need complex function that takes the distance to goal into account)
         # TODO: Add continuous reward function for speed, angular and attitude
-        # Reward for being closer to the goal location (with old observations):
+        # Reward for navigational errors
         self.last_reward_arr[0] = (
-                -self.reward_factors["w_d"] * Reward.log_precision(x=self.delta_d,
-                                                                   x_goal=self.dist_goal_reached_tol,
-                                                                   x_max=self.max_dist_from_goal)
-                - self.reward_factors["w_delta_theta"] * (np.abs(self.delta_theta) / (np.pi / 2)) ** 2
-                - self.reward_factors["w_delta_psi"] * (np.abs(self.delta_psi) / np.pi) ** 2
+            -self.reward_factors["w_d"] * Reward.log_precision(x=self.delta_d,
+                                                               x_goal=self.dist_goal_reached_tol,
+                                                               x_max=self.max_dist_from_goal)
+            - self.reward_factors["w_delta_theta"] * Reward.cont_goal_constraints(x=self.delta_theta,
+                                                                                  delta_d=self.delta_d,
+                                                                                  x_des=0.0,
+                                                                                  delta_d_des=self.dist_goal_reached_tol,
+                                                                                  x_max=np.pi / 2,
+                                                                                  delta_d_max=self.max_dist_from_goal,
+                                                                                  x_exp=4.0,
+                                                                                  delta_d_exp=4.0,
+                                                                                  x_rev=False,
+                                                                                  delta_d_rev=False
+                                                                                  )
+            - self.reward_factors["w_delta_psi"] * Reward.cont_goal_constraints(x=self.delta_psi,
+                                                                                delta_d=self.delta_d,
+                                                                                x_des=0.0,
+                                                                                delta_d_des=self.dist_goal_reached_tol,
+                                                                                x_max=np.pi,
+                                                                                delta_d_max=self.max_dist_from_goal,
+                                                                                x_exp=4.0,
+                                                                                delta_d_exp=4.0,
+                                                                                x_rev=False,
+                                                                                delta_d_rev=False
+                                                                                )
         )
         # Reward for stable attitude
         self.last_reward_arr[1] = -self.reward_factors["w_phi"] * (
@@ -710,8 +730,9 @@ class Reward:
         :param delta_d_rev: parameter to reverse direction on delta_d
         :return: reward [0..1] for actual value x with delta_d
         """
-        r_x = np.abs((float(x_rev)-Reward.log_precision(x, x_des, x_max)))**x_exp
-        r_delta_d = np.abs((float(delta_d_rev)-Reward.log_precision(delta_d, delta_d_des, delta_d_max)))**delta_d_exp
+        r_x = np.abs((float(x_rev) - Reward.log_precision(x, x_des, x_max))) ** x_exp
+        r_delta_d = np.abs(
+            (float(delta_d_rev) - Reward.log_precision(delta_d, delta_d_des, delta_d_max))) ** delta_d_exp
         return r_x * r_delta_d
 
 
