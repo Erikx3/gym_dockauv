@@ -503,37 +503,57 @@ class BaseDocking3d(gym.Env):
         # TODO: Add continuous reward function for speed, angular and attitude
         # Reward for navigational errors
         self.last_reward_arr[0] = (
-            -self.reward_factors["w_d"] * Reward.log_precision(x=self.delta_d,
-                                                               x_goal=self.dist_goal_reached_tol,
-                                                               x_max=self.max_dist_from_goal)
-            - self.reward_factors["w_delta_theta"] * Reward.cont_goal_constraints(x=self.delta_theta,
-                                                                                  delta_d=self.delta_d,
-                                                                                  x_des=0.0,
-                                                                                  delta_d_des=self.dist_goal_reached_tol,
-                                                                                  x_max=np.pi / 2,
-                                                                                  delta_d_max=self.max_dist_from_goal,
-                                                                                  x_exp=4.0,
-                                                                                  delta_d_exp=4.0,
-                                                                                  x_rev=False,
-                                                                                  delta_d_rev=False
-                                                                                  )
-            - self.reward_factors["w_delta_psi"] * Reward.cont_goal_constraints(x=self.delta_psi,
-                                                                                delta_d=self.delta_d,
-                                                                                x_des=0.0,
-                                                                                delta_d_des=self.dist_goal_reached_tol,
-                                                                                x_max=np.pi,
-                                                                                delta_d_max=self.max_dist_from_goal,
-                                                                                x_exp=4.0,
-                                                                                delta_d_exp=4.0,
-                                                                                x_rev=False,
-                                                                                delta_d_rev=False
-                                                                                )
+                -self.reward_factors["w_d"] * Reward.log_precision(x=self.delta_d,
+                                                                   x_goal=self.dist_goal_reached_tol,
+                                                                   x_max=self.max_dist_from_goal)
+                - self.reward_factors["w_delta_theta"] * Reward.cont_goal_constraints(x=self.delta_theta,
+                                                                                      delta_d=self.delta_d,
+                                                                                      x_des=0.0,
+                                                                                      delta_d_des=self.dist_goal_reached_tol,
+                                                                                      x_max=np.pi / 2,
+                                                                                      delta_d_max=self.max_dist_from_goal,
+                                                                                      x_exp=4.0,
+                                                                                      delta_d_exp=4.0,
+                                                                                      x_rev=False,
+                                                                                      delta_d_rev=False
+                                                                                      )
+                - self.reward_factors["w_delta_psi"] * Reward.cont_goal_constraints(x=self.delta_psi,
+                                                                                    delta_d=self.delta_d,
+                                                                                    x_des=0.0,
+                                                                                    delta_d_des=self.dist_goal_reached_tol,
+                                                                                    x_max=np.pi,
+                                                                                    delta_d_max=self.max_dist_from_goal,
+                                                                                    x_exp=4.0,
+                                                                                    delta_d_exp=4.0,
+                                                                                    x_rev=False,
+                                                                                    delta_d_rev=False
+                                                                                    )
         )
         # Reward for stable attitude
-        self.last_reward_arr[1] = -self.reward_factors["w_phi"] * (
-                np.abs(self.auv.attitude[0]) / self.max_attitude) ** 2 \
-                                  - self.reward_factors["w_theta"] * (
-                                          np.abs(self.auv.attitude[1]) / self.max_attitude) ** 2
+        self.last_reward_arr[1] = (
+            -self.reward_factors["w_phi"] * Reward.cont_goal_constraints(x=self.auv.attitude[0],
+                                                                         delta_d=self.delta_d,
+                                                                         x_des=0.0,
+                                                                         delta_d_des=self.dist_goal_reached_tol,
+                                                                         x_max=self.max_attitude,
+                                                                         delta_d_max=self.max_dist_from_goal,
+                                                                         x_exp=2.0,
+                                                                         delta_d_exp=1.0,
+                                                                         x_rev=False,
+                                                                         delta_d_rev=True
+                                                                         )
+            - self.reward_factors["w_theta"] * Reward.cont_goal_constraints(x=self.auv.attitude[1],
+                                                                            delta_d=self.delta_d,
+                                                                            x_des=0.0,
+                                                                            delta_d_des=self.dist_goal_reached_tol,
+                                                                            x_max=self.max_attitude,
+                                                                            delta_d_max=self.max_dist_from_goal,
+                                                                            x_exp=2.0,
+                                                                            delta_d_exp=1.0,
+                                                                            x_rev=False,
+                                                                            delta_d_rev=True
+                                                                            )
+        )
         # Negative cum_reward per time step
         self.last_reward_arr[2] = -self.reward_factors["w_t"]
         # Reward for action used (e.g. want to minimize action power usage), factors can be scalar or matching array

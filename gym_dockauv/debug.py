@@ -73,10 +73,32 @@ def debug_cont_goal_constraints_heading():
                     )
 
 
+def debug_cont_goal_constraints_attitude():
+    kwargs = {
+        "x_des": 0.0,
+        "x_max": np.pi,
+        "x_exp": 2.0,
+        "x_rev": False,
+        "delta_d_des": BASE_CONFIG["dist_goal_reached_tol"],
+        "delta_d_max": BASE_CONFIG["max_dist_from_goal"],
+        "delta_d_exp": 1,
+        "delta_d_rev": True
+    }
+    plot_function3d(f=Reward.cont_goal_constraints,
+                    xlim=[0.0, BASE_CONFIG["max_attitude"]],
+                    ylim=[BASE_CONFIG["dist_goal_reached_tol"], BASE_CONFIG["max_dist_from_goal"]],
+                    xlabel=r"$Attitude [rad]$",
+                    ylabel=r"$\Delta d$ [m]",
+                    zlabel="r [-]",
+                    **kwargs
+                    )
+
+
 if __name__ == "__main__":
     # debug_log_precision()
     # debug_disc_goal_contraints()
     debug_cont_goal_constraints_velocity()
     debug_cont_goal_constraints_heading()
+    debug_cont_goal_constraints_attitude()
 
     plt.show()
