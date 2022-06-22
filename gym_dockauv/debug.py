@@ -31,6 +31,7 @@ def debug_disc_goal_contraints():
     plt.grid()
 
 
+# Will also take the same parameter for the angular rate
 def debug_cont_goal_constraints_velocity():
     kwargs = {
         "x_des": BASE_CONFIG["velocity_goal_reached_tol"],
@@ -52,7 +53,7 @@ def debug_cont_goal_constraints_velocity():
                     )
 
 
-def debug_cont_goal_constraints_heading():
+def debug_cont_goal_constraints_heading_navigation():
     kwargs = {
         "x_des": 0.0,
         "x_max": np.pi,
@@ -67,6 +68,27 @@ def debug_cont_goal_constraints_heading():
                     xlim=[0.0, np.pi],
                     ylim=[BASE_CONFIG["dist_goal_reached_tol"], BASE_CONFIG["max_dist_from_goal"]],
                     xlabel=r"$\Delta \psi [rad]$",
+                    ylabel=r"$\Delta d$ [m]",
+                    zlabel="r [-]",
+                    **kwargs
+                    )
+
+
+def debug_cont_goal_constraints_goal_heading():
+    kwargs = {
+        "x_des": 0.0,
+        "x_max": np.pi,
+        "x_exp": 2.0,
+        "x_rev": False,
+        "delta_d_des": BASE_CONFIG["dist_goal_reached_tol"],
+        "delta_d_max": BASE_CONFIG["max_dist_from_goal"],
+        "delta_d_exp": 2.0,
+        "delta_d_rev": True
+    }
+    plot_function3d(f=Reward.cont_goal_constraints,
+                    xlim=[0.0, np.pi],
+                    ylim=[BASE_CONFIG["dist_goal_reached_tol"], BASE_CONFIG["max_dist_from_goal"]],
+                    xlabel=r"$\Delta \psi_g [rad]$",
                     ylabel=r"$\Delta d$ [m]",
                     zlabel="r [-]",
                     **kwargs
@@ -95,10 +117,11 @@ def debug_cont_goal_constraints_attitude():
 
 
 if __name__ == "__main__":
-    # debug_log_precision()
-    # debug_disc_goal_contraints()
+    debug_log_precision()
+    debug_disc_goal_contraints()
     debug_cont_goal_constraints_velocity()
-    debug_cont_goal_constraints_heading()
+    debug_cont_goal_constraints_heading_navigation()
     debug_cont_goal_constraints_attitude()
+    debug_cont_goal_constraints_goal_heading()
 
     plt.show()

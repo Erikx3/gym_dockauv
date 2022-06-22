@@ -40,7 +40,6 @@ class BaseDocking3d(gym.Env):
         - Add a factor to it in the config file
         - Update number of self.n_rewards and self.n_cont_rewards in __init__()
         - Update the list self.meta_data_reward in __init__()
-        - Update the index of self.meta_data_done in __init__() if necessary
         - Update the doc for the reward_step() function (and of done())
 
     .. note:: Adding observations:
@@ -151,8 +150,8 @@ class BaseDocking3d(gym.Env):
         self.collision = False  # Bool to indicate of vehicle has collided
 
         # Rewards
-        self.n_rewards = 9
-        self.n_cont_rewards = 4
+        self.n_rewards = 10  # Number helps to structure rewards
+        self.n_cont_rewards = 5
         self.last_reward = 0  # Last reward
         self.last_reward_arr = np.zeros(self.n_rewards)  # This should reflect the dimension of the rewards parts
         self.cumulative_reward = 0  # Current cumulative reward of agent
@@ -162,6 +161,7 @@ class BaseDocking3d(gym.Env):
         self.meta_data_reward = [
             "Nav_errors",
             "Attitude",
+            "Goal_constraints",
             "time_step",
             "action",
             "Done-Goal_reached",
@@ -183,7 +183,7 @@ class BaseDocking3d(gym.Env):
 
         # Initialize Done condition and related stuff for the done condition
         self.done = False
-        self.meta_data_done = self.meta_data_reward[4:]
+        self.meta_data_done = self.meta_data_reward[self.n_cont_rewards:]
         self.goal_constraints = []  # List of booleans for further contraints as soon as goal is reached
         self.goal_location = None  # This needs to be defined in self.generate_environment
         self.dist_goal_reached_tol = self.config[
@@ -488,6 +488,7 @@ class BaseDocking3d(gym.Env):
 
         Reward 1: Navigation Errors
         Reward 2: Stable attitude
+        Reward 3: Goal constraints
         Reward 3: time step penalty
         Reward 4: action use penalty
         Reward 5: Done - Goal reached
@@ -501,7 +502,6 @@ class BaseDocking3d(gym.Env):
         """
         # TODO: Add reward for the collision detection and obstacle closeness
         #  (maybe need complex function that takes the distance to goal into account)
-        # TODO: Add continuous reward function for speed, angular and attitude
         # Reward for navigational errors
         self.last_reward_arr[0] = (
                 -self.reward_factors["w_d"] * Reward.log_precision(x=self.delta_d,
@@ -532,33 +532,69 @@ class BaseDocking3d(gym.Env):
         )
         # Reward for stable attitude
         self.last_reward_arr[1] = (
-            -self.reward_factors["w_phi"] * Reward.cont_goal_constraints(x=self.auv.attitude[0],
-                                                                         delta_d=self.delta_d,
-                                                                         x_des=0.0,
-                                                                         delta_d_des=self.dist_goal_reached_tol,
-                                                                         x_max=self.max_attitude,
-                                                                         delta_d_max=self.max_dist_from_goal,
-                                                                         x_exp=2.0,
-                                                                         delta_d_exp=1.0,
-                                                                         x_rev=False,
-                                                                         delta_d_rev=True
-                                                                         )
-            - self.reward_factors["w_theta"] * Reward.cont_goal_constraints(x=self.auv.attitude[1],
-                                                                            delta_d=self.delta_d,
-                                                                            x_des=0.0,
-                                                                            delta_d_des=self.dist_goal_reached_tol,
-                                                                            x_max=self.max_attitude,
-                                                                            delta_d_max=self.max_dist_from_goal,
-                                                                            x_exp=2.0,
-                                                                            delta_d_exp=1.0,
-                                                                            x_rev=False,
-                                                                            delta_d_rev=True
-                                                                            )
+                -self.reward_factors["w_phi"] * Reward.cont_goal_constraints(x=self.auv.attitude[0],
+                                                                             delta_d=self.delta_d,
+                                                                             x_des=0.0,
+                                                                             delta_d_des=self.dist_goal_reached_tol,
+                                                                             x_max=self.max_attitude,
+                                                                             delta_d_max=self.max_dist_from_goal,
+                                                                             x_exp=2.0,
+                                                                             delta_d_exp=1.0,
+                                                                             x_rev=False,
+                                                                             delta_d_rev=True
+                                                                             )
+                - self.reward_factors["w_theta"] * Reward.cont_goal_constraints(x=self.auv.attitude[1],
+                                                                                delta_d=self.delta_d,
+                                                                                x_des=0.0,
+                                                                                delta_d_des=self.dist_goal_reached_tol,
+                                                                                x_max=self.max_attitude,
+                                                                                delta_d_max=self.max_dist_from_goal,
+                                                                                x_exp=2.0,
+                                                                                delta_d_exp=1.0,
+                                                                                x_rev=False,
+                                                                                delta_d_rev=True
+                                                                                )
+        )
+        # Continuous reward to reach goal constraints
+        self.last_reward_arr[2] = (
+                - self.reward_factors["w_pdot"] * Reward.cont_goal_constraints(x=np.linalg.norm(self.auv.position_dot),
+                                                                               delta_d=self.delta_d,
+                                                                               x_des=self.velocity_goal_reached_tol,
+                                                                               delta_d_des=self.dist_goal_reached_tol,
+                                                                               x_max=self.u_max,
+                                                                               delta_d_max=self.max_dist_from_goal,
+                                                                               x_exp=1.0,
+                                                                               delta_d_exp=2.0,
+                                                                               x_rev=False,
+                                                                               delta_d_rev=True
+                                                                               )
+                - self.reward_factors["w_Thetadot"] * Reward.cont_goal_constraints(x=np.linalg.norm(self.auv.euler_dot),
+                                                                                   delta_d=self.delta_d,
+                                                                                   x_des=self.ang_rate_goal_reached_tol,
+                                                                                   delta_d_des=self.dist_goal_reached_tol,
+                                                                                   x_max=self.p_max,
+                                                                                   delta_d_max=self.max_dist_from_goal,
+                                                                                   x_exp=1.0,
+                                                                                   delta_d_exp=2.0,
+                                                                                   x_rev=False,
+                                                                                   delta_d_rev=True
+                                                                                   )
+                - self.reward_factors["w_delta_psi_g"] * Reward.cont_goal_constraints(x=self.delta_heading_goal,
+                                                                                      delta_d=self.delta_d,
+                                                                                      x_des=self.attitude_goal_reached_tol,
+                                                                                      delta_d_des=self.dist_goal_reached_tol,
+                                                                                      x_max=np.pi,
+                                                                                      delta_d_max=self.max_dist_from_goal,
+                                                                                      x_exp=2.0,
+                                                                                      delta_d_exp=2.0,
+                                                                                      x_rev=False,
+                                                                                      delta_d_rev=True
+                                                                                      )
         )
         # Negative cum_reward per time step
-        self.last_reward_arr[2] = -self.reward_factors["w_t"]
+        self.last_reward_arr[3] = -self.reward_factors["w_t"]
         # Reward for action used (e.g. want to minimize action power usage), factors can be scalar or matching array
-        self.last_reward_arr[3] = - (np.sum(
+        self.last_reward_arr[4] = - (np.sum(
             (np.abs(action) / self.auv.u_bound.shape[0]) ** 2 * self.action_reward_factors))
 
         # Add extra reward on checking which condition caused the episode to be done (discrete rewards)
@@ -567,12 +603,15 @@ class BaseDocking3d(gym.Env):
         # Extra reward based on how the goal has been reached! # TODO: add attitude, and goal heading make this logarithmic more reward for small speed?
         if self.conditions[0]:
             self.last_reward_arr[self.n_cont_rewards] += (
-                    + self.reward_factors["w_goal_pdot"] * Reward.sq_goal_constraints(
+                    + self.reward_factors["w_goal_pdot"] * Reward.disc_goal_constraints(
                 x=np.linalg.norm(self.auv.position_dot),
-                l=self.velocity_goal_reached_tol)
-                    + self.reward_factors["w_goal_Thetadot"] * Reward.sq_goal_constraints(
+                x_des=self.velocity_goal_reached_tol)
+                    + self.reward_factors["w_goal_Thetadot"] * Reward.disc_goal_constraints(
                 x=np.linalg.norm(self.auv.euler_dot),
-                l=self.ang_rate_goal_reached_tol)
+                x_des=self.ang_rate_goal_reached_tol)
+                    + self.reward_factors["w_goal_delta_psi_g"] * Reward.disc_goal_constraints(
+                x=self.delta_heading_goal,
+                x_des=self.attitude_goal_reached_tol)
             )
         # Just for analyzing purpose:
         self.cum_reward_arr = self.cum_reward_arr + self.last_reward_arr

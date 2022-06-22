@@ -58,18 +58,22 @@ BASE_CONFIG = {
         "w_delta_theta": 0.5,               # Continuous: delta_theta error (elevation)
         "w_phi": 1.2,                       # Continuous: phi error (roll angle)
         "w_theta": 0.8,                     # Continuous: theta error (pitch angle)
+        "w_pdot": 1.2,                      # Continuous: total speed
+        "w_Thetadot": 1.2,                  # Continuous: total angular rate
+        "w_delta_psi_g": 1.2,               # Continuous: heading at goal location
         "w_t": 0.05,                        # Continuous: constant time step punish
         "w_oa": 1.0,                        # Continuous: obstacle avoidance parameter
         "w_goal": 50.0,                     # Discrete: reaching goal
         "w_goal_pdot": 20.0,                # Discrete: reaching goal with certain low speed
         "w_goal_Thetadot": 20.0,            # Discrete: Reaching goal with certain low angular rate
+        "w_goal_delta_psi_g": 20.0,         # Discrete: Reaching goal with certain heading (at e.g. capsule)
         "w_deltad_max": -100.0,             # Discrete: Flying out of bounds
         "w_Theta_max": -100.0,              # Discrete: Too high attitude
         "w_t_max": -50.0,                   # Discrete: Episode maximum length over
         "w_col": -100.0,                    # Discrete: Collision factor
     },
     "action_reward_factors": 2.5,           # reward factor w_{u,i} for action, can be an array matching the number of
-                                            # actions or just a scalar multiplied with the normalized sum of the action
+                                            # actions or just a scalar multiplied with the normalized sum of the actions
 
     # --------- RADAR -----------  Will be dynamically loaded via **kwargs
     "radar": {
