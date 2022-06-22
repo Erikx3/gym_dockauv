@@ -38,7 +38,7 @@ class BaseDocking3d(gym.Env):
     .. note:: Adding a reward or a done condition with reward needs to take the following steps:
         - Add reward to the self.last_reward_arr in the reward step
         - Add a factor to it in the config file
-        - Update number of self.n_rewards in __init__()
+        - Update number of self.n_rewards and self.n_cont_rewards in __init__()
         - Update the list self.meta_data_reward in __init__()
         - Update the index of self.meta_data_done in __init__() if necessary
         - Update the doc for the reward_step() function (and of done())
@@ -152,6 +152,7 @@ class BaseDocking3d(gym.Env):
 
         # Rewards
         self.n_rewards = 9
+        self.n_cont_rewards = 4
         self.last_reward = 0  # Last reward
         self.last_reward_arr = np.zeros(self.n_rewards)  # This should reflect the dimension of the rewards parts
         self.cumulative_reward = 0  # Current cumulative reward of agent
@@ -558,14 +559,14 @@ class BaseDocking3d(gym.Env):
         self.last_reward_arr[2] = -self.reward_factors["w_t"]
         # Reward for action used (e.g. want to minimize action power usage), factors can be scalar or matching array
         self.last_reward_arr[3] = - (np.sum(
-            np.abs(action) / self.auv.u_bound.shape[0] * self.action_reward_factors)) ** 2
+            (np.abs(action) / self.auv.u_bound.shape[0]) ** 2 * self.action_reward_factors))
 
-        # Add extra reward on checking which condition caused the episode to be done
-        self.last_reward_arr[4:] = np.array(self.conditions) * self.w_done
+        # Add extra reward on checking which condition caused the episode to be done (discrete rewards)
+        self.last_reward_arr[self.n_cont_rewards:] = np.array(self.conditions) * self.w_done
 
-        # Extra reward based on how the goal has been reached! # TODO: add attitude, make this logarithmic more reward for small speed?
+        # Extra reward based on how the goal has been reached! # TODO: add attitude, and goal heading make this logarithmic more reward for small speed?
         if self.conditions[0]:
-            self.last_reward_arr[4] += (
+            self.last_reward_arr[self.n_cont_rewards] += (
                     + self.reward_factors["w_goal_pdot"] * Reward.sq_goal_constraints(
                 x=np.linalg.norm(self.auv.position_dot),
                 l=self.velocity_goal_reached_tol)
@@ -604,7 +605,7 @@ class BaseDocking3d(gym.Env):
             self.collision
         ]
 
-        # If goal reached
+        # If goal reached TODO: Add goal heading
         if self.conditions[0]:
             self.goal_constraints = [
                 np.linalg.norm(self.auv.position_dot) < self.velocity_goal_reached_tol,
