@@ -31,7 +31,7 @@ class FullDataStorage:
         self.env = None
         self.storage = None
 
-    def set_up_episode_storage(self, env, path_folder: str, title: str = "") -> None:
+    def set_up_full_storage(self, env, path_folder: str, title: str = "") -> None:
         r"""
         Set up the storage to save and update incoming data with passing a reference of the env
 

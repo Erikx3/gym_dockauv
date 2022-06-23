@@ -203,7 +203,7 @@ class BaseDocking3d(gym.Env):
 
         # Full data storage:
         self.full_data_storage = FullDataStorage()
-        self.full_data_storage.set_up_episode_storage(env=self, path_folder=self.save_path_folder, title=self.title)
+        self.full_data_storage.set_up_full_storage(env=self, path_folder=self.save_path_folder, title=self.title)
 
         # Animation variables
         self.episode_animation = None
@@ -244,6 +244,7 @@ class BaseDocking3d(gym.Env):
 
         # Check if we should save a datastorage item
         if self.episode_data_storage and (self.episode % self.interval_datastorage == 0 or self.episode == 1):
+            self.episode_data_storage.update(self.nu_c)
             self.episode_data_storage.save()
         self.episode_data_storage = None
 
