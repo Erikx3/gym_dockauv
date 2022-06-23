@@ -24,8 +24,6 @@ from gym_dockauv.objects.shape import Sphere, Spheres, Capsule, intersec_dist_li
 import gym_dockauv.objects.shape as shape
 import gym_dockauv.utils.geomutils as geom
 
-# TODO: Add logging, which subclass has been called
-
 # Set logger
 logger = logging.getLogger(__name__)
 
@@ -113,7 +111,7 @@ class BaseDocking3d(gym.Env):
         self.obstacles = [*self.capsules, *self.spheres()]  # type: list[shape.Shape]
 
         # Set the action and observation space
-        self.n_obs_without_radar = 16
+        self.n_obs_without_radar = 17
         self.n_observations = self.n_obs_without_radar + self.radar.n_rays
         self.action_space = gym.spaces.Box(low=self.auv.u_bound[:, 0],
                                            high=self.auv.u_bound[:, 1],
@@ -128,7 +126,7 @@ class BaseDocking3d(gym.Env):
         self.observation = np.zeros(self.n_observations)
         # The inner lists decide, in which subplot the observations will go
         self.meta_data_observation = [
-            ["delta_d", "delta_theta", "delta_psi"],
+            ["delta_d", "delta_theta", "delta_psi", "delta_psi_g"],
             ["u", "v", "w"],
             ["phi", "theta", "psi_sin", "psi_cos"],
             ["p", "q", "r"],
@@ -405,7 +403,7 @@ class BaseDocking3d(gym.Env):
         self.delta_d = np.linalg.norm(diff)
         self.delta_theta = self.auv.attitude[1] + (geom.ssa(np.arctan2(diff[2], np.linalg.norm(diff[:2]))))
         self.delta_psi = geom.ssa(np.arctan2(diff[1], diff[0]) - self.auv.attitude[2])
-        self.delta_heading_goal = self.heading_goal_reached - self.auv.attitude[2]
+        self.delta_heading_goal = geom.ssa(self.heading_goal_reached - self.auv.attitude[2])
 
     def update_radar_collision(self) -> Union[np.ndarray, None]:
         """
@@ -464,19 +462,20 @@ class BaseDocking3d(gym.Env):
         # Heading error delta_theta, will be between -180 and +180 degree, observation jump is not fixed here,
         # since it might be good to directly indicate which way to turn is faster to adjust heading
         obs[2] = np.clip(self.delta_psi / np.pi, -1, 1)
-        obs[3] = np.clip(self.auv.relative_velocity[0] / self.u_max, -1, 1)  # Surge Forward speed
-        obs[4] = np.clip(self.auv.relative_velocity[1] / self.v_max, -1, 1)  # Sway Side speed
-        obs[5] = np.clip(self.auv.relative_velocity[2] / self.w_max, -1, 1)  # Heave Vertical speed
-        obs[6] = np.clip(self.auv.attitude[0] / self.max_attitude, -1, 1)  # Roll
-        obs[7] = np.clip(self.auv.attitude[1] / self.max_attitude, -1, 1)  # Pitch
-        obs[8] = np.clip(np.sin(self.auv.attitude[2]), -1, 1)  # Yaw, expressed in two polar values to make
-        obs[9] = np.clip(np.cos(self.auv.attitude[2]), -1, 1)  # sure observation does not jump between -1 and 1
-        obs[10] = np.clip(self.auv.angular_velocity[0] / self.p_max, -1, 1)  # Angular Velocities, roll rate
-        obs[11] = np.clip(self.auv.angular_velocity[1] / self.q_max, -1, 1)  # pitch rate
-        obs[12] = np.clip(self.auv.angular_velocity[2] / self.r_max, -1, 1)  # Yaw rate
-        obs[13] = np.clip(self.nu_c[0] / 2, -1, 1)  # Assuming in general current max. speed of 2m/s
-        obs[14] = np.clip(self.nu_c[1] / 2, -1, 1)
-        obs[15] = np.clip(self.nu_c[2] / 2, -1, 1)
+        obs[3] = np.clip(self.delta_heading_goal / np.pi, -1, 1)  # delta_psi_g, heading error for docking into goal
+        obs[4] = np.clip(self.auv.relative_velocity[0] / self.u_max, -1, 1)  # Surge Forward speed
+        obs[5] = np.clip(self.auv.relative_velocity[1] / self.v_max, -1, 1)  # Sway Side speed
+        obs[6] = np.clip(self.auv.relative_velocity[2] / self.w_max, -1, 1)  # Heave Vertical speed
+        obs[7] = np.clip(self.auv.attitude[0] / self.max_attitude, -1, 1)  # Roll
+        obs[8] = np.clip(self.auv.attitude[1] / self.max_attitude, -1, 1)  # Pitch
+        obs[9] = np.clip(np.sin(self.auv.attitude[2]), -1, 1)  # Yaw, expressed in two polar values to make
+        obs[10] = np.clip(np.cos(self.auv.attitude[2]), -1, 1)  # sure observation does not jump between -1 and 1
+        obs[11] = np.clip(self.auv.angular_velocity[0] / self.p_max, -1, 1)  # Angular Velocities, roll rate
+        obs[12] = np.clip(self.auv.angular_velocity[1] / self.q_max, -1, 1)  # pitch rate
+        obs[13] = np.clip(self.auv.angular_velocity[2] / self.r_max, -1, 1)  # Yaw rate
+        obs[14] = np.clip(self.nu_c[0] / 2, -1, 1)  # Assuming in general current max. speed of 2m/s
+        obs[15] = np.clip(self.nu_c[1] / 2, -1, 1)
+        obs[16] = np.clip(self.nu_c[2] / 2, -1, 1)
         obs[self.n_obs_without_radar:] = np.clip(self.radar.intersec_dist / self.radar.max_dist, 0, 1)
         return obs
 
@@ -601,7 +600,7 @@ class BaseDocking3d(gym.Env):
         # Add extra reward on checking which condition caused the episode to be done (discrete rewards)
         self.last_reward_arr[self.n_cont_rewards:] = np.array(self.conditions) * self.w_done
 
-        # Extra reward based on how the goal has been reached! # TODO: add attitude, and goal heading make this logarithmic more reward for small speed?
+        # Extra reward based on how the goal has been reached!
         if self.conditions[0]:
             self.last_reward_arr[self.n_cont_rewards] += (
                     + self.reward_factors["w_goal_pdot"] * Reward.disc_goal_constraints(
@@ -645,7 +644,7 @@ class BaseDocking3d(gym.Env):
             self.collision
         ]
 
-        # If goal reached TODO: Add goal heading
+        # If goal reached
         if self.conditions[0]:
             self.goal_constraints = [
                 np.linalg.norm(self.auv.position_dot) < self.velocity_goal_reached_tol,

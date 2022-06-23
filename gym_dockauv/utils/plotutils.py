@@ -289,7 +289,10 @@ class EpisodeVisualization:
         ax_r.set_title("Rewards")
         ax_r.set_xlabel(x_title)
         ax_r.set_ylabel("r")
+        # Change y_lim, since done rewards will be outliers
+        ax_r.set_ylim([-3.0, 0.0])
         ax_r.legend()
+
 
         # rewards cumulative
         for i in range(cum_rewards.shape[1]):
