@@ -56,8 +56,8 @@ BASE_CONFIG = {
         "w_d": 0.7,                         # Continuous: distance from goal
         "w_delta_psi": 0.7,                 # Continuous: chi error (heading)
         "w_delta_theta": 0.4,               # Continuous: delta_theta error (elevation)
-        "w_phi": 0.7,                       # Continuous: phi error (roll angle)
-        "w_theta": 0.7,                     # Continuous: theta error (pitch angle)
+        "w_phi": 0.9,                       # Continuous: phi error (roll angle)
+        "w_theta": 0.9,                     # Continuous: theta error (pitch angle)
         "w_pdot": 1.3,                      # Continuous: total speed
         "w_Thetadot": 1.0,                  # Continuous: total angular rate
         "w_delta_psi_g": 1.3,               # Continuous: heading at goal location

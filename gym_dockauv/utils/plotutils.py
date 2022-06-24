@@ -259,7 +259,7 @@ class EpisodeVisualization:
 
     @staticmethod
     def plot_rewards(cum_rewards: np.ndarray, rewards: np.ndarray, episode: Union[int, str] = None, title: str = None,
-                     x_title: str = "", meta_data_reward: List[str] = None):
+                     x_title: str = "", meta_data_reward: List[str] = None, n_cont_rewards: int = None):
         """
 
         :param cum_rewards: array(n, r) with n data points and r rewards (cumulative)
@@ -268,36 +268,58 @@ class EpisodeVisualization:
         :param title: title of figure
         :param x_title: title of x axis (this function is used in two ways)
         :param meta_data_reward: list of strings with short description of each reward
+        :param n_cont_rewards: number of continuous rewards
         :return: None
         """
+
+        # Set number of cont reward:
+        if n_cont_rewards is None:
+            n_cont_rewards = rewards.shape[1]
+
         # Calculate sums
         cum_rewards_sum = np.sum(cum_rewards, axis=1)
-        rewards_sum = np.sum(rewards, axis=1)
+        rewards_cont_sum = np.sum(rewards[:, :n_cont_rewards], axis=1)
+        if n_cont_rewards == rewards.shape[1]:
+            rewards_done_sum = np.zeros((rewards.shape[0], 1))
+        else:
+            rewards_done_sum = np.sum(rewards[:, n_cont_rewards:], axis=1)
 
-        # Init figure
+        # Init figure (depending on if number of cont reward is given)
         fig = plt.figure(figsize=(12, 8))
-        ax_r = fig.add_subplot(2, 1, 1)
-        ax_cum = fig.add_subplot(2, 1, 2)
+        fig2 = plt.figure(figsize=(12, 8))
+        ax_cont = fig.add_subplot(1, 1, 1)
+        ax_done = fig2.add_subplot(2, 1, 1)
+        ax_cum = fig2.add_subplot(2, 1, 2)
         if episode or title:
             fig.suptitle(f'{title} - Episode {episode}')
+            fig2.suptitle(f'{title} - Episode {episode}')
 
-        # rewards non cumulative
+        # rewards non cumulative cont and done
         for i in range(rewards.shape[1]):
-            ax_r.plot(rewards[:, i],
-                      label=meta_data_reward[i] if meta_data_reward else f"Reward {i}")
-        ax_r.plot(rewards_sum, label="Sum")
-        ax_r.set_title("Rewards")
-        ax_r.set_xlabel(x_title)
-        ax_r.set_ylabel("r")
+            if i < n_cont_rewards:
+                ax_cont.plot(rewards[:, i],
+                             label=meta_data_reward[i] if meta_data_reward else f"Reward {i}", linewidth=0.7)
+            else:
+                ax_done.plot(rewards[:, i],
+                             label=meta_data_reward[i] if meta_data_reward else f"Reward {i}", linewidth=0.7)
+        ax_cont.plot(rewards_cont_sum, label="Sum")
+        ax_done.plot(rewards_done_sum, label="Sum")
+        ax_cont.set_title("Cont. Rewards")
+        ax_cont.set_xlabel(x_title)
+        ax_cont.set_ylabel("r")
+
+        ax_done.set_title("Disc. Rewards")
+        ax_done.set_xlabel(x_title)
+        ax_done.set_ylabel("r")
         # Change y_lim, since done rewards will be outliers
-        ypbot = np.percentile(rewards_sum, 1)
+        ypbot = np.percentile(rewards_cont_sum, 1)
         yptop = 0.0
         ypad = 0.1 * (yptop - ypbot)
         ymin = ypbot - ypad
         ymax = yptop + ypad
-        ax_r.set_ylim([ymin, ymax])
-        ax_r.legend()
-
+        ax_cont.set_ylim([ymin, ymax])
+        ax_cont.legend()
+        ax_done.legend()
 
         # rewards cumulative
         for i in range(cum_rewards.shape[1]):

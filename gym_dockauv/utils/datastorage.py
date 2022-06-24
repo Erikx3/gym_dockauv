@@ -58,6 +58,7 @@ class FullDataStorage:
             "cum_rewards": cum_rewards_arr,
             "rewards": rewards_arr,
             "meta_data_reward": env.meta_data_reward,
+            "n_cont_rewards": env.n_cont_rewards,
             "infos": []
         }
 
@@ -111,7 +112,8 @@ class FullDataStorage:
                                           episode="all",
                                           title=self.storage["title"],
                                           x_title="episode no.",
-                                          meta_data_reward=self.storage["meta_data_reward"]
+                                          meta_data_reward=self.storage["meta_data_reward"],
+                                          n_cont_rewards=self.storage["n_cont_rewards"]
                                           )
 
 
@@ -252,12 +254,14 @@ class EpisodeDataStorage:
             cum_rewards_arr = ArrayList(env.cum_reward_arr)
             rewards_arr = ArrayList(env.last_reward_arr)
             meta_data_reward = env.meta_data_reward
+            n_cont_rewards = env.n_cont_rewards
             observation = ArrayList(env.observation)
             meta_data_observation = env.meta_data_observation
         else:
             cum_rewards_arr = None
             rewards_arr = None
             meta_data_reward = None
+            n_cont_rewards = None
             observation = None
             meta_data_observation = None
 
@@ -277,6 +281,7 @@ class EpisodeDataStorage:
             "cum_rewards": cum_rewards_arr,
             "rewards": rewards_arr,
             "meta_data_reward": meta_data_reward,
+            "n_cont_rewards": n_cont_rewards,
             "observation": observation,
             "meta_data_observation": meta_data_observation,
         }
@@ -426,7 +431,8 @@ class EpisodeDataStorage:
                                           rewards=self.storage["rewards"],
                                           episode=self.storage["episode"],
                                           title=self.storage["title"],
-                                          meta_data_reward=self.storage["meta_data_reward"]
+                                          meta_data_reward=self.storage["meta_data_reward"],
+                                          n_cont_rewards=self.storage["n_cont_rewards"]
                                           )
 
     def save_animation_video(self, save_path: str, fps: int) -> None:
