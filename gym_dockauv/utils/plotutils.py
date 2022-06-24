@@ -290,7 +290,12 @@ class EpisodeVisualization:
         ax_r.set_xlabel(x_title)
         ax_r.set_ylabel("r")
         # Change y_lim, since done rewards will be outliers
-        ax_r.set_ylim([-3.0, 0.0])
+        ypbot = np.percentile(rewards_sum, 1)
+        yptop = 0.0
+        ypad = 0.1 * (yptop - ypbot)
+        ymin = ypbot - ypad
+        ymax = yptop + ypad
+        ax_r.set_ylim([ymin, ymax])
         ax_r.legend()
 
 

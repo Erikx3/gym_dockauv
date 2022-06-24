@@ -36,7 +36,7 @@ BASE_CONFIG = {
     # ---------- GOAL AND DONE----------
     "max_dist_from_goal": 20,               # Maximum distance away from goal before simulation end
     "max_attitude": 60/180*np.pi,           # Maximum attitude allowed for vehicle
-    "dist_goal_reached_tol": 0.1,           # Distance [m] within it counts as goal successfully reached
+    "dist_goal_reached_tol": 0.5,           # Distance [m] within it counts as goal successfully reached
     "velocity_goal_reached_tol": 0.1,       # Total speed (norm(u,v,w)) for when goal reached for success
     "ang_rate_goal_reached_tol": 5 * np.pi/180,  # Total angular rate (norm(p,q,r)) for when goal reached for success
     "attitude_goal_reached_tol": 5 * np.pi/180,  # Maximum attitude tolerance from desired attitude at goal loc
@@ -53,24 +53,24 @@ BASE_CONFIG = {
     "r_max": 120 * np.pi/180,               # Yaw rate max
     "radius": 0.5,                          # Radius size of vehicle for collision detection
     "reward_factors": {                     # Reward factors / weights in dictionary
-        "w_d": 1.0,                         # Continuous: distance from goal
-        "w_delta_psi": 1.0,                 # Continuous: chi error (heading)
-        "w_delta_theta": 0.5,               # Continuous: delta_theta error (elevation)
-        "w_phi": 1.2,                       # Continuous: phi error (roll angle)
-        "w_theta": 0.8,                     # Continuous: theta error (pitch angle)
-        "w_pdot": 1.2,                      # Continuous: total speed
-        "w_Thetadot": 1.2,                  # Continuous: total angular rate
-        "w_delta_psi_g": 1.2,               # Continuous: heading at goal location
+        "w_d": 0.7,                         # Continuous: distance from goal
+        "w_delta_psi": 0.7,                 # Continuous: chi error (heading)
+        "w_delta_theta": 0.4,               # Continuous: delta_theta error (elevation)
+        "w_phi": 0.7,                       # Continuous: phi error (roll angle)
+        "w_theta": 0.7,                     # Continuous: theta error (pitch angle)
+        "w_pdot": 1.3,                      # Continuous: total speed
+        "w_Thetadot": 1.0,                  # Continuous: total angular rate
+        "w_delta_psi_g": 1.3,               # Continuous: heading at goal location
         "w_t": 0.05,                        # Continuous: constant time step punish
         "w_oa": 1.0,                        # Continuous: obstacle avoidance parameter
-        "w_goal": 50.0,                     # Discrete: reaching goal
-        "w_goal_pdot": 20.0,                # Discrete: reaching goal with certain low speed
-        "w_goal_Thetadot": 20.0,            # Discrete: Reaching goal with certain low angular rate
-        "w_goal_delta_psi_g": 20.0,         # Discrete: Reaching goal with certain heading (at e.g. capsule)
-        "w_deltad_max": -100.0,             # Discrete: Flying out of bounds
-        "w_Theta_max": -100.0,              # Discrete: Too high attitude
-        "w_t_max": -50.0,                   # Discrete: Episode maximum length over
-        "w_col": -100.0,                    # Discrete: Collision factor
+        "w_goal": 50.0,                    # Discrete: reaching goal
+        "w_goal_pdot": 100.0,               # Discrete: reaching goal with certain low speed
+        "w_goal_Thetadot": 50.0,           # Discrete: Reaching goal with certain low angular rate
+        "w_goal_delta_psi_g": 100.0,        # Discrete: Reaching goal with certain heading (at e.g. capsule)
+        "w_deltad_max": -200.0,             # Discrete: Flying out of bounds
+        "w_Theta_max": -200.0,              # Discrete: Too high attitude
+        "w_t_max": -100.0,                  # Discrete: Episode maximum length over
+        "w_col": -200.0,                    # Discrete: Collision factor
     },
     "action_reward_factors": 2.5,           # reward factor w_{u,i} for action, can be an array matching the number of
                                             # actions or just a scalar multiplied with the normalized sum of the actions
