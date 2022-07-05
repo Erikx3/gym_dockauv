@@ -64,6 +64,7 @@ TBD
 pip install -U gym
 pip install stable-baselines3
 pip install tensorflow
+pip install -U scikit-image
 ```
 
 For tensorboard analysis (https://pythonprogramming.net/saving-and-loading-reinforcement-learning-stable-baselines-3-tutorial/?completed=/introduction-reinforcement-learning-stable-baselines-3-tutorial/):
