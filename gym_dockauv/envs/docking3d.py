@@ -112,7 +112,7 @@ class BaseDocking3d(gym.Env):
 
         # Set the action and observation space
         self.n_obs_without_radar = 16
-        self.n_observations = self.n_obs_without_radar + self.radar.n_rays
+        self.n_observations = self.n_obs_without_radar + self.radar.n_rays_reduced
         self.action_space = gym.spaces.Box(low=self.auv.u_bound[:, 0],
                                            high=self.auv.u_bound[:, 1],
                                            dtype=np.float32)
@@ -131,7 +131,7 @@ class BaseDocking3d(gym.Env):
             ["phi", "theta", "psi_sin", "psi_cos"],
             ["p", "q", "r"],
             ["u_c", "v_c", "w_c"],
-            [f"ray_{i}" for i in range(self.radar.n_rays)]
+            [f"ray_{i}" for i in range(self.radar.n_rays_reduced)]
         ]
 
         # General simulation variables:
@@ -148,8 +148,8 @@ class BaseDocking3d(gym.Env):
         self.collision = False  # Bool to indicate of vehicle has collided
 
         # Rewards
-        self.n_rewards = 12  # Number helps to structure rewards
-        self.n_cont_rewards = 7
+        self.n_rewards = 13  # Number helps to structure rewards
+        self.n_cont_rewards = 8
         self.last_reward = 0  # Last reward
         self.last_reward_arr = np.zeros(self.n_rewards)  # This should reflect the dimension of the rewards parts
         self.cumulative_reward = 0  # Current cumulative reward of agent
@@ -166,6 +166,7 @@ class BaseDocking3d(gym.Env):
             # "pdot",
             # "Thetadot",
             # "Goal_psi_g",
+            "obstacle_avoid",
             "time_step",
             "action",
             "Done-Goal_reached",
@@ -483,7 +484,7 @@ class BaseDocking3d(gym.Env):
         obs[13] = np.clip(self.nu_c[0] / 2, -1, 1)  # Assuming in general current max. speed of 2m/s
         obs[14] = np.clip(self.nu_c[1] / 2, -1, 1)
         obs[15] = np.clip(self.nu_c[2] / 2, -1, 1)
-        obs[self.n_obs_without_radar:] = np.clip(self.radar.intersec_dist / self.radar.max_dist, 0, 1)
+        obs[self.n_obs_without_radar:] = np.clip(self.radar.intersec_dist_reduced / self.radar.max_dist, 0, 1)
         return obs
 
     def reward_step(self, action: np.ndarray) -> float:
@@ -585,10 +586,16 @@ class BaseDocking3d(gym.Env):
         #     delta_d_rev=True
         # )
 
+        # Reward fucntion for obstacle avoidance, TODO: Should be weaker when closer to goal?
+        self.last_reward_arr[5] = - self.reward_factors["w_oa"] * Reward.obstacle_avoidance(
+            theta_r=self.radar.alpha, psi_r=self.radar.beta, d_r=self.radar.intersec_dist,
+            theta_max=self.radar.alpha_max, psi_max=self.radar.beta_max, d_max=self.radar.max_dist,
+            gamma_c=1, epsilon_c=0.001, epsilon_oa=0.01)
+
         # Negative cum_reward per time step
-        self.last_reward_arr[5] = -self.reward_factors["w_t"]
+        self.last_reward_arr[6] = -self.reward_factors["w_t"]
         # Reward for action used (e.g. want to minimize action power usage), factors can be scalar or matching array
-        self.last_reward_arr[6] = - (np.sum(
+        self.last_reward_arr[7] = - (np.sum(
             (np.abs(action) / self.auv.u_bound.shape[0]) ** 2 * self.action_reward_factors))
 
         # Add extra reward on checking which condition caused the episode to be done (discrete rewards)
@@ -813,7 +820,7 @@ class Reward:
         """
         beta = Reward.beta_oa(theta_r, psi_r, theta_max, psi_max, epsilon_oa)
         c = Reward.c_oa(d_r, d_max)
-        return np.sum(beta) / (np.maximum((gamma_c * (1 - c)) ** 2, epsilon_c) @ beta)  # Sum via scalar product
+        return np.sum(beta) / (np.maximum((gamma_c * (1 - c)) ** 2, epsilon_c) @ beta) - 1  # Sum via scalar product
 
     @staticmethod
     def beta_oa(theta_r, psi_r, theta_max, psi_max, epsilon_oa):

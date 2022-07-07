@@ -216,10 +216,15 @@ class EpisodeVisualization:
             for p in meta_data_list:
                 ax_tmp.plot(time_arr, observation[:, p_count], label=p, linewidth=1.1)
                 p_count += 1
-            ax_tmp.legend()
-            # ax_tmp.set_ylabel(r"o [ - ]")
-            ax_tmp.set_ylim([-1.1, 1.1])
-            ax_tmp.set_yticks([-1.0, -0.5, 0.0, 0.5, 1.0])
+            if len(ax_tmp.lines) > 5:  # This will be the rays
+                ax_tmp.legend([f"All {len(meta_data_list)} Rays"])
+                ax_tmp.set_ylim([0, 1.1])
+                ax_tmp.set_yticks([0.0, 0.5, 1.0])
+            else:
+                ax_tmp.legend()
+                # ax_tmp.set_ylabel(r"o [ - ]")
+                ax_tmp.set_ylim([-1.1, 1.1])
+                ax_tmp.set_yticks([-1.0, -0.5, 0.0, 0.5, 1.0])
             ax_tmp.grid()
 
         ax_tmp.set_xlabel("t [s]")

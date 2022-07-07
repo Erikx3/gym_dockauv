@@ -2,7 +2,7 @@ import copy
 
 import numpy as np
 from functools import cached_property
-
+from skimage.measure import block_reduce
 from ..utils import geomutils as geom
 
 
@@ -41,7 +41,7 @@ class Radar:
     """
 
     def __init__(self, eta: np.ndarray, freq: float, alpha: float = 2 * np.pi, beta: float = 2 * np.pi,
-                 ray_per_deg: float = 5.0 * np.pi / 180, max_dist: float = 25):
+                 ray_per_deg: float = 5.0 * np.pi / 180, max_dist: float = 25, blocksize_reduce: int = 2):
 
         self.pos = eta[0:3]  # Initial starting position for all the rays, is always the same
         self.freq = freq
@@ -50,10 +50,14 @@ class Radar:
         # Check for valid input, little quirky solution due to float precision
         if (alpha + tol) % ray_per_deg > 0.001 or (beta + tol) % ray_per_deg > 0.001:
             raise KeyError("Initialize the radar with valid ray_per_deg for alpha and beta.")
+        self.alpha_max = alpha/2
+        self.beta_max = beta/2
         # Create (n, 1) array for the alpha and beta angle of each array
         self.alpha = np.arange(-alpha / 2, alpha / 2 + tol, ray_per_deg)
+        self.n_vertical = self.alpha.shape[0]  # Number of rays vertically
         self.alpha = np.repeat(self.alpha, repeats=(beta + tol) // ray_per_deg + 1, axis=0)
         self.beta = np.arange(-beta / 2, beta / 2 + tol, ray_per_deg)
+        self.n_horizontal = self.beta.shape[0]  # Number of rays horizontally
         self.beta = np.tile(self.beta, (int((alpha + tol) // ray_per_deg + 1),))
 
         self.n_rays = self.alpha.shape[0]
@@ -78,6 +82,10 @@ class Radar:
         # Do one update e.g. for the end position
         self.update(eta=eta)
         self.update_intersec()
+        # Get number of reduced n_rays if it would be used
+        self.blocksize_reduce = blocksize_reduce
+        self.n_rays_reduced = self.intersec_dist_reduced.shape[0]
+
 
     def update(self, eta: np.ndarray) -> None:
         """
@@ -119,6 +127,14 @@ class Radar:
         :return: array (n,3), where the starting position is copied n times to create artificial array
         """
         return np.tile(self.pos, (self.n_rays, 1))
+
+    @property
+    def intersec_dist2d(self):
+        return self.intersec_dist.reshape((self.n_vertical, self.n_horizontal))
+
+    @property
+    def intersec_dist_reduced(self):
+        return block_reduce(self.intersec_dist2d, block_size=self.blocksize_reduce, func=np.max).flatten()
 
     def reset(self, eta: np.ndarray):
         """

@@ -63,7 +63,7 @@ BASE_CONFIG = {
         # "w_Thetadot": 0.0,                  # Continuous: total angular rate
         # "w_delta_psi_g": 0.5,               # Continuous: heading at goal location
         "w_t": 0.05,                        # Continuous: constant time step punish
-        "w_oa": 1.0,                        # Continuous: obstacle avoidance parameter
+        "w_oa": 0.2,                        # Continuous: obstacle avoidance parameter
         "w_goal": 100.0,                    # Discrete: reaching goal
         # Depracated for now, added complexity of very tight goal constraints removed - Erik 30.06.22
         # "w_goal_pdot": 150.0,               # Discrete: reaching goal with certain low speed
@@ -80,10 +80,11 @@ BASE_CONFIG = {
     # --------- RADAR -----------  Will be dynamically loaded via **kwargs
     "radar": {
         "freq": 1,                          # Frequency of updates of radars TODO: Not yet implemented
-        "alpha": 70 * np.pi / 180,          # Range of vertical angle wideness
-        "beta": 70 * np.pi / 180,           # Range of horizontal angle wideness
+        "alpha": 60 * np.pi / 180,          # Range of vertical angle wideness
+        "beta": 80 * np.pi / 180,           # Range of horizontal angle wideness
         "ray_per_deg": 10 * np.pi / 180,    # rad inbetween each ray, must leave zero remainder with alpha and beta
-        "max_dist": 5                       # Maximum distance the radar can look ahead
+        "max_dist": 5,                       # Maximum distance the radar can look ahead
+        "blocksize_reduce": 2                   # Size of the basic image reduction (e.g. used for observation by agent)
     }
 }
 
