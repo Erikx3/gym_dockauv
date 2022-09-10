@@ -307,8 +307,8 @@ class EpisodeVisualization:
             else:
                 ax_done.plot(rewards[:, i],
                              label=meta_data_reward[i] if meta_data_reward else f"Reward {i}", linewidth=0.7)
-        ax_cont.plot(rewards_cont_sum, label="Sum")
-        ax_done.plot(rewards_done_sum, label="Sum")
+        ax_cont.plot(rewards_cont_sum, label="Sum", alpha=0.5)
+        ax_done.plot(rewards_done_sum, label="Sum", alpha=0.5)
         ax_cont.set_title("Cont. Rewards")
         ax_cont.set_xlabel(x_title)
         ax_cont.set_ylabel("r")
@@ -583,7 +583,7 @@ def plot_function2d(f: Callable, xlim: List[float], xlabel: str, ylabel: str,
     for count, x_val in enumerate(x):
         y[count] = f(x_val, **kwargs)
 
-    fig = plt.figure(figsize=(12, 8))
+    fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
     ax.plot(x, y, "b-", linewidth=2)
     ax.set(title=title, xlabel=xlabel, ylabel=ylabel)
@@ -612,7 +612,7 @@ def plot_function3d(f: Callable, xlim: List[float], ylim: List[float], xlabel: s
     for ind1, (x_row, y_row) in enumerate(zip(X, Y)):
         for ind2, (x_val, y_val) in enumerate(zip(x_row, y_row)):
             Z[ind1, ind2] = f(x_val, y_val, **kwargs)
-    fig = plt.figure(figsize=(12, 8))
+    fig = plt.figure()
     ax = plt.axes(projection='3d')
     ax.plot_surface(X, Y, Z)
     ax.set(title=title, xlabel=xlabel, ylabel=ylabel, zlabel=zlabel)

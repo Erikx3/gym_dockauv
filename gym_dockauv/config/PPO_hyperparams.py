@@ -27,10 +27,10 @@ PPO_HYPER_PARAMS_DEFAULT = {
 PPO_HYPER_PARAMS_TEST = {
     "learning_rate": 3e-4,
     "n_steps": 2048,
-    "batch_size": 64,
+    "batch_size": 8192,
     "n_epochs": 10,
-    "gamma": 0.99,
-    "gae_lambda": 0.95,
+    "gamma": 0.97,
+    "gae_lambda": 0.90,
     "clip_range": 0.2,
     "clip_range_vf": None,
     "normalize_advantage": True,

@@ -12,7 +12,8 @@ REGISTRATION_DICT = {
     "CapsuleDocking3d-v0": "gym_dockauv.envs:CapsuleDocking3d",
     "CapsuleCurrentDocking3d-v0": "gym_dockauv.envs:CapsuleCurrentDocking3d",
     "ObstaclesDocking3d-v0": "gym_dockauv.envs:ObstaclesDocking3d",
-    "ObstaclesCurrentDocking3d-v0": "gym_dockauv.envs:ObstaclesCurrentDocking3d"
+    "ObstaclesCurrentDocking3d-v0": "gym_dockauv.envs:ObstaclesCurrentDocking3d",
+    "ObstaclesNoCapDocking3d-v0": "gym_dockauv.envs:ObstaclesNoCapDocking3d"
 }
 
 # ---------- Base Config for all other possible configs ----------
@@ -25,7 +26,7 @@ BASE_CONFIG = {
     "verbose": 1,                           # If logs should also appear in output console, either 0 or 1
 
     # ---------- EPISODE ----------
-    "max_timesteps": 600,                   # Maximum amount of timesteps before episode ends
+    "max_timesteps": 1000,                   # Maximum amount of timesteps before episode ends
 
     # ---------- SIMULATION --------------
     "t_step_size": 0.10,                    # Length of each simulation timestep [s]
@@ -54,17 +55,17 @@ BASE_CONFIG = {
     "radius": 0.5,                          # Radius size of vehicle for collision detection
     "reward_factors": {                     # Reward factors / weights in dictionary
         "w_d": 1.1,                         # Continuous: distance from goal
-        "w_delta_psi": 0.7,                 # Continuous: chi error (heading)
-        "w_delta_theta": 0.4,               # Continuous: delta_theta error (elevation)
-        "w_phi": 1.3,                       # Continuous: phi error (roll angle)
-        "w_theta": 1.3,                     # Continuous: theta error (pitch angle)
+        "w_delta_psi": 0.5,                 # Continuous: chi error (heading)
+        "w_delta_theta": 0.3,               # Continuous: delta_theta error (elevation)
+        "w_phi": 0.3,                       # Continuous: phi error (roll angle)
+        "w_theta": 0.3,                     # Continuous: theta error (pitch angle)
         # Depracated for now, added complexity of very tight goal constraints removed - Erik 30.06.22
         # "w_pdot": 0.0,                      # Continuous: total speed
-        # "w_Thetadot": 0.0,                  # Continuous: total angular rate
+        "w_Thetadot": 0.2,                  # Continuous: total angular rate
         # "w_delta_psi_g": 0.5,               # Continuous: heading at goal location
         "w_t": 0.05,                        # Continuous: constant time step punish
-        "w_oa": 0.2,                        # Continuous: obstacle avoidance parameter
-        "w_goal": 100.0,                    # Discrete: reaching goal
+        "w_oa": 0.20,                        # Continuous: obstacle avoidance parameter
+        "w_goal": 400.0,                    # Discrete: reaching goal
         # Depracated for now, added complexity of very tight goal constraints removed - Erik 30.06.22
         # "w_goal_pdot": 150.0,               # Discrete: reaching goal with certain low speed
         # "w_goal_Thetadot": 100.0,           # Discrete: Reaching goal with certain low angular rate
@@ -72,9 +73,9 @@ BASE_CONFIG = {
         "w_deltad_max": -200.0,             # Discrete: Flying out of bounds
         "w_Theta_max": -200.0,              # Discrete: Too high attitude
         "w_t_max": -100.0,                  # Discrete: Episode maximum length over
-        "w_col": -200.0,                    # Discrete: Collision factor
+        "w_col": -300.0,                    # Discrete: Collision factor
     },
-    "action_reward_factors": 3.0,           # reward factor w_{u,i} for action, can be an array matching the number of
+    "action_reward_factors": 6.0,           # reward factor w_{u,i} for action, can be an array matching the number of
                                             # actions or just a scalar multiplied with the normalized sum of the actions
 
     # --------- RADAR -----------  Will be dynamically loaded via **kwargs
@@ -83,7 +84,7 @@ BASE_CONFIG = {
         "alpha": 60 * np.pi / 180,          # Range of vertical angle wideness
         "beta": 80 * np.pi / 180,           # Range of horizontal angle wideness
         "ray_per_deg": 10 * np.pi / 180,    # rad inbetween each ray, must leave zero remainder with alpha and beta
-        "max_dist": 5,                       # Maximum distance the radar can look ahead
+        "max_dist": 10,                       # Maximum distance the radar can look ahead
         "blocksize_reduce": 2                   # Size of the basic image reduction (e.g. used for observation by agent)
     }
 }

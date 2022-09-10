@@ -5,7 +5,8 @@ import numpy as np
 
 import gym
 from matplotlib import pyplot as plt
-from stable_baselines3 import A2C, PPO
+from stable_baselines3 import A2C, PPO, DDPG, SAC
+from stable_baselines3.common.noise import NormalActionNoise
 
 from gym_dockauv.utils.datastorage import EpisodeDataStorage, FullDataStorage
 from gym_dockauv.config.PPO_hyperparams import PPO_HYPER_PARAMS_DEFAULT
@@ -51,12 +52,17 @@ def train(gym_env: str,
     elapsed_timesteps = 0
     sim_timesteps = timesteps_per_save if timesteps_per_save else total_timesteps
 
+    # For DDPG algorithm
+    n_actions = env.action_space.shape[0]
+    action_noise = NormalActionNoise(mean=np.zeros(n_actions), sigma=0.1 * np.ones(n_actions))
+
     # Instantiate the agent
     if model_load_path is None:
-        model = PPO(policy='MlpPolicy', env=env, **agent_hyper_params)
+        # model = PPO(policy='MlpPolicy', env=env, **agent_hyper_params)
+        model = SAC(policy="MlpPolicy", env=env, learning_rate=0.0015, buffer_size=50000, batch_size=100, tensorboard_log="tb_logs")
     else:
         # Note that this does not load a replay buffer
-        model = PPO.load(model_load_path, env=env)
+        model = SAC.load(model_load_path, env=env)
 
     while elapsed_timesteps < total_timesteps:
         # Train the agent
@@ -88,10 +94,13 @@ def predict(gym_env: str, model_path: str, n_episodes: int = 5, render: bool = T
     # Load the trained agent
     # NOTE: if you have loading issue, you can pass `print_system_info=True`
     # to compare the system on which the model was trained vs the current one
-    model = PPO.load(model_path, env=env)
+
+    n_actions = env.action_space.shape[0]
+    action_noise = NormalActionNoise(mean=np.zeros(n_actions), sigma=0.1 * np.ones(n_actions))
+    model = SAC.load(model_path, env=env)
 
     # Enjoy trained agent
-    obs = env.reset(seed=5)
+    obs = env.reset(seed=2)
     for i in range(n_episodes):
         done = False
         while not done:

@@ -1,5 +1,6 @@
 # This file is used to analyze or visualize various aspect of the environment
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 import numpy as np
 
 from gym_dockauv.utils.plotutils import plot_function2d, plot_function3d
@@ -7,17 +8,22 @@ from gym_dockauv.config.env_config import BASE_CONFIG
 from gym_dockauv.envs.docking3d import Reward
 from gym_dockauv.objects.sensor import Radar
 
+mpl.rcParams["axes.titlesize"] = 18
+mpl.rcParams["axes.labelsize"] = 14
+mpl.rcParams["xtick.labelsize"] = 12
+mpl.rcParams["ytick.labelsize"] = 12
+
 
 def debug_log_precision():
     """
     Debug reward function of log (here with delta distance)
     """
     kwargs = {
-        "x_goal": BASE_CONFIG["dist_goal_reached_tol"],
+        "x_goal": 0.01,
         "x_max": BASE_CONFIG["max_dist_from_goal"]
     }
     plot_function2d(f=Reward.log_precision,
-                    xlim=[BASE_CONFIG["dist_goal_reached_tol"], BASE_CONFIG["max_dist_from_goal"]],
+                    xlim=[0.01, BASE_CONFIG["max_dist_from_goal"]],
                     xlabel=r"$\Delta d$ [m]", ylabel="r [-]", **kwargs)
     plt.grid()
 

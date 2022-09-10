@@ -164,10 +164,10 @@ class BaseDocking3d(gym.Env):
             "Att_theta",
             # Depracated, Goal constraints removed - Erik - 30.06.2022
             # "pdot",
-            # "Thetadot",
+            "Thetadot",
             # "Goal_psi_g",
             "obstacle_avoid",
-            "time_step",
+            # "time_step",
             "action",
             "Done-Goal_reached",
             "Done-out_pos",
@@ -508,8 +508,7 @@ class BaseDocking3d(gym.Env):
         :param action: array with actions between -1 and 1
         :return: The single reward at this step
         """
-        # TODO: Add reward for the collision detection and obstacle closeness
-        #  (maybe need complex function that takes the distance to goal into account)
+
         # Reward for navigational errors
         self.last_reward_arr[0] = -self.reward_factors["w_d"] * Reward.log_precision(
             x=self.delta_d,
@@ -548,7 +547,7 @@ class BaseDocking3d(gym.Env):
         # Depracated, Goal constraints removed - Erik - 30.06.2022
         # Continuous reward to reach goal constraints
         # self.last_reward_arr[5] = - self.reward_factors["w_pdot"] * (np.linalg.norm(self.auv.position_dot)/self.u_max) ** 2
-        # self.last_reward_arr[6] = - self.reward_factors["w_Thetadot"] * (np.linalg.norm(self.auv.euler_dot)/self.p_max) ** 2
+        self.last_reward_arr[5] = - self.reward_factors["w_Thetadot"] * (np.linalg.norm(self.auv.euler_dot)/self.p_max) ** 2
         # self.last_reward_arr[5] = - self.reward_factors["w_pdot"] * (Reward.cont_goal_constraints(
         #     x=np.linalg.norm(self.auv.position_dot),
         #     delta_d=self.delta_d,
@@ -587,13 +586,13 @@ class BaseDocking3d(gym.Env):
         # )
 
         # Reward fucntion for obstacle avoidance, TODO: Should be weaker when closer to goal?
-        self.last_reward_arr[5] = - self.reward_factors["w_oa"] * Reward.obstacle_avoidance(
+        self.last_reward_arr[6] = - self.reward_factors["w_oa"] * Reward.obstacle_avoidance(
             theta_r=self.radar.alpha, psi_r=self.radar.beta, d_r=self.radar.intersec_dist,
             theta_max=self.radar.alpha_max, psi_max=self.radar.beta_max, d_max=self.radar.max_dist,
             gamma_c=1, epsilon_c=0.001, epsilon_oa=0.01)
 
         # Negative cum_reward per time step
-        self.last_reward_arr[6] = -self.reward_factors["w_t"]
+        # self.last_reward_arr[7] = -self.reward_factors["w_t"]
         # Reward for action used (e.g. want to minimize action power usage), factors can be scalar or matching array
         self.last_reward_arr[7] = - (np.sum(
             (np.abs(action) / self.auv.u_bound.shape[0]) ** 2 * self.action_reward_factors))
@@ -732,6 +731,7 @@ class BaseDocking3d(gym.Env):
         :return: array(3,) with random position
         """
         rnd_arr_pos = (np.random.random(3) - 0.5)
+        rnd_arr_pos[2] = abs(rnd_arr_pos[0] + rnd_arr_pos[1]) / 3 * np.sign(rnd_arr_pos[2])
         return self.goal_location + rnd_arr_pos * (d / np.linalg.norm(rnd_arr_pos))
 
     def generate_random_att(self, max_att_factor: float = 0.7):
@@ -844,7 +844,6 @@ class SimpleDocking3d(BaseDocking3d):
         Set up an environment after each reset call, can be used to in multiple environments to make multiple scenarios
 
         """
-        # TODO: Make this better
         # DISTANCE_FROM_GOAL = np.random.random() + 0.5 * 12
         DISTANCE_FROM_GOAL = 15
 
@@ -960,7 +959,6 @@ class ObstaclesDocking3d(CapsuleDocking3d):
         """
         Set up and environment with multiple capsules as obstacles around the goal location (e.g. a pear or oil rig)
         """
-        # TODO: ADD strategy for spawn location to be away from capsules! (maybe to z location limitation, do not forget to update reset function then)
         CAPSULE_OBSTACLES_RADIUS = 1.0
         CAPSULE_OBSTACLES_HEIGHT = 2 * self.max_dist_from_goal
         CAPSULE_DISTANCE_FROM_CENTER = 6
@@ -985,6 +983,25 @@ class ObstaclesDocking3d(CapsuleDocking3d):
         # Add Obstacles:
         self.capsules.extend(new_capsules)
         self.obstacles.extend(new_capsules)
+
+
+class ObstaclesNoCapDocking3d(ObstaclesDocking3d):
+    """
+    This class generates an environment already with multiple obstacles, but no capsule at docking point
+    """
+
+    def __init__(self, env_config: dict = BASE_CONFIG):
+        super().__init__(env_config)
+
+    def generate_environment(self):
+        """
+        Set up and environment as CapsuleDocking3d and just remove inner capsule
+        """
+        # Same setup as before:
+        super().generate_environment()
+        # Remove first capsule (the one in the middle)
+        self.capsules.pop(0)
+        self.obstacles.pop(0)
 
 
 class ObstaclesCurrentDocking3d(ObstaclesDocking3d):
