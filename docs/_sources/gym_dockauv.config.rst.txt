@@ -4,10 +4,10 @@ gym\_dockauv.config package
 Submodules
 ----------
 
-gym\_dockauv.config.PPO\_hyperparams module
+gym\_dockauv.config.DRL\_hyperparams module
 -------------------------------------------
 
-.. automodule:: gym_dockauv.config.PPO_hyperparams
+.. automodule:: gym_dockauv.config.DRL_hyperparams
    :members:
    :undoc-members:
    :show-inheritance:

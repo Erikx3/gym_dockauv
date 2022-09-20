@@ -30,7 +30,7 @@ BASE_CONFIG = {
 
     # ---------- SIMULATION --------------
     "t_step_size": 0.10,                    # Length of each simulation timestep [s]
-    "interval_datastorage": 200,            # Interval of episodes on which extended data is saved through data class
+    "interval_datastorage": 100,            # Interval of episodes on which extended data is saved through data class
     "interval_episode_log": 50,             # Log the episode info dict in specific interval into the log file
     "save_path_folder": os.path.join(os.getcwd(), "logs"),  # Folder name where all result files will be stored
 
@@ -45,7 +45,7 @@ BASE_CONFIG = {
     # ---------- AUV & REWARDS ----------
     "vehicle": "BlueROV2",                  # Name of the vehicle, look for available vehicles in
                                             # gym_dockauv/objects/vehicles
-                                            # Observation normalization parameters
+                                            # Observation normalization parameters empirically determined
     "u_max": 2.0,                           # Surge max
     "v_max": 1.5,                           # Sway max
     "w_max": 1.5,                           # Heave max
@@ -53,6 +53,7 @@ BASE_CONFIG = {
     "q_max": 90 * np.pi/180,                # Pitch rate max
     "r_max": 120 * np.pi/180,               # Yaw rate max
     "radius": 0.5,                          # Radius size of vehicle for collision detection
+    "reward_set": 1,                        # The reward set that is chosen
     "reward_factors": {                     # Reward factors / weights in dictionary
         "w_d": 1.1,                         # Continuous: distance from goal
         "w_delta_psi": 0.5,                 # Continuous: chi error (heading)

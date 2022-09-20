@@ -49,6 +49,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="gym_dockauv.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gym_dockauv.html#module-gym_dockauv.debug">gym_dockauv.debug module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gym_dockauv.html#module-gym_dockauv.notes">gym_dockauv.notes module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gym_dockauv.html#module-gym_dockauv.train">gym_dockauv.train module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gym_dockauv.html#module-gym_dockauv">Module contents</a></li>
@@ -267,13 +268,6 @@ the numpy arrays.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="gym_dockauv.utils.datastorage.EpisodeDataStorage.plot_epsiode_observation_and_u">
-<span class="sig-name descname"><span class="pre">plot_epsiode_observation_and_u</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.datastorage.EpisodeDataStorage.plot_epsiode_observation_and_u" title="Permalink to this definition"></a></dt>
-<dd><p>Individual wrapper for the static post simulation plot function for observations
-:return:</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="gym_dockauv.utils.datastorage.EpisodeDataStorage.plot_epsiode_states">
 <span class="sig-name descname"><span class="pre">plot_epsiode_states</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.datastorage.EpisodeDataStorage.plot_epsiode_states" title="Permalink to this definition"></a></dt>
 <dd><p>Individual wrapper for the static post simulation plot function for states
@@ -281,9 +275,23 @@ the numpy arrays.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.utils.datastorage.EpisodeDataStorage.plot_observation">
+<span class="sig-name descname"><span class="pre">plot_observation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.datastorage.EpisodeDataStorage.plot_observation" title="Permalink to this definition"></a></dt>
+<dd><p>Individual wrapper for plotting the observations wih metadata in subplots
+:return:</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="gym_dockauv.utils.datastorage.EpisodeDataStorage.plot_rewards">
 <span class="sig-name descname"><span class="pre">plot_rewards</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.datastorage.EpisodeDataStorage.plot_rewards" title="Permalink to this definition"></a></dt>
 <dd><p>Individual wrapper for plotting rewards
+:return:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.utils.datastorage.EpisodeDataStorage.plot_u">
+<span class="sig-name descname"><span class="pre">plot_u</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.datastorage.EpisodeDataStorage.plot_u" title="Permalink to this definition"></a></dt>
+<dd><p>Individual wrapper for the static post simulation plot function for observations
 :return:</p>
 </dd></dl>
 
@@ -311,6 +319,25 @@ the numpy arrays.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>path to where file is saved</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.utils.datastorage.EpisodeDataStorage.save_animation_video">
+<span class="sig-name descname"><span class="pre">save_animation_video</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">save_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fps</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.datastorage.EpisodeDataStorage.save_animation_video" title="Permalink to this definition"></a></dt>
+<dd><p>Individual wrapper to save video of loaded storage
+:rtype: <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>
+:return:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>save_path</strong> (<em>str</em>) – </p></li>
+<li><p><strong>fps</strong> (<em>int</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None</p>
 </dd>
 </dl>
 </dd></dl>
@@ -442,8 +469,8 @@ its simulation ends</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="gym_dockauv.utils.datastorage.FullDataStorage.set_up_episode_storage">
-<span class="sig-name descname"><span class="pre">set_up_episode_storage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.datastorage.FullDataStorage.set_up_episode_storage" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="gym_dockauv.utils.datastorage.FullDataStorage.set_up_full_storage">
+<span class="sig-name descname"><span class="pre">set_up_full_storage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.datastorage.FullDataStorage.set_up_full_storage" title="Permalink to this definition"></a></dt>
 <dd><p>Set up the storage to save and update incoming data with passing a reference of the env</p>
 <p>file_save_name: will be formatted path_folderYYYY-MM-DDTHH-MM-SS__{title}__FULL_DATA_STORAGE.pkl</p>
 <dl class="field-list simple">
@@ -811,8 +838,12 @@ the test cases.</p>
 </dd>
 <dt class="field-even">Keyword Arguments</dt>
 <dd class="field-even"><ul class="simple">
-<li><p><em>position</em> (<code class="docutils literal notranslate"><span class="pre">np.ndarray</span></code>) –
+<li><p><em>positions</em> (<code class="docutils literal notranslate"><span class="pre">np.ndarray</span></code>) –
 array nx3, where n is the total number of all available position data points after the episode</p></li>
+<li><p><em>attitudes</em> (<code class="docutils literal notranslate"><span class="pre">np.ndarray</span></code>) –
+array nx3, where n is the total number of all available attitude data</p></li>
+<li><p><em>end_pos</em> (<code class="docutils literal notranslate"><span class="pre">np.ndarray</span></code>) –
+array nxnr, where n is the number of data and nr the number of rays</p></li>
 </ul>
 </dd>
 <dt class="field-odd">Return type</dt>
@@ -941,13 +972,53 @@ show attitude arrows (with plt.pause() save animation does not work)</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="gym_dockauv.utils.plotutils.EpisodeVisualization.plot_observation_and_u">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">plot_observation_and_u</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">observation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">episode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.plotutils.EpisodeVisualization.plot_observation_and_u" title="Permalink to this definition"></a></dt>
-<dd><p>Plot the observation and the resulting input into the vehicle (which might be low pass filtered)</p>
+<dt class="sig sig-object py" id="gym_dockauv.utils.plotutils.EpisodeVisualization.plot_observation">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">plot_observation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">observation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meta_data_obs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">episode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.plotutils.EpisodeVisualization.plot_observation" title="Permalink to this definition"></a></dt>
+<dd><p>Plot the observation with meta data (needs meta data on observation, more beautiful wrapper)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>observation</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – array(n, o) with n data points and o observations</p></li>
+<li><p><strong>step_size</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – fixed step size</p></li>
+<li><p><strong>meta_data_obs</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]) – meta data of observation name in list of lists</p></li>
+<li><p><strong>episode</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – optional episode number</p></li>
+<li><p><strong>title</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – optional title</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.utils.plotutils.EpisodeVisualization.plot_rewards">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">plot_rewards</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cum_rewards</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rewards</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">episode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meta_data_reward</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_cont_rewards</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.plotutils.EpisodeVisualization.plot_rewards" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cum_rewards</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – array(n, r) with n data points and r rewards (cumulative)</p></li>
+<li><p><strong>rewards</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – array(n, r) with n data points and r rewards</p></li>
+<li><p><strong>episode</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – episode number</p></li>
+<li><p><strong>title</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – title of figure</p></li>
+<li><p><strong>x_title</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – title of x axis (this function is used in two ways)</p></li>
+<li><p><strong>meta_data_reward</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]) – list of strings with short description of each reward</p></li>
+<li><p><strong>n_cont_rewards</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – number of continuous rewards</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.utils.plotutils.EpisodeVisualization.plot_u">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">plot_u</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">u</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">episode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.plotutils.EpisodeVisualization.plot_u" title="Permalink to this definition"></a></dt>
+<dd><p>Plot the resulting input into the vehicle (which might be low pass filtered)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
 <li><p><strong>u</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – array(n, u) with n data points and u input</p></li>
 <li><p><strong>step_size</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – fixed step size</p></li>
 <li><p><strong>episode</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – optional episode number</p></li>
@@ -961,21 +1032,26 @@ show attitude arrows (with plt.pause() save animation does not work)</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="gym_dockauv.utils.plotutils.EpisodeVisualization.plot_rewards">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">plot_rewards</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cum_rewards</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rewards</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">episode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meta_data_reward</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.plotutils.EpisodeVisualization.plot_rewards" title="Permalink to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<dt class="sig sig-object py" id="gym_dockauv.utils.plotutils.EpisodeVisualization.save_animation_video">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">save_animation_video</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">save_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">states</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">episode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shapes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radar_end_pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.plotutils.EpisodeVisualization.save_animation_video" title="Permalink to this definition"></a></dt>
+<dd><p>Wrapper to plot interactive animation of the episode animation after it has been saved</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>cum_rewards</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – array(n, r) with n data points and r rewards (cumulative)</p></li>
-<li><p><strong>rewards</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – array(n, r) with n data points and r rewards</p></li>
-<li><p><strong>episode</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – episode number</p></li>
-<li><p><strong>title</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – title of figure</p></li>
-<li><p><strong>x_title</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – title of x axis (this function is used in two ways)</p></li>
-<li><p><strong>meta_data_reward</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]) – list of strings with short description of each reward</p></li>
+<li><p><strong>save_path</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Where the video file should be saved, should end on .mp4</p></li>
+<li><p><strong>fps</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Frames per second (if realtime wanted, enter 1/t_step here)</p></li>
+<li><p><strong>states</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – nx12 array of states</p></li>
+<li><p><strong>episode</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Episode number</p></li>
+<li><p><strong>shapes</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="gym_dockauv.objects.html#gym_dockauv.objects.shape.Shape" title="gym_dockauv.objects.shape.Shape"><code class="xref py py-class docutils literal notranslate"><span class="pre">Shape</span></code></a>]]) – static shapes in plot</p></li>
+<li><p><strong>radar_end_pos</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>]) – array(n_data, n_rays, 3) for all radar end pos</p></li>
+<li><p><strong>title</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – title for subplot</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>None</p>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
 </dd>
 </dl>
 </dd></dl>
@@ -990,6 +1066,52 @@ show attitude arrows (with plt.pause() save animation does not work)</p>
 <p>Possible function ideas:
 - Reward function, success and other statistics about the agent or its path/decision
 - All available animations in the folder in chronological order</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gym_dockauv.utils.plotutils.plot_function2d">
+<span class="sig-prename descclassname"><span class="pre">gym_dockauv.utils.plotutils.</span></span><span class="sig-name descname"><span class="pre">plot_function2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlabel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylabel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.plotutils.plot_function2d" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>f</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>) – Funcion</p></li>
+<li><p><strong>xlim</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – x limits for linspace</p></li>
+<li><p><strong>xlabel</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – xlabel</p></li>
+<li><p><strong>ylabel</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – ylabel</p></li>
+<li><p><strong>title</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – Title</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>[&lt;function figure at 0x7facb48908b0&gt;, &lt;function axes at 0x7facb4892280&gt;]</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>plot</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gym_dockauv.utils.plotutils.plot_function3d">
+<span class="sig-prename descclassname"><span class="pre">gym_dockauv.utils.plotutils.</span></span><span class="sig-name descname"><span class="pre">plot_function3d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlabel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylabel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zlabel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.utils.plotutils.plot_function3d" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>f</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>) – Funcion</p></li>
+<li><p><strong>xlim</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – x limits for linspace</p></li>
+<li><p><strong>ylim</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – y limits for linspace</p></li>
+<li><p><strong>xlabel</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – x-label</p></li>
+<li><p><strong>ylabel</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – y-label</p></li>
+<li><p><strong>zlabel</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – z-label</p></li>
+<li><p><strong>title</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – Title</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>[&lt;function figure at 0x7facb48908b0&gt;, &lt;function axes at 0x7facb4892280&gt;]</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>plot</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>

@@ -50,6 +50,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="gym_dockauv.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gym_dockauv.html#module-gym_dockauv.debug">gym_dockauv.debug module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gym_dockauv.html#module-gym_dockauv.notes">gym_dockauv.notes module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gym_dockauv.html#module-gym_dockauv.train">gym_dockauv.train module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gym_dockauv.html#module-gym_dockauv">Module contents</a></li>
@@ -162,6 +163,12 @@ Simulation. Below you find the most important definitions:</p>
 \[\boldsymbol{\eta} = \begin{bmatrix}
     x &amp; y &amp; z &amp; \phi &amp; \theta &amp; \psi
 \end{bmatrix}^T\]</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gym_dockauv.objects.auvsim.AUVSim.euler_dot">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">euler_dot</span></span><a class="headerlink" href="#gym_dockauv.objects.auvsim.AUVSim.euler_dot" title="Permalink to this definition"></a></dt>
+<dd><p>Returns <span class="math notranslate nohighlight">\(\boldsymbol{\dot{Theta}}\)</span></p>
 </dd></dl>
 
 <dl class="py property">
@@ -377,7 +384,7 @@ thus transformation from FLOW coordinate system to NED can be done here with var
 <span id="gym-dockauv-objects-sensor-module"></span><h2>gym_dockauv.objects.sensor module<a class="headerlink" href="#module-gym_dockauv.objects.sensor" title="Permalink to this headline"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="gym_dockauv.objects.sensor.Radar">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gym_dockauv.objects.sensor.</span></span><span class="sig-name descname"><span class="pre">Radar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6.283185307179586</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6.283185307179586</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ray_per_deg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.08726646259971647</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_dist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">25</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.sensor.Radar" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gym_dockauv.objects.sensor.</span></span><span class="sig-name descname"><span class="pre">Radar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6.283185307179586</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6.283185307179586</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ray_per_deg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.08726646259971647</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_dist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blocksize_reduce</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.sensor.Radar" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Represent a radar sensor suite. Initialize with the alpha, beta view angle and the amount of the rays per degree</p>
 <p>Make sure alpha and beta is dividable by that amount, for now I throw an error if not.</p>
@@ -394,6 +401,7 @@ sensor is mounted on (function is provided)</p>
 <li><p><strong>beta</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – range in horizontal direction</p></li>
 <li><p><strong>ray_per_deg</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – number of rays per degree</p></li>
 <li><p><strong>max_dist</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – maximum distance for all rays</p></li>
+<li><p><strong>blocksize_reduce</strong> (<em>int</em>) – </p></li>
 </ul>
 </dd>
 <dt class="field-even">Variables</dt>
@@ -402,12 +410,22 @@ sensor is mounted on (function is provided)</p>
 <li><p><strong>rd_b</strong> (<em>np.ndarray</em>) – array (n,3) for the direction of the rays in body frame, where n will be the total number of rays
 (does not change normal over the course of a simulation)</p></li>
 <li><p><strong>rd_n</strong> (<em>np.ndarray</em>) – array (n,3) for the direction of the rays in {n}</p></li>
-<li><p><strong>intersec_dist</strong> (<em>np.ndarray</em>) – array (n,) for saving the intersection distance along rd_n, if no intersection the max distance
-should be set</p></li>
+<li><p><strong>intersec_dist_fallback</strong> (<em>np.ndarray</em>) – array (n,) for saving the intersection distance for no intersection, the max distance
+will be set</p></li>
 <li><p><strong>end_pos_n</strong> (<em>np.ndarray</em>) – array (n,3) for saving the intersection point in {n}</p></li>
 </ul>
 </dd>
 </dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="gym_dockauv.objects.sensor.Radar.intersec_dist2d">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">intersec_dist2d</span></span><a class="headerlink" href="#gym_dockauv.objects.sensor.Radar.intersec_dist2d" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gym_dockauv.objects.sensor.Radar.intersec_dist_reduced">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">intersec_dist_reduced</span></span><a class="headerlink" href="#gym_dockauv.objects.sensor.Radar.intersec_dist_reduced" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="gym_dockauv.objects.sensor.Radar.pos_arr">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pos_arr</span></span><a class="headerlink" href="#gym_dockauv.objects.sensor.Radar.pos_arr" title="Permalink to this definition"></a></dt>
@@ -420,15 +438,20 @@ should be set</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="gym_dockauv.objects.sensor.Radar.update_end_pos">
-<span class="sig-name descname"><span class="pre">update_end_pos</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.sensor.Radar.update_end_pos" title="Permalink to this definition"></a></dt>
-<dd><p>Update all end position points, should be called when intersec_dist is upated from the outside</p>
+<dt class="sig sig-object py" id="gym_dockauv.objects.sensor.Radar.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eta</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.sensor.Radar.reset" title="Permalink to this definition"></a></dt>
+<dd><p>Helper function to reset radar</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>eta</strong> (<em>numpy.ndarray</em>) – </p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="gym_dockauv.objects.sensor.Radar.update_pos_and_att">
-<span class="sig-name descname"><span class="pre">update_pos_and_att</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eta</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.sensor.Radar.update_pos_and_att" title="Permalink to this definition"></a></dt>
-<dd><p>Updates all the rays direction in {n} and the actual position</p>
+<dt class="sig sig-object py" id="gym_dockauv.objects.sensor.Radar.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eta</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.sensor.Radar.update" title="Permalink to this definition"></a></dt>
+<dd><p>Updates all the rays direction in {n} and the actual starting position,</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>eta</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – array (6,) of position and attitude</p>
@@ -438,6 +461,21 @@ should be set</p></li>
 </dd>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.objects.sensor.Radar.update_intersec">
+<span class="sig-name descname"><span class="pre">update_intersec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">intersec_dist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.sensor.Radar.update_intersec" title="Permalink to this definition"></a></dt>
+<dd><p>Update the intersection points and thus the end points of the radar, fallback is used in case None is parsed</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>intersec_dist</strong> – array (n_rays,) with the intersection distances, negative and greater values than max
+dist are corrected automatically</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
 </dd>
 </dl>
 </dd></dl>
@@ -571,7 +609,7 @@ distance.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>radius</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – radius of sphere</p></li>
-<li><p><strong>scale</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – [0, 2] range for circle</p></li>
+<li><p><strong>scale</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – [0, 1] range for circle</p></li>
 <li><p><strong>sweep1</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – first sweep of mesh</p></li>
 <li><p><strong>sweep2</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – second sweep of mesh</p></li>
 </ul>
@@ -596,6 +634,20 @@ distance.</p>
 </dl>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gym_dockauv.objects.shape.Spheres">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gym_dockauv.objects.shape.</span></span><span class="sig-name descname"><span class="pre">Spheres</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spheres</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.shape.Spheres" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Helper class to access and store data from all spheres</p>
+<p>Most important is to access all the positions and radius as a big array for vectorized functions</p>
+<p>This class can be enhanced with update or adding features, but are not needed in this case</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>spheres</strong> (<em>List</em><em>[</em><a class="reference internal" href="#gym_dockauv.objects.shape.Sphere" title="gym_dockauv.objects.shape.Sphere"><em>gym_dockauv.objects.shape.Sphere</em></a><em>]</em>) – </p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -644,6 +696,28 @@ distance.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="gym_dockauv.objects.shape.collision_sphere_spheres">
+<span class="sig-prename descclassname"><span class="pre">gym_dockauv.objects.shape.</span></span><span class="sig-name descname"><span class="pre">collision_sphere_spheres</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rad1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rad2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.shape.collision_sphere_spheres" title="Permalink to this definition"></a></dt>
+<dd><p>Determining whether one sphere 1 collides with any of multiple spheres</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pos1</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – (3,) array for position of first object</p></li>
+<li><p><strong>rad1</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – radius of first object</p></li>
+<li><p><strong>pos2</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – (n,3) array for position of all other spheres</p></li>
+<li><p><strong>rad2</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – radius of all other spheres</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>returns true if collision</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="gym_dockauv.objects.shape.dist_line_point">
 <span class="sig-prename descclassname"><span class="pre">gym_dockauv.objects.shape.</span></span><span class="sig-name descname"><span class="pre">dist_line_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">po</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.shape.dist_line_point" title="Permalink to this definition"></a></dt>
 <dd><p>Function to calculate the closest distance between a line segment and a point</p>
@@ -660,7 +734,7 @@ distance.</p>
 <dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
 </dd>
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>shortes distance between line and point</p>
+<dd class="field-odd"><p>shortest distance between line and point</p>
 </dd>
 </dl>
 </dd></dl>
@@ -718,6 +792,65 @@ capsule</p>
 </dd>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>array(n,) with the distances calculated</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gym_dockauv.objects.shape.intersec_dist_line_sphere">
+<span class="sig-prename descclassname"><span class="pre">gym_dockauv.objects.shape.</span></span><span class="sig-name descname"><span class="pre">intersec_dist_line_sphere</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">l1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ld</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rad</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.shape.intersec_dist_line_sphere" title="Permalink to this definition"></a></dt>
+<dd><p>From: <a class="reference external" href="https://iquilezles.org/articles/intersectors/">https://iquilezles.org/articles/intersectors/</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>l1</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – array (3,) for line starting point</p></li>
+<li><p><strong>ld</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – array (3,) for the line direction from the starting point (does not need to be unit vector)</p></li>
+<li><p><strong>center</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – array(3,) for the center of the sphere</p></li>
+<li><p><strong>rad</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – radius of the sphere</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gym_dockauv.objects.shape.intersec_dist_lines_spheres_vectorized">
+<span class="sig-prename descclassname"><span class="pre">gym_dockauv.objects.shape.</span></span><span class="sig-name descname"><span class="pre">intersec_dist_lines_spheres_vectorized</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">l1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ld</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rad</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.shape.intersec_dist_lines_spheres_vectorized" title="Permalink to this definition"></a></dt>
+<dd><p>Adapted from: <a class="reference external" href="https://iquilezles.org/articles/intersectors/">https://iquilezles.org/articles/intersectors/</a></p>
+<p>This functions calculates the minimum distance of all intersection between a number of rays and multiple spheres</p>
+<p>nl is the number of rays, ns the number of sphere for the dimensions below in the description</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>l1</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – array (nl, 3) for line starting points</p></li>
+<li><p><strong>ld</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – array (nl, 3) for the line directions from the starting points (does not need to be unit vector)</p></li>
+<li><p><strong>center</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – array(ns, 3) for the center of the spheres</p></li>
+<li><p><strong>rad</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – array(ns,) for the radius of the spheres</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>array(nl,) with the shortest intersection distance in the direction of each ray, otherwise result is
+something negative (as no criteria for intersect “behind” the starting point is not well defined)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gym_dockauv.objects.shape.vec_line_point">
+<span class="sig-prename descclassname"><span class="pre">gym_dockauv.objects.shape.</span></span><span class="sig-name descname"><span class="pre">vec_line_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">po</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.objects.shape.vec_line_point" title="Permalink to this definition"></a></dt>
+<dd><p>This function returns the vector pointing from the line towards the point</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>po</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – array (3,) for the point position</p></li>
+<li><p><strong>l1</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – array (3,) for start of line</p></li>
+<li><p><strong>l2</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – array (3,) for end of line</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>array(3,) pointing from line to point</p>
 </dd>
 </dl>
 </dd></dl>

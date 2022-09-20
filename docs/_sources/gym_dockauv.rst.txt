@@ -15,6 +15,14 @@ Subpackages
 Submodules
 ----------
 
+gym\_dockauv.debug module
+-------------------------
+
+.. automodule:: gym_dockauv.debug
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 gym\_dockauv.notes module
 -------------------------
 

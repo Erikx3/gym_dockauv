@@ -6,10 +6,11 @@ import numpy as np
 import gym
 from matplotlib import pyplot as plt
 from stable_baselines3 import A2C, PPO, DDPG, SAC
+from stable_baselines3.common import base_class
 from stable_baselines3.common.noise import NormalActionNoise
 
 from gym_dockauv.utils.datastorage import EpisodeDataStorage, FullDataStorage
-from gym_dockauv.config.PPO_hyperparams import PPO_HYPER_PARAMS_DEFAULT
+from gym_dockauv.config.DRL_hyperparams import PPO_HYPER_PARAMS_DEFAULT
 from gym_dockauv.config.env_config import PREDICT_CONFIG, MANUAL_CONFIG, TRAIN_CONFIG, REGISTRATION_DICT
 from gym_dockauv.envs.docking3d import BaseDocking3d
 
@@ -19,6 +20,7 @@ logger = logging.getLogger(__name__)
 
 def train(gym_env: str,
           total_timesteps: int,
+          MODEL: base_class = PPO,
           model_save_path: str = "logs/PPO_docking",
           agent_hyper_params: dict = PPO_HYPER_PARAMS_DEFAULT,
           env_config: dict = TRAIN_CONFIG,
@@ -36,6 +38,7 @@ def train(gym_env: str,
         by default for PPO at 2048, thus the agents only checks if its own simulation time steps is bigger than 3000 
         after every multiple of 2048 
 
+    :param MODEL: DRL algorithm model to use
     :param gym_env: Registration string of gym from docking3d
     :param total_timesteps: total timesteps for this training run
     :param model_save_path: path where to save the model
@@ -52,17 +55,16 @@ def train(gym_env: str,
     elapsed_timesteps = 0
     sim_timesteps = timesteps_per_save if timesteps_per_save else total_timesteps
 
-    # For DDPG algorithm
-    n_actions = env.action_space.shape[0]
-    action_noise = NormalActionNoise(mean=np.zeros(n_actions), sigma=0.1 * np.ones(n_actions))
+    # # For DDPG algorithm
+    # n_actions = env.action_space.shape[0]
+    # action_noise = NormalActionNoise(mean=np.zeros(n_actions), sigma=0.1 * np.ones(n_actions))
 
     # Instantiate the agent
     if model_load_path is None:
-        # model = PPO(policy='MlpPolicy', env=env, **agent_hyper_params)
-        model = SAC(policy="MlpPolicy", env=env, learning_rate=0.0015, buffer_size=50000, batch_size=100, tensorboard_log="tb_logs")
+        model = MODEL(policy='MlpPolicy', env=env, **agent_hyper_params)
     else:
         # Note that this does not load a replay buffer
-        model = SAC.load(model_load_path, env=env)
+        model = MODEL.load(model_load_path, env=env)
 
     while elapsed_timesteps < total_timesteps:
         # Train the agent
@@ -76,16 +78,18 @@ def train(gym_env: str,
         model.save(tmp_model_save_path)
         logger.info(f'Successfully saved model: {os.path.join(os.path.join(os.getcwd(), tmp_model_save_path))}')
 
-    # TODO: Check if saving rollout buffer is worth it
     env.save_full_data_storage()
+    return None
 
 
-def predict(gym_env: str, model_path: str, n_episodes: int = 5, render: bool = True):
+# TODO
+def predict(gym_env: str, model_path: str, MODEL: base_class = PPO, n_episodes: int = 5, render: bool = True):
     """
     Function to visualize and evaluate the actual model on the environment
 
     :param gym_env: Registration string of gym from docking3d
     :param model_path: full path of trained agent
+    :param MODEL: stable baseline model
     :param n_episodes: number of episodes to run
     :param render: boolean for render
     :return:
@@ -96,8 +100,8 @@ def predict(gym_env: str, model_path: str, n_episodes: int = 5, render: bool = T
     # to compare the system on which the model was trained vs the current one
 
     n_actions = env.action_space.shape[0]
-    action_noise = NormalActionNoise(mean=np.zeros(n_actions), sigma=0.1 * np.ones(n_actions))
-    model = SAC.load(model_path, env=env)
+    #action_noise = NormalActionNoise(mean=np.zeros(n_actions), sigma=0.1 * np.ones(n_actions))
+    model = MODEL.load(model_path, env=env)
 
     # Enjoy trained agent
     obs = env.reset(seed=2)

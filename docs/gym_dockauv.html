@@ -49,6 +49,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-gym_dockauv.debug">gym_dockauv.debug module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-gym_dockauv.notes">gym_dockauv.notes module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-gym_dockauv.train">gym_dockauv.train module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-gym_dockauv">Module contents</a></li>
@@ -91,7 +92,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="gym_dockauv.config.html">gym_dockauv.config package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="gym_dockauv.config.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gym_dockauv.config.html#module-gym_dockauv.config.PPO_hyperparams">gym_dockauv.config.PPO_hyperparams module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gym_dockauv.config.html#module-gym_dockauv.config.DRL_hyperparams">gym_dockauv.config.DRL_hyperparams module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gym_dockauv.config.html#module-gym_dockauv.config.env_config">gym_dockauv.config.env_config module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gym_dockauv.config.html#module-gym_dockauv.config">Module contents</a></li>
 </ul>
@@ -139,16 +140,128 @@
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
 </section>
+<section id="module-gym_dockauv.debug">
+<span id="gym-dockauv-debug-module"></span><h2>gym_dockauv.debug module<a class="headerlink" href="#module-gym_dockauv.debug" title="Permalink to this headline"></a></h2>
+<p>This file is just an accumulation of files for single purpose debugging or plots</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="gym_dockauv.debug.debug_cont_goal_constraints_attitude">
+<span class="sig-prename descclassname"><span class="pre">gym_dockauv.debug.</span></span><span class="sig-name descname"><span class="pre">debug_cont_goal_constraints_attitude</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.debug.debug_cont_goal_constraints_attitude" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gym_dockauv.debug.debug_cont_goal_constraints_goal_heading">
+<span class="sig-prename descclassname"><span class="pre">gym_dockauv.debug.</span></span><span class="sig-name descname"><span class="pre">debug_cont_goal_constraints_goal_heading</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.debug.debug_cont_goal_constraints_goal_heading" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gym_dockauv.debug.debug_cont_goal_constraints_heading_navigation">
+<span class="sig-prename descclassname"><span class="pre">gym_dockauv.debug.</span></span><span class="sig-name descname"><span class="pre">debug_cont_goal_constraints_heading_navigation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.debug.debug_cont_goal_constraints_heading_navigation" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gym_dockauv.debug.debug_cont_goal_constraints_velocity">
+<span class="sig-prename descclassname"><span class="pre">gym_dockauv.debug.</span></span><span class="sig-name descname"><span class="pre">debug_cont_goal_constraints_velocity</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.debug.debug_cont_goal_constraints_velocity" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gym_dockauv.debug.debug_disc_goal_contraints">
+<span class="sig-prename descclassname"><span class="pre">gym_dockauv.debug.</span></span><span class="sig-name descname"><span class="pre">debug_disc_goal_contraints</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.debug.debug_disc_goal_contraints" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gym_dockauv.debug.debug_log_precision">
+<span class="sig-prename descclassname"><span class="pre">gym_dockauv.debug.</span></span><span class="sig-name descname"><span class="pre">debug_log_precision</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.debug.debug_log_precision" title="Permalink to this definition"></a></dt>
+<dd><p>Debug reward function of log (here with delta distance)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gym_dockauv.debug.debug_obstacle_avoidance">
+<span class="sig-prename descclassname"><span class="pre">gym_dockauv.debug.</span></span><span class="sig-name descname"><span class="pre">debug_obstacle_avoidance</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.debug.debug_obstacle_avoidance" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gym_dockauv.debug.evaluate_paths">
+<span class="sig-prename descclassname"><span class="pre">gym_dockauv.debug.</span></span><span class="sig-name descname"><span class="pre">evaluate_paths</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_dir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.debug.evaluate_paths" title="Permalink to this definition"></a></dt>
+<dd><p>Function to plot the path of  the vehicle in each episode saved in multiple subfolders
+:type log_dir: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param log_dir: folder with logs in subfolders of environment and DRL algo
+:return:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>log_dir</strong> (<em>str</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gym_dockauv.debug.evaluate_training">
+<span class="sig-prename descclassname"><span class="pre">gym_dockauv.debug.</span></span><span class="sig-name descname"><span class="pre">evaluate_training</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_dir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.debug.evaluate_training" title="Permalink to this definition"></a></dt>
+<dd><p>Function to evaluate the training with episodic reward
+:type log_dir: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param log_dir: folder with logs in subfolders of environment and DRL algo
+:return:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>log_dir</strong> (<em>str</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gym_dockauv.debug.get_statistics_prediction">
+<span class="sig-prename descclassname"><span class="pre">gym_dockauv.debug.</span></span><span class="sig-name descname"><span class="pre">get_statistics_prediction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_dir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.debug.get_statistics_prediction" title="Permalink to this definition"></a></dt>
+<dd><p>Function to get the statistics in the full data storage of multiple runs
+:type log_dir: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param log_dir: folder with logs in subfolders of environment and DRL algo
+:return:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>log_dir</strong> (<em>str</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gym_dockauv.debug.mov_avg_plot">
+<span class="sig-prename descclassname"><span class="pre">gym_dockauv.debug.</span></span><span class="sig-name descname"><span class="pre">mov_avg_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.debug.mov_avg_plot" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
 <section id="module-gym_dockauv.notes">
 <span id="gym-dockauv-notes-module"></span><h2>gym_dockauv.notes module<a class="headerlink" href="#module-gym_dockauv.notes" title="Permalink to this headline"></a></h2>
 </section>
 <section id="module-gym_dockauv.train">
 <span id="gym-dockauv-train-module"></span><h2>gym_dockauv.train module<a class="headerlink" href="#module-gym_dockauv.train" title="Permalink to this headline"></a></h2>
 <dl class="py function">
+<dt class="sig sig-object py" id="gym_dockauv.train.make_gym">
+<span class="sig-prename descclassname"><span class="pre">gym_dockauv.train.</span></span><span class="sig-name descname"><span class="pre">make_gym</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gym_env</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env_config</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.train.make_gym" title="Permalink to this definition"></a></dt>
+<dd><p>Wrapper to create and return gym and return error if key is wrong</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gym_env</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Registration string of gym from docking3d env</p></li>
+<li><p><strong>env_config</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>) – Config for environment</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="gym_dockauv.envs.html#gym_dockauv.envs.docking3d.BaseDocking3d" title="gym_dockauv.envs.docking3d.BaseDocking3d"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDocking3d</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="gym_dockauv.train.manual_control">
-<span class="sig-prename descclassname"><span class="pre">gym_dockauv.train.</span></span><span class="sig-name descname"><span class="pre">manual_control</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.train.manual_control" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">gym_dockauv.train.</span></span><span class="sig-name descname"><span class="pre">manual_control</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gym_env</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.train.manual_control" title="Permalink to this definition"></a></dt>
 <dd><p>Function with pygame workaround to manually fly and debug the vehicle</p>
 <p>Great for debugging purposes, since post analysis can be called on the log that is created</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>gym_env</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Registration string of gym from docking3d env</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -167,13 +280,16 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="gym_dockauv.train.predict">
-<span class="sig-prename descclassname"><span class="pre">gym_dockauv.train.</span></span><span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_episodes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.train.predict" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">gym_dockauv.train.</span></span><span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gym_env</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">MODEL=&lt;class</span> <span class="pre">'stable_baselines3.ppo.ppo.PPO'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_episodes=5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">render=True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.train.predict" title="Permalink to this definition"></a></dt>
 <dd><p>Function to visualize and evaluate the actual model on the environment</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><strong>gym_env</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Registration string of gym from docking3d</p></li>
 <li><p><strong>model_path</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – full path of trained agent</p></li>
+<li><p><strong>MODEL</strong> (<em>&lt;module 'stable_baselines3.common.base_class' from '/home/erikx3/PycharmProjects/gym_dockauv/venv/lib/python3.8/site-packages/stable_baselines3/common/base_class.py'&gt;</em>) – stable baseline model</p></li>
 <li><p><strong>n_episodes</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – number of episodes to run</p></li>
+<li><p><strong>render</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – boolean for render</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -184,14 +300,16 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="gym_dockauv.train.train">
-<span class="sig-prename descclassname"><span class="pre">gym_dockauv.train.</span></span><span class="sig-name descname"><span class="pre">train</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">total_timesteps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_save_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'logs/PPO_docking'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_hyper_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'_init_setup_model':</span> <span class="pre">True,</span> <span class="pre">'batch_size':</span> <span class="pre">64,</span> <span class="pre">'clip_range':</span> <span class="pre">0.2,</span> <span class="pre">'clip_range_vf':</span> <span class="pre">None,</span> <span class="pre">'create_eval_env':</span> <span class="pre">False,</span> <span class="pre">'device':</span> <span class="pre">'auto',</span> <span class="pre">'ent_coef':</span> <span class="pre">0.0,</span> <span class="pre">'gae_lambda':</span> <span class="pre">0.95,</span> <span class="pre">'gamma':</span> <span class="pre">0.99,</span> <span class="pre">'learning_rate':</span> <span class="pre">0.0003,</span> <span class="pre">'max_grad_norm':</span> <span class="pre">0.5,</span> <span class="pre">'n_epochs':</span> <span class="pre">10,</span> <span class="pre">'n_steps':</span> <span class="pre">2048,</span> <span class="pre">'normalize_advantage':</span> <span class="pre">True,</span> <span class="pre">'policy_kwargs':</span> <span class="pre">None,</span> <span class="pre">'sde_sample_freq':</span> <span class="pre">-</span> <span class="pre">1,</span> <span class="pre">'seed':</span> <span class="pre">None,</span> <span class="pre">'target_kl':</span> <span class="pre">None,</span> <span class="pre">'tensorboard_log':</span> <span class="pre">None,</span> <span class="pre">'use_sde':</span> <span class="pre">False,</span> <span class="pre">'verbose':</span> <span class="pre">0,</span> <span class="pre">'vf_coef':</span> <span class="pre">0.5}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'action_reward_factors':</span> <span class="pre">array([0.05,</span> <span class="pre">0.15,</span> <span class="pre">0.05,</span> <span class="pre">0.25,</span> <span class="pre">0.25,</span> <span class="pre">0.25]),</span> <span class="pre">'config_name':</span> <span class="pre">'DEFAULT_BASE_CONFIG',</span> <span class="pre">'goal_location':</span> <span class="pre">array([0,</span> <span class="pre">0,</span> <span class="pre">0]),</span> <span class="pre">'interval_datastorage':</span> <span class="pre">200,</span> <span class="pre">'log_level':</span> <span class="pre">20,</span> <span class="pre">'max_attitude':</span> <span class="pre">1.0471975511965976,</span> <span class="pre">'max_dist_from_goal':</span> <span class="pre">10,</span> <span class="pre">'max_timesteps':</span> <span class="pre">500,</span> <span class="pre">'radius':</span> <span class="pre">0.5,</span> <span class="pre">'reward_factors':</span> <span class="pre">array([-</span> <span class="pre">7.e-01,</span> <span class="pre">-</span> <span class="pre">6.e-01,</span> <span class="pre">-</span> <span class="pre">5.e-02,</span> <span class="pre">-</span> <span class="pre">4.e-01,</span> <span class="pre">5.e+01,</span> <span class="pre">-</span> <span class="pre">1.e+02,</span> <span class="pre">-</span> <span class="pre">1.e+02,</span> <span class="pre">-</span> <span class="pre">5.e+01]),</span> <span class="pre">'save_path_folder':</span> <span class="pre">'/home/erikx3/PycharmProjects/gym_dockauv/docsrc/logs',</span> <span class="pre">'t_step_size':</span> <span class="pre">0.1,</span> <span class="pre">'title':</span> <span class="pre">'Training</span> <span class="pre">Run',</span> <span class="pre">'vehicle':</span> <span class="pre">'BlueROV2',</span> <span class="pre">'verbose':</span> <span class="pre">1}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tb_log_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'PPO'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timesteps_per_save</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_load_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.train.train" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">gym_dockauv.train.</span></span><span class="sig-name descname"><span class="pre">train</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gym_env</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_timesteps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">MODEL=&lt;class</span> <span class="pre">'stable_baselines3.ppo.ppo.PPO'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_save_path='logs/PPO_docking'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_hyper_params={'_init_setup_model':</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'batch_size':</span> <span class="pre">64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'clip_range':</span> <span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'clip_range_vf':</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'create_eval_env':</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'device':</span> <span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'ent_coef':</span> <span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'gae_lambda':</span> <span class="pre">0.95</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'gamma':</span> <span class="pre">0.99</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'learning_rate':</span> <span class="pre">0.0003</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'max_grad_norm':</span> <span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'n_epochs':</span> <span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'n_steps':</span> <span class="pre">2048</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'normalize_advantage':</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'policy_kwargs':</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'sde_sample_freq':</span> <span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'seed':</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'target_kl':</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'tensorboard_log':</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'use_sde':</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'verbose':</span> <span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'vf_coef':</span> <span class="pre">0.5}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env_config={'action_reward_factors':</span> <span class="pre">6.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'ang_rate_goal_reached_tol':</span> <span class="pre">0.3490658503988659</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'attitude_goal_reached_tol':</span> <span class="pre">0.3490658503988659</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'config_name':</span> <span class="pre">'DEFAULT_BASE_CONFIG'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'dist_goal_reached_tol':</span> <span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'interval_datastorage':</span> <span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'interval_episode_log':</span> <span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'log_level':</span> <span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'max_attitude':</span> <span class="pre">1.0471975511965976</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'max_dist_from_goal':</span> <span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'max_timesteps':</span> <span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'p_max':</span> <span class="pre">1.5707963267948966</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'q_max':</span> <span class="pre">1.5707963267948966</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'r_max':</span> <span class="pre">2.0943951023931953</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'radar':</span> <span class="pre">{'alpha':</span> <span class="pre">1.0471975511965976</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'beta':</span> <span class="pre">1.3962634015954636</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'blocksize_reduce':</span> <span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'freq':</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'max_dist':</span> <span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'ray_per_deg':</span> <span class="pre">0.17453292519943295}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'radius':</span> <span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'reward_factors':</span> <span class="pre">{'w_Theta_max':</span> <span class="pre">-200.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'w_Thetadot':</span> <span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'w_col':</span> <span class="pre">-300.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'w_d':</span> <span class="pre">1.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'w_delta_psi':</span> <span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'w_delta_theta':</span> <span class="pre">0.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'w_deltad_max':</span> <span class="pre">-200.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'w_goal':</span> <span class="pre">400.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'w_oa':</span> <span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'w_phi':</span> <span class="pre">0.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'w_t':</span> <span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'w_t_max':</span> <span class="pre">-100.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'w_theta':</span> <span class="pre">0.3}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'reward_set':</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'save_path_folder':</span> <span class="pre">'/home/erikx3/PycharmProjects/gym_dockauv/docsrc/logs'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'t_step_size':</span> <span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'title':</span> <span class="pre">'Training</span> <span class="pre">Run'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'u_max':</span> <span class="pre">2.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'v_max':</span> <span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'vehicle':</span> <span class="pre">'BlueROV2'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'velocity_goal_reached_tol':</span> <span class="pre">0.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'verbose':</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'w_max':</span> <span class="pre">1.5}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tb_log_name='PPO'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timesteps_per_save=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_load_path=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.train.train" title="Permalink to this definition"></a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
 </dd>
 <dt class="field-even">Parameters</dt>
 <dd class="field-even"><ul class="simple">
+<li><p><strong>gym_env</strong> (<em>str</em>) – </p></li>
 <li><p><strong>total_timesteps</strong> (<em>int</em>) – </p></li>
+<li><p><strong>MODEL</strong> (<em>&lt;module 'stable_baselines3.common.base_class' from '/home/erikx3/PycharmProjects/gym_dockauv/venv/lib/python3.8/site-packages/stable_baselines3/common/base_class.py'&gt;</em>) – </p></li>
 <li><p><strong>model_save_path</strong> (<em>str</em>) – </p></li>
 <li><p><strong>agent_hyper_params</strong> (<em>dict</em>) – </p></li>
 <li><p><strong>env_config</strong> (<em>dict</em>) – </p></li>

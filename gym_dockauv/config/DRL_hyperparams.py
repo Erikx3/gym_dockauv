@@ -24,6 +24,34 @@ PPO_HYPER_PARAMS_DEFAULT = {
     "_init_setup_model": True
 }
 
+SAC_HYPER_PARAMS_DEFAULT = {
+    "learning_rate": 3e-4,
+    "buffer_size": 1_000_000,  # 1e6
+    "learning_starts": 100,
+    "batch_size": 256,
+    "tau": 0.005,
+    "gamma": 0.99,
+    "train_freq": 1,
+    "gradient_steps": 1,
+    "action_noise": None,
+    "replay_buffer_class": None,
+    "replay_buffer_kwargs": None,
+    "optimize_memory_usage": False,
+    "ent_coef": "auto",
+    "target_update_interval": 1,
+    "target_entropy": "auto",
+    "use_sde": False,
+    "sde_sample_freq": -1,
+    "use_sde_at_warmup": False,
+    "tensorboard_log": None,
+    "create_eval_env": False,
+    "policy_kwargs": None,
+    "verbose": 0,
+    "seed": None,
+    "device": "auto",
+    "_init_setup_model": True
+}
+
 PPO_HYPER_PARAMS_TEST = {
     "learning_rate": 3e-4,
     "n_steps": 2048,
@@ -49,3 +77,30 @@ PPO_HYPER_PARAMS_TEST = {
     "_init_setup_model": True
 }
 
+SAC_HYPER_PARAMS_TEST = {
+    "learning_rate": 0.0015,
+    "buffer_size": 50000,  # 1e6
+    "learning_starts": 100,
+    "batch_size": 100,
+    "tau": 0.005,
+    "gamma": 0.99,
+    "train_freq": 1,
+    "gradient_steps": 1,
+    "action_noise": None,
+    "replay_buffer_class": None,
+    "replay_buffer_kwargs": None,
+    "optimize_memory_usage": False,
+    "ent_coef": "auto",
+    "target_update_interval": 1,
+    "target_entropy": "auto",
+    "use_sde": False,
+    "sde_sample_freq": -1,
+    "use_sde_at_warmup": False,
+    "tensorboard_log": "tb_logs",  # Changed to save tensorboard logs
+    "create_eval_env": False,
+    "policy_kwargs": None,
+    "verbose": 0,
+    "seed": None,
+    "device": "auto",
+    "_init_setup_model": True
+}

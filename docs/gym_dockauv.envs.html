@@ -49,6 +49,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="gym_dockauv.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gym_dockauv.html#module-gym_dockauv.debug">gym_dockauv.debug module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gym_dockauv.html#module-gym_dockauv.notes">gym_dockauv.notes module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gym_dockauv.html#module-gym_dockauv.train">gym_dockauv.train module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gym_dockauv.html#module-gym_dockauv">Module contents</a></li>
@@ -92,8 +93,8 @@
 <section id="module-gym_dockauv.envs.docking3d">
 <span id="gym-dockauv-envs-docking3d-module"></span><h2>gym_dockauv.envs.docking3d module<a class="headerlink" href="#module-gym_dockauv.envs.docking3d" title="Permalink to this headline"></a></h2>
 <dl class="py class">
-<dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.Docking3d">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gym_dockauv.envs.docking3d.</span></span><span class="sig-name descname"><span class="pre">Docking3d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'action_reward_factors':</span> <span class="pre">array([0.05,</span> <span class="pre">0.15,</span> <span class="pre">0.05,</span> <span class="pre">0.25,</span> <span class="pre">0.25,</span> <span class="pre">0.25]),</span> <span class="pre">'config_name':</span> <span class="pre">'DEFAULT_BASE_CONFIG',</span> <span class="pre">'goal_location':</span> <span class="pre">array([0,</span> <span class="pre">0,</span> <span class="pre">0]),</span> <span class="pre">'interval_datastorage':</span> <span class="pre">200,</span> <span class="pre">'log_level':</span> <span class="pre">20,</span> <span class="pre">'max_attitude':</span> <span class="pre">1.0471975511965976,</span> <span class="pre">'max_dist_from_goal':</span> <span class="pre">10,</span> <span class="pre">'max_timesteps':</span> <span class="pre">500,</span> <span class="pre">'radius':</span> <span class="pre">0.5,</span> <span class="pre">'reward_factors':</span> <span class="pre">array([-</span> <span class="pre">7.e-01,</span> <span class="pre">-</span> <span class="pre">6.e-01,</span> <span class="pre">-</span> <span class="pre">5.e-02,</span> <span class="pre">-</span> <span class="pre">4.e-01,</span> <span class="pre">5.e+01,</span> <span class="pre">-</span> <span class="pre">1.e+02,</span> <span class="pre">-</span> <span class="pre">1.e+02,</span> <span class="pre">-</span> <span class="pre">5.e+01]),</span> <span class="pre">'save_path_folder':</span> <span class="pre">'/home/erikx3/PycharmProjects/gym_dockauv/docsrc/logs',</span> <span class="pre">'t_step_size':</span> <span class="pre">0.1,</span> <span class="pre">'title':</span> <span class="pre">'DEFAULT',</span> <span class="pre">'vehicle':</span> <span class="pre">'BlueROV2',</span> <span class="pre">'verbose':</span> <span class="pre">1}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.Docking3d" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.BaseDocking3d">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gym_dockauv.envs.docking3d.</span></span><span class="sig-name descname"><span class="pre">BaseDocking3d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'action_reward_factors':</span> <span class="pre">6.0,</span> <span class="pre">'ang_rate_goal_reached_tol':</span> <span class="pre">0.3490658503988659,</span> <span class="pre">'attitude_goal_reached_tol':</span> <span class="pre">0.3490658503988659,</span> <span class="pre">'config_name':</span> <span class="pre">'DEFAULT_BASE_CONFIG',</span> <span class="pre">'dist_goal_reached_tol':</span> <span class="pre">0.5,</span> <span class="pre">'interval_datastorage':</span> <span class="pre">100,</span> <span class="pre">'interval_episode_log':</span> <span class="pre">50,</span> <span class="pre">'log_level':</span> <span class="pre">20,</span> <span class="pre">'max_attitude':</span> <span class="pre">1.0471975511965976,</span> <span class="pre">'max_dist_from_goal':</span> <span class="pre">20,</span> <span class="pre">'max_timesteps':</span> <span class="pre">1000,</span> <span class="pre">'p_max':</span> <span class="pre">1.5707963267948966,</span> <span class="pre">'q_max':</span> <span class="pre">1.5707963267948966,</span> <span class="pre">'r_max':</span> <span class="pre">2.0943951023931953,</span> <span class="pre">'radar':</span> <span class="pre">{'alpha':</span> <span class="pre">1.0471975511965976,</span> <span class="pre">'beta':</span> <span class="pre">1.3962634015954636,</span> <span class="pre">'blocksize_reduce':</span> <span class="pre">2,</span> <span class="pre">'freq':</span> <span class="pre">1,</span> <span class="pre">'max_dist':</span> <span class="pre">10,</span> <span class="pre">'ray_per_deg':</span> <span class="pre">0.17453292519943295},</span> <span class="pre">'radius':</span> <span class="pre">0.5,</span> <span class="pre">'reward_factors':</span> <span class="pre">{'w_Theta_max':</span> <span class="pre">-</span> <span class="pre">200.0,</span> <span class="pre">'w_Thetadot':</span> <span class="pre">0.2,</span> <span class="pre">'w_col':</span> <span class="pre">-</span> <span class="pre">300.0,</span> <span class="pre">'w_d':</span> <span class="pre">1.1,</span> <span class="pre">'w_delta_psi':</span> <span class="pre">0.5,</span> <span class="pre">'w_delta_theta':</span> <span class="pre">0.3,</span> <span class="pre">'w_deltad_max':</span> <span class="pre">-</span> <span class="pre">200.0,</span> <span class="pre">'w_goal':</span> <span class="pre">400.0,</span> <span class="pre">'w_oa':</span> <span class="pre">0.2,</span> <span class="pre">'w_phi':</span> <span class="pre">0.3,</span> <span class="pre">'w_t':</span> <span class="pre">0.05,</span> <span class="pre">'w_t_max':</span> <span class="pre">-</span> <span class="pre">100.0,</span> <span class="pre">'w_theta':</span> <span class="pre">0.3},</span> <span class="pre">'reward_set':</span> <span class="pre">1,</span> <span class="pre">'save_path_folder':</span> <span class="pre">'/home/erikx3/PycharmProjects/gym_dockauv/docsrc/logs',</span> <span class="pre">'t_step_size':</span> <span class="pre">0.1,</span> <span class="pre">'title':</span> <span class="pre">'DEFAULT',</span> <span class="pre">'u_max':</span> <span class="pre">2.0,</span> <span class="pre">'v_max':</span> <span class="pre">1.5,</span> <span class="pre">'vehicle':</span> <span class="pre">'BlueROV2',</span> <span class="pre">'velocity_goal_reached_tol':</span> <span class="pre">0.3,</span> <span class="pre">'verbose':</span> <span class="pre">1,</span> <span class="pre">'w_max':</span> <span class="pre">1.5}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.BaseDocking3d" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">gym.core.Env</span></code></p>
 <p>Base Class for the docking environment, will also be registered with gym. However, the configs for the
 environment are found at gym_dockauv/config</p>
@@ -102,10 +103,15 @@ environment are found at gym_dockauv/config</p>
 <p>Adding a reward or a done condition with reward needs to take the following steps:
 - Add reward to the self.last_reward_arr in the reward step
 - Add a factor to it in the config file
-- Update number of self.n_rewards in __init__()
+- Update number of self.n_rewards and self.n_cont_rewards in __init__()
 - Update the list self.meta_data_reward in __init__()
-- Update the index of self.meta_data_done in __init__() if necessary
 - Update the doc for the reward_step() function (and of done())</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Adding observations:
+- Add plus one to self.n_observation in __init__, update meta data here too
+- Add observation in observe() function, clip it accordingly, maybe update self.observation_space</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -113,37 +119,63 @@ environment are found at gym_dockauv/config</p>
 </dd>
 </dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.Docking3d.generate_environment">
-<span class="sig-name descname"><span class="pre">generate_environment</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.Docking3d.generate_environment" title="Permalink to this definition"></a></dt>
-<dd><p>Setup a environment after each reset call</p>
+<dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.BaseDocking3d.generate_environment">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">generate_environment</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.BaseDocking3d.generate_environment" title="Permalink to this definition"></a></dt>
+<dd><p>Set up an environment after each reset call, can be used to in multiple environments to make multiple scenarios,
+order matters in some helper functions</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.Docking3d.init_episode_storage">
-<span class="sig-name descname"><span class="pre">init_episode_storage</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.Docking3d.init_episode_storage" title="Permalink to this definition"></a></dt>
-<dd><p>Small helper function for setting up episode storage when needed</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.Docking3d.is_done">
-<span class="sig-name descname"><span class="pre">is_done</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.Docking3d.is_done" title="Permalink to this definition"></a></dt>
-<dd><p>Condition 0: Check if close to the goal
-Condition 1: Check if out of bounds for position
-Condition 2: Check if attitude (pitch, roll) too high
-Condition 3: Check if maximum time steps reached</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>]</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>[if simulation is done, extra discrete reward, indexes of conditions that are true]</p>
+<dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.BaseDocking3d.generate_random_att">
+<span class="sig-name descname"><span class="pre">generate_random_att</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_att_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.7</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.BaseDocking3d.generate_random_att" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>max_att_factor</strong> (<em>float</em>) – </p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.Docking3d.observe">
-<span class="sig-name descname"><span class="pre">observe</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.Docking3d.observe" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.BaseDocking3d.generate_random_pos">
+<span class="sig-name descname"><span class="pre">generate_random_pos</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.BaseDocking3d.generate_random_pos" title="Permalink to this definition"></a></dt>
+<dd><p>Function to generate random position with distance away from goal</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>d</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Distance spawned away from goal</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>array(3,) with random position</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.BaseDocking3d.init_episode_storage">
+<span class="sig-name descname"><span class="pre">init_episode_storage</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.BaseDocking3d.init_episode_storage" title="Permalink to this definition"></a></dt>
+<dd><p>Small helper function for setting up episode storage when needed</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.BaseDocking3d.is_done">
+<span class="sig-name descname"><span class="pre">is_done</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.BaseDocking3d.is_done" title="Permalink to this definition"></a></dt>
+<dd><p>Condition 0: Check if close to the goal
+Condition 1: Check if out of bounds for position
+Condition 2: Check if attitude (pitch, roll) too high
+Condition 3: Check if maximum time steps reached
+Condition 4: Check for collision</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[if simulation is done, indexes of conditions that are true]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.BaseDocking3d.observe">
+<span class="sig-name descname"><span class="pre">observe</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.BaseDocking3d.observe" title="Permalink to this definition"></a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></p>
@@ -152,56 +184,25 @@ Condition 3: Check if maximum time steps reached</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.Docking3d.render">
-<span class="sig-name descname"><span class="pre">render</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'human'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">real_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.Docking3d.render" title="Permalink to this definition"></a></dt>
-<dd><p>Renders the environment.</p>
-<p>The set of supported modes varies per environment. (And some
-environments do not support rendering at all.) By convention,
-if mode is:</p>
-<ul class="simple">
-<li><p>human: render to the current display or terminal and
-return nothing. Usually for human consumption.</p></li>
-<li><p>rgb_array: Return an numpy.ndarray with shape (x, y, 3),
-representing RGB values for an x-by-y pixel image, suitable
-for turning into a video.</p></li>
-<li><p>ansi: Return a string (str) or StringIO.StringIO containing a
-terminal-style text representation. The text can include newlines
-and ANSI escape sequences (e.g. for colors).</p></li>
-</ul>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<dl class="simple">
-<dt>Make sure that your class’s metadata ‘render.modes’ key includes</dt><dd><p>the list of supported modes. It’s recommended to call super()
-in implementations to use the functionality of this method.</p>
-</dd>
-</dl>
-</div>
-<dl class="field-list simple">
+<dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.BaseDocking3d.render">
+<span class="sig-name descname"><span class="pre">render</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'human'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rotate_cam</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">real_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.BaseDocking3d.render" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>mode</strong> (<em>str</em>) – the mode to render with</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mode</strong> – from base class, only human mode in this case</p></li>
+<li><p><strong>rotate_cam</strong> – if rotating the cam slowly (helps with depth in matplotlib)</p></li>
+<li><p><strong>real_time</strong> – if render should approx happen in real time</p></li>
+</ul>
 </dd>
-</dl>
-<p>Example:</p>
-<dl>
-<dt>class MyEnv(Env):</dt><dd><p>metadata = {‘render.modes’: [‘human’, ‘rgb_array’]}</p>
-<dl class="simple">
-<dt>def render(self, mode=’human’):</dt><dd><dl class="simple">
-<dt>if mode == ‘rgb_array’:</dt><dd><p>return np.array(…) # return RGB frame suitable for video</p>
-</dd>
-<dt>elif mode == ‘human’:</dt><dd><p>… # pop up a window and render</p>
-</dd>
-<dt>else:</dt><dd><p>super(MyEnv, self).render(mode=mode) # just raise an exception</p>
-</dd>
-</dl>
-</dd>
-</dl>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.Docking3d.reset">
-<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.Docking3d.reset" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.BaseDocking3d.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.BaseDocking3d.reset" title="Permalink to this definition"></a></dt>
 <dd><p>From Base Class:</p>
 <p>Resets the environment to an initial state and returns an initial
 observation.</p>
@@ -231,19 +232,21 @@ integer seed right after initialization and then never again.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.Docking3d.reward_step">
-<span class="sig-name descname"><span class="pre">reward_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.Docking3d.reward_step" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.BaseDocking3d.reward_step">
+<span class="sig-name descname"><span class="pre">reward_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.BaseDocking3d.reward_step" title="Permalink to this definition"></a></dt>
 <dd><p>Calculate the reward function, make sure to call self.is_done() before to update and check the done conditions</p>
 <p>The factors are defined in the config. Each reward is normalized between 0..1, thus the factor decides its
 importance. Keep in mind the rewards for the done conditions will be sparse.</p>
-<p>Reward 1: Close gto goal location
+<p>Reward 1: Navigation Errors
 Reward 2: Stable attitude
+Reward 3: Goal constraints
 Reward 3: time step penalty
 Reward 4: action use penalty
 Reward 5: Done - Goal reached
 Reward 6: Done - out of bounds position
 Reward 7: Done - out of bounds attitude
-Reward 8: Done - maximum episode steps</p>
+Reward 8: Done - maximum episode steps
+Reward 9: Done - collision</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>action</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – array with actions between -1 and 1</p>
@@ -258,14 +261,14 @@ Reward 8: Done - maximum episode steps</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.Docking3d.save_full_data_storage">
-<span class="sig-name descname"><span class="pre">save_full_data_storage</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.Docking3d.save_full_data_storage" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.BaseDocking3d.save_full_data_storage">
+<span class="sig-name descname"><span class="pre">save_full_data_storage</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.BaseDocking3d.save_full_data_storage" title="Permalink to this definition"></a></dt>
 <dd><p>Call this function to save the full data storage</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.Docking3d.step">
-<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.Docking3d.step" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.BaseDocking3d.step">
+<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.BaseDocking3d.step" title="Permalink to this definition"></a></dt>
 <dd><p>Run one timestep of the environment’s dynamics. When end of
 episode is reached, you are responsible for calling <cite>reset()</cite>
 to reset this environment’s state.</p>
@@ -287,6 +290,300 @@ info (dict): contains auxiliary diagnostic information (helpful for debugging, a
 <dd class="field-even"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>]</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.BaseDocking3d.update_body_collision">
+<span class="sig-name descname"><span class="pre">update_body_collision</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.BaseDocking3d.update_body_collision" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>boolean if collision with any of the obstacles</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.BaseDocking3d.update_navigation_errors">
+<span class="sig-name descname"><span class="pre">update_navigation_errors</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.BaseDocking3d.update_navigation_errors" title="Permalink to this definition"></a></dt>
+<dd><p>Update some navigation error values and save them to instance
+:return:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.BaseDocking3d.update_radar_collision">
+<span class="sig-name descname"><span class="pre">update_radar_collision</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.BaseDocking3d.update_radar_collision" title="Permalink to this definition"></a></dt>
+<dd><p>Function to update the radar collision, MUST be called after radar position and attitude update to reflect
+recent radar vectors</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>array(nr, 1) number of rays nr with the closest collision point in direction of each radar</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.CapsuleCurrentDocking3d">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gym_dockauv.envs.docking3d.</span></span><span class="sig-name descname"><span class="pre">CapsuleCurrentDocking3d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'action_reward_factors':</span> <span class="pre">6.0,</span> <span class="pre">'ang_rate_goal_reached_tol':</span> <span class="pre">0.3490658503988659,</span> <span class="pre">'attitude_goal_reached_tol':</span> <span class="pre">0.3490658503988659,</span> <span class="pre">'config_name':</span> <span class="pre">'DEFAULT_BASE_CONFIG',</span> <span class="pre">'dist_goal_reached_tol':</span> <span class="pre">0.5,</span> <span class="pre">'interval_datastorage':</span> <span class="pre">100,</span> <span class="pre">'interval_episode_log':</span> <span class="pre">50,</span> <span class="pre">'log_level':</span> <span class="pre">20,</span> <span class="pre">'max_attitude':</span> <span class="pre">1.0471975511965976,</span> <span class="pre">'max_dist_from_goal':</span> <span class="pre">20,</span> <span class="pre">'max_timesteps':</span> <span class="pre">1000,</span> <span class="pre">'p_max':</span> <span class="pre">1.5707963267948966,</span> <span class="pre">'q_max':</span> <span class="pre">1.5707963267948966,</span> <span class="pre">'r_max':</span> <span class="pre">2.0943951023931953,</span> <span class="pre">'radar':</span> <span class="pre">{'alpha':</span> <span class="pre">1.0471975511965976,</span> <span class="pre">'beta':</span> <span class="pre">1.3962634015954636,</span> <span class="pre">'blocksize_reduce':</span> <span class="pre">2,</span> <span class="pre">'freq':</span> <span class="pre">1,</span> <span class="pre">'max_dist':</span> <span class="pre">10,</span> <span class="pre">'ray_per_deg':</span> <span class="pre">0.17453292519943295},</span> <span class="pre">'radius':</span> <span class="pre">0.5,</span> <span class="pre">'reward_factors':</span> <span class="pre">{'w_Theta_max':</span> <span class="pre">-</span> <span class="pre">200.0,</span> <span class="pre">'w_Thetadot':</span> <span class="pre">0.2,</span> <span class="pre">'w_col':</span> <span class="pre">-</span> <span class="pre">300.0,</span> <span class="pre">'w_d':</span> <span class="pre">1.1,</span> <span class="pre">'w_delta_psi':</span> <span class="pre">0.5,</span> <span class="pre">'w_delta_theta':</span> <span class="pre">0.3,</span> <span class="pre">'w_deltad_max':</span> <span class="pre">-</span> <span class="pre">200.0,</span> <span class="pre">'w_goal':</span> <span class="pre">400.0,</span> <span class="pre">'w_oa':</span> <span class="pre">0.2,</span> <span class="pre">'w_phi':</span> <span class="pre">0.3,</span> <span class="pre">'w_t':</span> <span class="pre">0.05,</span> <span class="pre">'w_t_max':</span> <span class="pre">-</span> <span class="pre">100.0,</span> <span class="pre">'w_theta':</span> <span class="pre">0.3},</span> <span class="pre">'reward_set':</span> <span class="pre">1,</span> <span class="pre">'save_path_folder':</span> <span class="pre">'/home/erikx3/PycharmProjects/gym_dockauv/docsrc/logs',</span> <span class="pre">'t_step_size':</span> <span class="pre">0.1,</span> <span class="pre">'title':</span> <span class="pre">'DEFAULT',</span> <span class="pre">'u_max':</span> <span class="pre">2.0,</span> <span class="pre">'v_max':</span> <span class="pre">1.5,</span> <span class="pre">'vehicle':</span> <span class="pre">'BlueROV2',</span> <span class="pre">'velocity_goal_reached_tol':</span> <span class="pre">0.3,</span> <span class="pre">'verbose':</span> <span class="pre">1,</span> <span class="pre">'w_max':</span> <span class="pre">1.5}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.CapsuleCurrentDocking3d" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gym_dockauv.envs.docking3d.CapsuleDocking3d" title="gym_dockauv.envs.docking3d.CapsuleDocking3d"><code class="xref py py-class docutils literal notranslate"><span class="pre">gym_dockauv.envs.docking3d.CapsuleDocking3d</span></code></a></p>
+<p>This class generates an environment only with the capsule to dock at and with current</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>env_config</strong> (<em>dict</em>) – </p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.CapsuleCurrentDocking3d.generate_environment">
+<span class="sig-name descname"><span class="pre">generate_environment</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.CapsuleCurrentDocking3d.generate_environment" title="Permalink to this definition"></a></dt>
+<dd><p>Set up an environment after each reset call, can be used to in multiple environments to make multiple scenarios</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.CapsuleDocking3d">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gym_dockauv.envs.docking3d.</span></span><span class="sig-name descname"><span class="pre">CapsuleDocking3d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'action_reward_factors':</span> <span class="pre">6.0,</span> <span class="pre">'ang_rate_goal_reached_tol':</span> <span class="pre">0.3490658503988659,</span> <span class="pre">'attitude_goal_reached_tol':</span> <span class="pre">0.3490658503988659,</span> <span class="pre">'config_name':</span> <span class="pre">'DEFAULT_BASE_CONFIG',</span> <span class="pre">'dist_goal_reached_tol':</span> <span class="pre">0.5,</span> <span class="pre">'interval_datastorage':</span> <span class="pre">100,</span> <span class="pre">'interval_episode_log':</span> <span class="pre">50,</span> <span class="pre">'log_level':</span> <span class="pre">20,</span> <span class="pre">'max_attitude':</span> <span class="pre">1.0471975511965976,</span> <span class="pre">'max_dist_from_goal':</span> <span class="pre">20,</span> <span class="pre">'max_timesteps':</span> <span class="pre">1000,</span> <span class="pre">'p_max':</span> <span class="pre">1.5707963267948966,</span> <span class="pre">'q_max':</span> <span class="pre">1.5707963267948966,</span> <span class="pre">'r_max':</span> <span class="pre">2.0943951023931953,</span> <span class="pre">'radar':</span> <span class="pre">{'alpha':</span> <span class="pre">1.0471975511965976,</span> <span class="pre">'beta':</span> <span class="pre">1.3962634015954636,</span> <span class="pre">'blocksize_reduce':</span> <span class="pre">2,</span> <span class="pre">'freq':</span> <span class="pre">1,</span> <span class="pre">'max_dist':</span> <span class="pre">10,</span> <span class="pre">'ray_per_deg':</span> <span class="pre">0.17453292519943295},</span> <span class="pre">'radius':</span> <span class="pre">0.5,</span> <span class="pre">'reward_factors':</span> <span class="pre">{'w_Theta_max':</span> <span class="pre">-</span> <span class="pre">200.0,</span> <span class="pre">'w_Thetadot':</span> <span class="pre">0.2,</span> <span class="pre">'w_col':</span> <span class="pre">-</span> <span class="pre">300.0,</span> <span class="pre">'w_d':</span> <span class="pre">1.1,</span> <span class="pre">'w_delta_psi':</span> <span class="pre">0.5,</span> <span class="pre">'w_delta_theta':</span> <span class="pre">0.3,</span> <span class="pre">'w_deltad_max':</span> <span class="pre">-</span> <span class="pre">200.0,</span> <span class="pre">'w_goal':</span> <span class="pre">400.0,</span> <span class="pre">'w_oa':</span> <span class="pre">0.2,</span> <span class="pre">'w_phi':</span> <span class="pre">0.3,</span> <span class="pre">'w_t':</span> <span class="pre">0.05,</span> <span class="pre">'w_t_max':</span> <span class="pre">-</span> <span class="pre">100.0,</span> <span class="pre">'w_theta':</span> <span class="pre">0.3},</span> <span class="pre">'reward_set':</span> <span class="pre">1,</span> <span class="pre">'save_path_folder':</span> <span class="pre">'/home/erikx3/PycharmProjects/gym_dockauv/docsrc/logs',</span> <span class="pre">'t_step_size':</span> <span class="pre">0.1,</span> <span class="pre">'title':</span> <span class="pre">'DEFAULT',</span> <span class="pre">'u_max':</span> <span class="pre">2.0,</span> <span class="pre">'v_max':</span> <span class="pre">1.5,</span> <span class="pre">'vehicle':</span> <span class="pre">'BlueROV2',</span> <span class="pre">'velocity_goal_reached_tol':</span> <span class="pre">0.3,</span> <span class="pre">'verbose':</span> <span class="pre">1,</span> <span class="pre">'w_max':</span> <span class="pre">1.5}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.CapsuleDocking3d" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gym_dockauv.envs.docking3d.SimpleDocking3d" title="gym_dockauv.envs.docking3d.SimpleDocking3d"><code class="xref py py-class docutils literal notranslate"><span class="pre">gym_dockauv.envs.docking3d.SimpleDocking3d</span></code></a></p>
+<p>This class generates an environment only with the capsule to dock at</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>env_config</strong> (<em>dict</em>) – </p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.CapsuleDocking3d.generate_environment">
+<span class="sig-name descname"><span class="pre">generate_environment</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.CapsuleDocking3d.generate_environment" title="Permalink to this definition"></a></dt>
+<dd><p>Set up an environment after each reset call, can be used to in multiple environments to make multiple scenarios</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.ObstaclesCurrentDocking3d">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gym_dockauv.envs.docking3d.</span></span><span class="sig-name descname"><span class="pre">ObstaclesCurrentDocking3d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'action_reward_factors':</span> <span class="pre">6.0,</span> <span class="pre">'ang_rate_goal_reached_tol':</span> <span class="pre">0.3490658503988659,</span> <span class="pre">'attitude_goal_reached_tol':</span> <span class="pre">0.3490658503988659,</span> <span class="pre">'config_name':</span> <span class="pre">'DEFAULT_BASE_CONFIG',</span> <span class="pre">'dist_goal_reached_tol':</span> <span class="pre">0.5,</span> <span class="pre">'interval_datastorage':</span> <span class="pre">100,</span> <span class="pre">'interval_episode_log':</span> <span class="pre">50,</span> <span class="pre">'log_level':</span> <span class="pre">20,</span> <span class="pre">'max_attitude':</span> <span class="pre">1.0471975511965976,</span> <span class="pre">'max_dist_from_goal':</span> <span class="pre">20,</span> <span class="pre">'max_timesteps':</span> <span class="pre">1000,</span> <span class="pre">'p_max':</span> <span class="pre">1.5707963267948966,</span> <span class="pre">'q_max':</span> <span class="pre">1.5707963267948966,</span> <span class="pre">'r_max':</span> <span class="pre">2.0943951023931953,</span> <span class="pre">'radar':</span> <span class="pre">{'alpha':</span> <span class="pre">1.0471975511965976,</span> <span class="pre">'beta':</span> <span class="pre">1.3962634015954636,</span> <span class="pre">'blocksize_reduce':</span> <span class="pre">2,</span> <span class="pre">'freq':</span> <span class="pre">1,</span> <span class="pre">'max_dist':</span> <span class="pre">10,</span> <span class="pre">'ray_per_deg':</span> <span class="pre">0.17453292519943295},</span> <span class="pre">'radius':</span> <span class="pre">0.5,</span> <span class="pre">'reward_factors':</span> <span class="pre">{'w_Theta_max':</span> <span class="pre">-</span> <span class="pre">200.0,</span> <span class="pre">'w_Thetadot':</span> <span class="pre">0.2,</span> <span class="pre">'w_col':</span> <span class="pre">-</span> <span class="pre">300.0,</span> <span class="pre">'w_d':</span> <span class="pre">1.1,</span> <span class="pre">'w_delta_psi':</span> <span class="pre">0.5,</span> <span class="pre">'w_delta_theta':</span> <span class="pre">0.3,</span> <span class="pre">'w_deltad_max':</span> <span class="pre">-</span> <span class="pre">200.0,</span> <span class="pre">'w_goal':</span> <span class="pre">400.0,</span> <span class="pre">'w_oa':</span> <span class="pre">0.2,</span> <span class="pre">'w_phi':</span> <span class="pre">0.3,</span> <span class="pre">'w_t':</span> <span class="pre">0.05,</span> <span class="pre">'w_t_max':</span> <span class="pre">-</span> <span class="pre">100.0,</span> <span class="pre">'w_theta':</span> <span class="pre">0.3},</span> <span class="pre">'reward_set':</span> <span class="pre">1,</span> <span class="pre">'save_path_folder':</span> <span class="pre">'/home/erikx3/PycharmProjects/gym_dockauv/docsrc/logs',</span> <span class="pre">'t_step_size':</span> <span class="pre">0.1,</span> <span class="pre">'title':</span> <span class="pre">'DEFAULT',</span> <span class="pre">'u_max':</span> <span class="pre">2.0,</span> <span class="pre">'v_max':</span> <span class="pre">1.5,</span> <span class="pre">'vehicle':</span> <span class="pre">'BlueROV2',</span> <span class="pre">'velocity_goal_reached_tol':</span> <span class="pre">0.3,</span> <span class="pre">'verbose':</span> <span class="pre">1,</span> <span class="pre">'w_max':</span> <span class="pre">1.5}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.ObstaclesCurrentDocking3d" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gym_dockauv.envs.docking3d.ObstaclesDocking3d" title="gym_dockauv.envs.docking3d.ObstaclesDocking3d"><code class="xref py py-class docutils literal notranslate"><span class="pre">gym_dockauv.envs.docking3d.ObstaclesDocking3d</span></code></a></p>
+<p>Set up and environment with multiple capsules as obstacles around the goal location (e.g. a pear or oil rig)
+Add water current to it</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>env_config</strong> (<em>dict</em>) – </p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.ObstaclesCurrentDocking3d.generate_environment">
+<span class="sig-name descname"><span class="pre">generate_environment</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.ObstaclesCurrentDocking3d.generate_environment" title="Permalink to this definition"></a></dt>
+<dd><p>Set up an environment after each reset call, can be used to in multiple environments to make multiple scenarios</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.ObstaclesDocking3d">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gym_dockauv.envs.docking3d.</span></span><span class="sig-name descname"><span class="pre">ObstaclesDocking3d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'action_reward_factors':</span> <span class="pre">6.0,</span> <span class="pre">'ang_rate_goal_reached_tol':</span> <span class="pre">0.3490658503988659,</span> <span class="pre">'attitude_goal_reached_tol':</span> <span class="pre">0.3490658503988659,</span> <span class="pre">'config_name':</span> <span class="pre">'DEFAULT_BASE_CONFIG',</span> <span class="pre">'dist_goal_reached_tol':</span> <span class="pre">0.5,</span> <span class="pre">'interval_datastorage':</span> <span class="pre">100,</span> <span class="pre">'interval_episode_log':</span> <span class="pre">50,</span> <span class="pre">'log_level':</span> <span class="pre">20,</span> <span class="pre">'max_attitude':</span> <span class="pre">1.0471975511965976,</span> <span class="pre">'max_dist_from_goal':</span> <span class="pre">20,</span> <span class="pre">'max_timesteps':</span> <span class="pre">1000,</span> <span class="pre">'p_max':</span> <span class="pre">1.5707963267948966,</span> <span class="pre">'q_max':</span> <span class="pre">1.5707963267948966,</span> <span class="pre">'r_max':</span> <span class="pre">2.0943951023931953,</span> <span class="pre">'radar':</span> <span class="pre">{'alpha':</span> <span class="pre">1.0471975511965976,</span> <span class="pre">'beta':</span> <span class="pre">1.3962634015954636,</span> <span class="pre">'blocksize_reduce':</span> <span class="pre">2,</span> <span class="pre">'freq':</span> <span class="pre">1,</span> <span class="pre">'max_dist':</span> <span class="pre">10,</span> <span class="pre">'ray_per_deg':</span> <span class="pre">0.17453292519943295},</span> <span class="pre">'radius':</span> <span class="pre">0.5,</span> <span class="pre">'reward_factors':</span> <span class="pre">{'w_Theta_max':</span> <span class="pre">-</span> <span class="pre">200.0,</span> <span class="pre">'w_Thetadot':</span> <span class="pre">0.2,</span> <span class="pre">'w_col':</span> <span class="pre">-</span> <span class="pre">300.0,</span> <span class="pre">'w_d':</span> <span class="pre">1.1,</span> <span class="pre">'w_delta_psi':</span> <span class="pre">0.5,</span> <span class="pre">'w_delta_theta':</span> <span class="pre">0.3,</span> <span class="pre">'w_deltad_max':</span> <span class="pre">-</span> <span class="pre">200.0,</span> <span class="pre">'w_goal':</span> <span class="pre">400.0,</span> <span class="pre">'w_oa':</span> <span class="pre">0.2,</span> <span class="pre">'w_phi':</span> <span class="pre">0.3,</span> <span class="pre">'w_t':</span> <span class="pre">0.05,</span> <span class="pre">'w_t_max':</span> <span class="pre">-</span> <span class="pre">100.0,</span> <span class="pre">'w_theta':</span> <span class="pre">0.3},</span> <span class="pre">'reward_set':</span> <span class="pre">1,</span> <span class="pre">'save_path_folder':</span> <span class="pre">'/home/erikx3/PycharmProjects/gym_dockauv/docsrc/logs',</span> <span class="pre">'t_step_size':</span> <span class="pre">0.1,</span> <span class="pre">'title':</span> <span class="pre">'DEFAULT',</span> <span class="pre">'u_max':</span> <span class="pre">2.0,</span> <span class="pre">'v_max':</span> <span class="pre">1.5,</span> <span class="pre">'vehicle':</span> <span class="pre">'BlueROV2',</span> <span class="pre">'velocity_goal_reached_tol':</span> <span class="pre">0.3,</span> <span class="pre">'verbose':</span> <span class="pre">1,</span> <span class="pre">'w_max':</span> <span class="pre">1.5}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.ObstaclesDocking3d" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gym_dockauv.envs.docking3d.CapsuleDocking3d" title="gym_dockauv.envs.docking3d.CapsuleDocking3d"><code class="xref py py-class docutils literal notranslate"><span class="pre">gym_dockauv.envs.docking3d.CapsuleDocking3d</span></code></a></p>
+<p>This class generates an environment already with multiple obstacles</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>env_config</strong> (<em>dict</em>) – </p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.ObstaclesDocking3d.generate_environment">
+<span class="sig-name descname"><span class="pre">generate_environment</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.ObstaclesDocking3d.generate_environment" title="Permalink to this definition"></a></dt>
+<dd><p>Set up and environment with multiple capsules as obstacles around the goal location (e.g. a pear or oil rig)</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.ObstaclesNoCapDocking3d">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gym_dockauv.envs.docking3d.</span></span><span class="sig-name descname"><span class="pre">ObstaclesNoCapDocking3d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'action_reward_factors':</span> <span class="pre">6.0,</span> <span class="pre">'ang_rate_goal_reached_tol':</span> <span class="pre">0.3490658503988659,</span> <span class="pre">'attitude_goal_reached_tol':</span> <span class="pre">0.3490658503988659,</span> <span class="pre">'config_name':</span> <span class="pre">'DEFAULT_BASE_CONFIG',</span> <span class="pre">'dist_goal_reached_tol':</span> <span class="pre">0.5,</span> <span class="pre">'interval_datastorage':</span> <span class="pre">100,</span> <span class="pre">'interval_episode_log':</span> <span class="pre">50,</span> <span class="pre">'log_level':</span> <span class="pre">20,</span> <span class="pre">'max_attitude':</span> <span class="pre">1.0471975511965976,</span> <span class="pre">'max_dist_from_goal':</span> <span class="pre">20,</span> <span class="pre">'max_timesteps':</span> <span class="pre">1000,</span> <span class="pre">'p_max':</span> <span class="pre">1.5707963267948966,</span> <span class="pre">'q_max':</span> <span class="pre">1.5707963267948966,</span> <span class="pre">'r_max':</span> <span class="pre">2.0943951023931953,</span> <span class="pre">'radar':</span> <span class="pre">{'alpha':</span> <span class="pre">1.0471975511965976,</span> <span class="pre">'beta':</span> <span class="pre">1.3962634015954636,</span> <span class="pre">'blocksize_reduce':</span> <span class="pre">2,</span> <span class="pre">'freq':</span> <span class="pre">1,</span> <span class="pre">'max_dist':</span> <span class="pre">10,</span> <span class="pre">'ray_per_deg':</span> <span class="pre">0.17453292519943295},</span> <span class="pre">'radius':</span> <span class="pre">0.5,</span> <span class="pre">'reward_factors':</span> <span class="pre">{'w_Theta_max':</span> <span class="pre">-</span> <span class="pre">200.0,</span> <span class="pre">'w_Thetadot':</span> <span class="pre">0.2,</span> <span class="pre">'w_col':</span> <span class="pre">-</span> <span class="pre">300.0,</span> <span class="pre">'w_d':</span> <span class="pre">1.1,</span> <span class="pre">'w_delta_psi':</span> <span class="pre">0.5,</span> <span class="pre">'w_delta_theta':</span> <span class="pre">0.3,</span> <span class="pre">'w_deltad_max':</span> <span class="pre">-</span> <span class="pre">200.0,</span> <span class="pre">'w_goal':</span> <span class="pre">400.0,</span> <span class="pre">'w_oa':</span> <span class="pre">0.2,</span> <span class="pre">'w_phi':</span> <span class="pre">0.3,</span> <span class="pre">'w_t':</span> <span class="pre">0.05,</span> <span class="pre">'w_t_max':</span> <span class="pre">-</span> <span class="pre">100.0,</span> <span class="pre">'w_theta':</span> <span class="pre">0.3},</span> <span class="pre">'reward_set':</span> <span class="pre">1,</span> <span class="pre">'save_path_folder':</span> <span class="pre">'/home/erikx3/PycharmProjects/gym_dockauv/docsrc/logs',</span> <span class="pre">'t_step_size':</span> <span class="pre">0.1,</span> <span class="pre">'title':</span> <span class="pre">'DEFAULT',</span> <span class="pre">'u_max':</span> <span class="pre">2.0,</span> <span class="pre">'v_max':</span> <span class="pre">1.5,</span> <span class="pre">'vehicle':</span> <span class="pre">'BlueROV2',</span> <span class="pre">'velocity_goal_reached_tol':</span> <span class="pre">0.3,</span> <span class="pre">'verbose':</span> <span class="pre">1,</span> <span class="pre">'w_max':</span> <span class="pre">1.5}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.ObstaclesNoCapDocking3d" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gym_dockauv.envs.docking3d.ObstaclesDocking3d" title="gym_dockauv.envs.docking3d.ObstaclesDocking3d"><code class="xref py py-class docutils literal notranslate"><span class="pre">gym_dockauv.envs.docking3d.ObstaclesDocking3d</span></code></a></p>
+<p>This class generates an environment already with multiple obstacles, but no capsule at docking point</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>env_config</strong> (<em>dict</em>) – </p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.ObstaclesNoCapDocking3d.generate_environment">
+<span class="sig-name descname"><span class="pre">generate_environment</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.ObstaclesNoCapDocking3d.generate_environment" title="Permalink to this definition"></a></dt>
+<dd><p>Set up and environment as CapsuleDocking3d and just remove inner capsule</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.Reward">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gym_dockauv.envs.docking3d.</span></span><span class="sig-name descname"><span class="pre">Reward</span></span><a class="headerlink" href="#gym_dockauv.envs.docking3d.Reward" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Static class to group the different reward functions</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.Reward.beta_oa">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">beta_oa</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta_r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">psi_r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta_max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">psi_max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon_oa</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.Reward.beta_oa" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.Reward.c_oa">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">c_oa</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d_r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d_max</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.Reward.c_oa" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.Reward.cont_goal_constraints">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cont_goal_constraints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta_d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_des</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta_d_des</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta_d_max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_exp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta_d_exp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_rev</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta_d_rev</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.Reward.cont_goal_constraints" title="Permalink to this definition"></a></dt>
+<dd><p>Continuous reward functions for some goal constraints put into a from goal distance dependent function</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – actual value</p></li>
+<li><p><strong>delta_d</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – distance from goal</p></li>
+<li><p><strong>x_des</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – desired value</p></li>
+<li><p><strong>delta_d_des</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – desired delta distance (needed to form function)</p></li>
+<li><p><strong>x_max</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – max value</p></li>
+<li><p><strong>delta_d_max</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – maximum delta distance (needed to form function)</p></li>
+<li><p><strong>x_exp</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – exponent for term of x</p></li>
+<li><p><strong>delta_d_exp</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – exponent for term of delta_d</p></li>
+<li><p><strong>x_rev</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – parameter to reverse direction on x</p></li>
+<li><p><strong>delta_d_rev</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – parameter to reverse direction on delta_d</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>reward [0..1] for actual value x with delta_d</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.Reward.disc_goal_constraints">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">disc_goal_constraints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_des</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">perc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.Reward.disc_goal_constraints" title="Permalink to this definition"></a></dt>
+<dd><p>Function for the final discrete reward when goal is reached for the constraints. This assumes a desired small
+positive value as a target (e.g. tolerance) and the actual achieves value (positive). Overshoot percentage is
+used to make sure, the final result is always below the desired value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – actual value</p></li>
+<li><p><strong>x_des</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – desired value</p></li>
+<li><p><strong>perc</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – percentage to overshoot desired value</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>reward [0..2] for actual value from desired value [0..1]
+extra reward when des value actually reached [0,1]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.Reward.log_precision">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">log_precision</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_goal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_max</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.Reward.log_precision" title="Permalink to this definition"></a></dt>
+<dd><p>Function to scale logarithmic function between x_goal-&gt;y=0 and x_max-&gt;y=1 (clip in case max or des value got
+over-/ or undershot</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – actual value</p></li>
+<li><p><strong>x_max</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – maximum value</p></li>
+<li><p><strong>x_goal</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – goal value (smaller than max!)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>x value scaled on log (0 &lt;= x &lt;= 1 when x_goal &lt;= x &lt;= x_max)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.Reward.obstacle_avoidance">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">obstacle_avoidance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta_r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">psi_r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d_r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta_max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">psi_max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d_max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma_c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon_c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon_oa</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.Reward.obstacle_avoidance" title="Permalink to this definition"></a></dt>
+<dd><p>function to calculate the reward for the obstacle avoidance mechanism
+:type theta_r: <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>
+:param theta_r: 1d array of the vertical radar angles
+:type psi_r: <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>
+:param psi_r: 1d array of the horizontal radar angles
+:type d_r: <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>
+:param d_r: 1d array distance of each radar ray
+:type theta_max: <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>
+:param theta_max: maximum angle vertically
+:type psi_max: <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>
+:param psi_max: maximum angle horizontally
+:type d_max: <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>
+:param d_max: maximum distance for an array
+:type gamma_c: <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>
+:param gamma_c: scaling the closeness values
+:type epsilon_c: <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>
+:param epsilon_c: minimum obstacle closeness punishment
+:type epsilon_oa: <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>
+:param epsilon_oa: avoiding singularities
+:return:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>theta_r</strong> (<em>numpy.ndarray</em>) – </p></li>
+<li><p><strong>psi_r</strong> (<em>numpy.ndarray</em>) – </p></li>
+<li><p><strong>d_r</strong> (<em>numpy.ndarray</em>) – </p></li>
+<li><p><strong>theta_max</strong> (<em>float</em>) – </p></li>
+<li><p><strong>psi_max</strong> (<em>float</em>) – </p></li>
+<li><p><strong>d_max</strong> (<em>float</em>) – </p></li>
+<li><p><strong>gamma_c</strong> (<em>float</em>) – </p></li>
+<li><p><strong>epsilon_c</strong> (<em>float</em>) – </p></li>
+<li><p><strong>epsilon_oa</strong> (<em>float</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.SimpleCurrentDocking3d">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gym_dockauv.envs.docking3d.</span></span><span class="sig-name descname"><span class="pre">SimpleCurrentDocking3d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'action_reward_factors':</span> <span class="pre">6.0,</span> <span class="pre">'ang_rate_goal_reached_tol':</span> <span class="pre">0.3490658503988659,</span> <span class="pre">'attitude_goal_reached_tol':</span> <span class="pre">0.3490658503988659,</span> <span class="pre">'config_name':</span> <span class="pre">'DEFAULT_BASE_CONFIG',</span> <span class="pre">'dist_goal_reached_tol':</span> <span class="pre">0.5,</span> <span class="pre">'interval_datastorage':</span> <span class="pre">100,</span> <span class="pre">'interval_episode_log':</span> <span class="pre">50,</span> <span class="pre">'log_level':</span> <span class="pre">20,</span> <span class="pre">'max_attitude':</span> <span class="pre">1.0471975511965976,</span> <span class="pre">'max_dist_from_goal':</span> <span class="pre">20,</span> <span class="pre">'max_timesteps':</span> <span class="pre">1000,</span> <span class="pre">'p_max':</span> <span class="pre">1.5707963267948966,</span> <span class="pre">'q_max':</span> <span class="pre">1.5707963267948966,</span> <span class="pre">'r_max':</span> <span class="pre">2.0943951023931953,</span> <span class="pre">'radar':</span> <span class="pre">{'alpha':</span> <span class="pre">1.0471975511965976,</span> <span class="pre">'beta':</span> <span class="pre">1.3962634015954636,</span> <span class="pre">'blocksize_reduce':</span> <span class="pre">2,</span> <span class="pre">'freq':</span> <span class="pre">1,</span> <span class="pre">'max_dist':</span> <span class="pre">10,</span> <span class="pre">'ray_per_deg':</span> <span class="pre">0.17453292519943295},</span> <span class="pre">'radius':</span> <span class="pre">0.5,</span> <span class="pre">'reward_factors':</span> <span class="pre">{'w_Theta_max':</span> <span class="pre">-</span> <span class="pre">200.0,</span> <span class="pre">'w_Thetadot':</span> <span class="pre">0.2,</span> <span class="pre">'w_col':</span> <span class="pre">-</span> <span class="pre">300.0,</span> <span class="pre">'w_d':</span> <span class="pre">1.1,</span> <span class="pre">'w_delta_psi':</span> <span class="pre">0.5,</span> <span class="pre">'w_delta_theta':</span> <span class="pre">0.3,</span> <span class="pre">'w_deltad_max':</span> <span class="pre">-</span> <span class="pre">200.0,</span> <span class="pre">'w_goal':</span> <span class="pre">400.0,</span> <span class="pre">'w_oa':</span> <span class="pre">0.2,</span> <span class="pre">'w_phi':</span> <span class="pre">0.3,</span> <span class="pre">'w_t':</span> <span class="pre">0.05,</span> <span class="pre">'w_t_max':</span> <span class="pre">-</span> <span class="pre">100.0,</span> <span class="pre">'w_theta':</span> <span class="pre">0.3},</span> <span class="pre">'reward_set':</span> <span class="pre">1,</span> <span class="pre">'save_path_folder':</span> <span class="pre">'/home/erikx3/PycharmProjects/gym_dockauv/docsrc/logs',</span> <span class="pre">'t_step_size':</span> <span class="pre">0.1,</span> <span class="pre">'title':</span> <span class="pre">'DEFAULT',</span> <span class="pre">'u_max':</span> <span class="pre">2.0,</span> <span class="pre">'v_max':</span> <span class="pre">1.5,</span> <span class="pre">'vehicle':</span> <span class="pre">'BlueROV2',</span> <span class="pre">'velocity_goal_reached_tol':</span> <span class="pre">0.3,</span> <span class="pre">'verbose':</span> <span class="pre">1,</span> <span class="pre">'w_max':</span> <span class="pre">1.5}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.SimpleCurrentDocking3d" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gym_dockauv.envs.docking3d.SimpleDocking3d" title="gym_dockauv.envs.docking3d.SimpleDocking3d"><code class="xref py py-class docutils literal notranslate"><span class="pre">gym_dockauv.envs.docking3d.SimpleDocking3d</span></code></a></p>
+<p>This class generates a simple environment to drive in one point in space without obstacles but with custom
+defined current</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>env_config</strong> (<em>dict</em>) – </p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.SimpleCurrentDocking3d.generate_environment">
+<span class="sig-name descname"><span class="pre">generate_environment</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.SimpleCurrentDocking3d.generate_environment" title="Permalink to this definition"></a></dt>
+<dd><p>Set up an environment after each reset call, can be used to in multiple environments to make multiple scenarios</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.SimpleDocking3d">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gym_dockauv.envs.docking3d.</span></span><span class="sig-name descname"><span class="pre">SimpleDocking3d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'action_reward_factors':</span> <span class="pre">6.0,</span> <span class="pre">'ang_rate_goal_reached_tol':</span> <span class="pre">0.3490658503988659,</span> <span class="pre">'attitude_goal_reached_tol':</span> <span class="pre">0.3490658503988659,</span> <span class="pre">'config_name':</span> <span class="pre">'DEFAULT_BASE_CONFIG',</span> <span class="pre">'dist_goal_reached_tol':</span> <span class="pre">0.5,</span> <span class="pre">'interval_datastorage':</span> <span class="pre">100,</span> <span class="pre">'interval_episode_log':</span> <span class="pre">50,</span> <span class="pre">'log_level':</span> <span class="pre">20,</span> <span class="pre">'max_attitude':</span> <span class="pre">1.0471975511965976,</span> <span class="pre">'max_dist_from_goal':</span> <span class="pre">20,</span> <span class="pre">'max_timesteps':</span> <span class="pre">1000,</span> <span class="pre">'p_max':</span> <span class="pre">1.5707963267948966,</span> <span class="pre">'q_max':</span> <span class="pre">1.5707963267948966,</span> <span class="pre">'r_max':</span> <span class="pre">2.0943951023931953,</span> <span class="pre">'radar':</span> <span class="pre">{'alpha':</span> <span class="pre">1.0471975511965976,</span> <span class="pre">'beta':</span> <span class="pre">1.3962634015954636,</span> <span class="pre">'blocksize_reduce':</span> <span class="pre">2,</span> <span class="pre">'freq':</span> <span class="pre">1,</span> <span class="pre">'max_dist':</span> <span class="pre">10,</span> <span class="pre">'ray_per_deg':</span> <span class="pre">0.17453292519943295},</span> <span class="pre">'radius':</span> <span class="pre">0.5,</span> <span class="pre">'reward_factors':</span> <span class="pre">{'w_Theta_max':</span> <span class="pre">-</span> <span class="pre">200.0,</span> <span class="pre">'w_Thetadot':</span> <span class="pre">0.2,</span> <span class="pre">'w_col':</span> <span class="pre">-</span> <span class="pre">300.0,</span> <span class="pre">'w_d':</span> <span class="pre">1.1,</span> <span class="pre">'w_delta_psi':</span> <span class="pre">0.5,</span> <span class="pre">'w_delta_theta':</span> <span class="pre">0.3,</span> <span class="pre">'w_deltad_max':</span> <span class="pre">-</span> <span class="pre">200.0,</span> <span class="pre">'w_goal':</span> <span class="pre">400.0,</span> <span class="pre">'w_oa':</span> <span class="pre">0.2,</span> <span class="pre">'w_phi':</span> <span class="pre">0.3,</span> <span class="pre">'w_t':</span> <span class="pre">0.05,</span> <span class="pre">'w_t_max':</span> <span class="pre">-</span> <span class="pre">100.0,</span> <span class="pre">'w_theta':</span> <span class="pre">0.3},</span> <span class="pre">'reward_set':</span> <span class="pre">1,</span> <span class="pre">'save_path_folder':</span> <span class="pre">'/home/erikx3/PycharmProjects/gym_dockauv/docsrc/logs',</span> <span class="pre">'t_step_size':</span> <span class="pre">0.1,</span> <span class="pre">'title':</span> <span class="pre">'DEFAULT',</span> <span class="pre">'u_max':</span> <span class="pre">2.0,</span> <span class="pre">'v_max':</span> <span class="pre">1.5,</span> <span class="pre">'vehicle':</span> <span class="pre">'BlueROV2',</span> <span class="pre">'velocity_goal_reached_tol':</span> <span class="pre">0.3,</span> <span class="pre">'verbose':</span> <span class="pre">1,</span> <span class="pre">'w_max':</span> <span class="pre">1.5}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.SimpleDocking3d" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gym_dockauv.envs.docking3d.BaseDocking3d" title="gym_dockauv.envs.docking3d.BaseDocking3d"><code class="xref py py-class docutils literal notranslate"><span class="pre">gym_dockauv.envs.docking3d.BaseDocking3d</span></code></a></p>
+<p>This class generates a simple environment to drive in one point in space without obstacles and no current</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>env_config</strong> (<em>dict</em>) – </p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gym_dockauv.envs.docking3d.SimpleDocking3d.generate_environment">
+<span class="sig-name descname"><span class="pre">generate_environment</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gym_dockauv.envs.docking3d.SimpleDocking3d.generate_environment" title="Permalink to this definition"></a></dt>
+<dd><p>Set up an environment after each reset call, can be used to in multiple environments to make multiple scenarios</p>
 </dd></dl>
 
 </dd></dl>
